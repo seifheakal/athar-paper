@@ -1,0 +1,19 @@
+% ===== UNIT 11: Stream 1: backbone architecture (3.2.1) =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+\subsubsection{Backbone architecture}
+The backbone follows the TransReID architecture~\cite{he2021transreid}: a
+ViT-Base/16 augmented with the SIE module and the JPM. The SIE module encodes
+VeRi-776's 20 camera indices as learnable additive offsets to the patch token
+sequence. The JPM operates as a parallel branch that randomly shuffles groups
+of patch tokens and applies a separate classification head. A BNNeck is applied
+on the 768-dimensional global CLS token before the classification
+head~\cite{he2021transreid}.
+
+The key deviation from the original TransReID recipe is the backbone
+initialisation: \texttt{vit\_base\_\allowbreak patch16\_\allowbreak clip\_\allowbreak
+224.openai} (OpenAI CLIP pretrained ViT-B/16 via
+\texttt{timm}~\cite{radford2021clip}) replaces
+ImageNet-21k-only weights. CLIP pretraining provides richer visual-semantic
+representations that transfer more effectively to fine-grained vehicle
+appearance.

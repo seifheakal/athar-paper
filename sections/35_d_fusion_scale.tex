@@ -1,0 +1,26 @@
+% ===== UNIT 35: Why fusion works + backbone scale (6.2-6.3) =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+\subsection{Why score-level fusion works}
+The complementarity is architectural. The ViT-B backbone processes images as
+global patch-token sequences with multi-head self-attention, producing
+representations sensitive to holistic vehicle structure and long-range spatial
+relationships~\cite{he2021transreid,dosovitskiy2021vit}. The CLIP-SENet
+ResNet101-IBN-a backbone~\cite{pan2018ibn} applies hierarchical local
+convolutional filters capturing fine-grained texture, with IBN providing
+simultaneous style normalisation and discriminative training. The AFEM branch
+injects attribute-level structure from TinyCLIP~\cite{lu2025clipsenet}
+orthogonal to ViT patch attention. Score-level fusion preserves each stream's
+post-processing calibration independently and requires no additional training.
+The optimal $w_2{=}0.65$ for CLIP-SENet reflects its higher standalone
+post-processed performance (91.44\% vs.\ 89.97\% mAP for ViT-B); the ViT-B
+branch still contributes $+1.88$\,pp above CLIP-SENet alone, confirming genuine
+complementarity.
+
+\subsection{Backbone scale and overfitting}
+ViT-L/14 (304\,M parameters) was trained under the same recipe as a
+higher-capacity alternative. Despite its larger parameter count it overfit
+VeRi-776's 576 training identities---a known failure mode at this dataset
+scale---and did not exceed the ViT-B/16 CLIP result after re-ranking. This
+supports prioritising systematic post-processing over backbone scaling as the
+primary performance lever for small-scale ReID benchmarks.

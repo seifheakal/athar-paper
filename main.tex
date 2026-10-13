@@ -1,0 +1,309 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Revisiting ViT-B Training and Post-Processing for Vehicle Re-Identification
+%  Submission to: The Visual Computer (Springer)
+%
+%  FORMATTING NOTE
+%  ---------------
+%  The Visual Computer states in its Instructions for Authors that there is
+%  currently no official journal template and that authors should follow the
+%  generic Instructions for Authors; accepted papers are typeset by the
+%  publisher.  This file therefore implements those instructions directly:
+%    * single column, A4, 10 pt Times (via mathptmx / newtxtext)
+%    * decimal headings, at most three levels
+%    * numbered citations in square brackets, Springer reference style
+%    * abstract 150-250 words, 4-6 keywords
+%    * tables numbered in Arabic numerals with captions ABOVE the table
+%    * figure captions beginning "Fig. N" in bold, no terminal punctuation
+%    * Statements and Declarations section
+%    * author biographies (50-100 words each)
+%
+%  To switch to Springer Nature's generic class instead, download sn-jnl.cls
+%  from Springer and replace the \documentclass line with
+%      \documentclass[sn-mathphys-num,iicol]{sn-jnl}
+%  keeping the body text below unchanged.
+%
+%  Compile:  pdflatex manuscript && pdflatex manuscript
+%  (Bibliography is embedded as thebibliography so no BibTeX run is needed.
+%   A references.bib file is also provided if you prefer BibTeX; see the note
+%   just above the bibliography at the end of this file.)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[10pt,a4paper]{article}
+
+% ---- Page layout -------------------------------------------------------------
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}                 % Times text and math
+\usepackage[scaled=0.90]{helvet}      % Helvetica for figure/sans elements
+
+% ---- Maths, tables, graphics -------------------------------------------------
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{pifont}
+\graphicspath{{figs/}}
+\usepackage{wrapfig}
+% ---- Typography, captions, links --------------------------------------------
+\usepackage{microtype}
+\usepackage[font=small,labelfont=bf,labelsep=space]{caption}
+\usepackage{url}
+\usepackage[hidelinks,breaklinks=true]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.08}
+
+% Figure captions must read "Fig. 1 ..." with no terminal punctuation
+\renewcommand{\figurename}{Fig.}
+\captionsetup[figure]{name=Fig.}
+\captionsetup[table]{name=Table}
+
+% Decimal headings, three levels maximum
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\itshape}{\thesubsubsection}{0.6em}{}
+\setcounter{secnumdepth}{3}
+
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\thepage}
+
+% =============================================================================
+\begin{document}
+% =============================================================================
+
+% ---- Title page -------------------------------------------------------------
+\begin{center}
+  {\LARGE\bfseries Revisiting ViT-B Training and Post-Processing for Vehicle
+  Re-Identification: A Reproducible Baseline and Training-Free Fusion on
+  VeRi-776\par}
+
+  \vspace{1.4em}
+
+  {\normalsize
+   Abdelrahman Hamdi$^{1}$ \quad
+   Ali A. Ali$^{1}$ \quad
+   Mohamed A. Ali$^{1}$ \\[4pt]
+   Seif T. Heakal$^{1,\ast}$ \quad
+   Ahmed H. Abdel-Gawad$^{1}$\par}
+
+  \vspace{0.9em}
+
+  {\small $^{1}$\,Department of Computer Engineering, Faculty of Engineering,
+   Cairo University, Giza 12613, Egypt\par}
+
+  \vspace{0.5em}
+
+  {\small $^{\ast}$\,Corresponding author:
+   \texttt{seif.mohamed05@eng-st.cu.edu.eg}\par}
+
+  \vspace{0.4em}
+
+  {\footnotesize
+   \texttt{abdelrahman.ibrahim03@eng-st.cu.edu.eg};\;
+   \texttt{ali.abdelraouf03@eng-st.cu.edu.eg};\;
+   \texttt{mohamed.awaad02@eng-st.cu.edu.eg};\\
+   \texttt{seif.mohamed05@eng-st.cu.edu.eg};\;
+   \texttt{ahamdy@eng.cu.edu.eg}\par}
+
+  \vspace{0.4em}
+
+  {\footnotesize ORCID: [to be supplied by each author at submission]\par}
+\end{center}
+
+\vspace{1.0em}
+
+% ---- Abstract (150-250 words per the Instructions for Authors) ---------------
+\input{sections/01_abstract}
+
+\vspace{0.8em}
+\noindent{\small\textbf{Keywords}\; Vehicle re-identification $\cdot$
+Vision Transformer $\cdot$ Score-level fusion $\cdot$ $k$-reciprocal
+re-ranking $\cdot$ VeRi-776 $\cdot$ Cross-dataset generalisation}
+
+\vspace{1.2em}
+
+% =============================================================================
+\section{Introduction}
+\label{sec:intro}
+% =============================================================================
+
+\input{sections/02_intro_motivation}
+
+\input{sections/03_intro_gap}
+
+\input{sections/04_intro_contrib}
+
+\subsection{Paper organisation}
+Section~\ref{sec:related} reviews related work across CNN-era methods,
+transformer-based methods, and post-processing techniques.
+Section~\ref{sec:method} describes the full methodology including both streams
+and the fusion strategy. Section~\ref{sec:setup} details the experimental
+setup. Section~\ref{sec:results} presents quantitative results and ablations.
+Section~\ref{sec:discussion} discusses findings and limitations.
+Section~\ref{sec:conclusion} concludes.
+
+% =============================================================================
+\section{Related work}
+\label{sec:related}
+% =============================================================================
+
+\input{sections/05_rel_cnn}
+
+\input{sections/06_rel_transformer}
+
+\input{sections/07_rel_crossdomain}
+
+\input{sections/08_rel_rerank}
+
+\input{sections/09_rel_position}
+
+% =============================================================================
+\section{Methodology}
+\label{sec:method}
+% =============================================================================
+
+\input{sections/10_m_overview}
+
+\subsection{Stream~1: improved ViT-B training recipe}
+
+\input{sections/11_m_backbone}
+
+\input{sections/12_m_loss}
+
+\input{sections/13_m_aug_hparams}
+
+\input{sections/14_m_stream2}
+
+\subsection{Post-processing pipeline}
+\input{sections/15_m_postproc}
+
+\input{sections/16_m_fusion_def}
+
+\input{sections/17_m_fusion_why}
+
+% =============================================================================
+\section{Experimental setup}
+\label{sec:setup}
+% =============================================================================
+
+\input{sections/18_s_setup}
+
+\input{sections/19_s_repro}
+
+% =============================================================================
+\section{Results and analysis}
+\label{sec:results}
+% =============================================================================
+
+\input{sections/20_r_sota}
+
+\input{sections/21_r_pure}
+
+\input{sections/22_r_matched}
+
+\input{sections/23_r_ablation}
+
+\input{sections/24_r_seed_fusionw}
+
+\input{sections/25_r_hp_selection}
+
+\input{sections/26_r_hp_heldout}
+
+\input{sections/27_r_hp_signif}
+
+\input{sections/28_r_pp_resolution}
+
+\input{sections/29_r_vw_setup}
+
+\input{sections/30_r_vw_obs12}
+
+\input{sections/31_r_vw_obs34}
+
+\input{sections/32_r_vw_context}
+
+\input{sections/33_r_qualitative}
+
+% =============================================================================
+\section{Discussion}
+\label{sec:discussion}
+% =============================================================================
+
+\input{sections/34_d_gain}
+
+\input{sections/35_d_fusion_scale}
+
+\input{sections/36_d_cost_model}
+
+\input{sections/37_d_cost_pp}
+
+\input{sections/38_d_cost_sparse}
+
+\input{sections/39_d_cost_tradeoff}
+
+\input{sections/40_d_limitations}
+
+% =============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% =============================================================================
+
+\input{sections/41_conclusion}
+
+% =============================================================================
+\section*{Statements and Declarations}
+% =============================================================================
+
+\input{sections/42_statements}
+
+% =============================================================================
+% BIBLIOGRAPHY
+% -----------------------------------------------------------------------------
+% The bibliography is embedded below in Springer numbered style so that this
+% file compiles with pdflatex alone.  If you prefer BibTeX, delete the
+% thebibliography environment below and uncomment these two lines, using the
+% accompanying references.bib (Springer's spmpsci.bst ships with their template):
+%   \bibliographystyle{spmpsci}
+%   \bibliography{references}
+% =============================================================================
+
+\begin{thebibliography}{99}
+\small
+
+\input{sections/43_refs_a}
+
+\input{sections/44_refs_b}
+
+\end{thebibliography}
+
+% =============================================================================
+\section*{Author Biographies}
+% =============================================================================
+
+\noindent\emph{[Insert a passport-sized black-and-white photograph of each
+author beside the corresponding biography before submission, as required by the
+journal.]}
+
+\input{sections/45_bio_hamdi}
+
+\input{sections/46_bio_aali}
+
+\input{sections/47_bio_maali}
+
+\input{sections/48_bio_seif}
+
+\input{sections/49_bio_ahmed}
+
+\end{document}

@@ -1,0 +1,40 @@
+% ===== UNIT 39: Cost: accuracy/latency trade-offs, CA-Jaccard (6.4 part 4) =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+\paragraph{Accuracy/latency trade-offs.} These costs are separable levers. A
+system that must run online can drop $k$-reciprocal re-ranking for
+$\mathcal{O}(N)$ cosine retrieval at a cost of roughly $5.5$\,pp mAP, disable
+flip-TTA ($\approx\!0.3$\,pp) to halve extraction, and use a single stream
+rather than two-stream fusion (fusion contributes $+1.88$\,pp over the stronger
+standalone stream) to halve model cost---recovering a real-time configuration
+at a quantified accuracy penalty. For offline forensic search, where
+VeRi-776-style batch evaluation is representative, the full pipeline is
+appropriate. The per-image latencies above are measured values; a reproducible
+micro-benchmark of latency, peak VRAM, and FLOPs for each component is released
+with the code (\texttt{scripts/benchmark\_veri\_inference.py}).
+
+\paragraph{Alternative re-ranking: CA-Jaccard.} Because re-ranking is central
+to the reported gains, we additionally benchmarked the official CA-Jaccard
+implementation~\cite{chen2024cajaccard} (CVPR 2024) as an evaluation-time
+re-ranker on Stream-1. At its authors' evaluation defaults ($k_1{=}30$,
+$k_2{=}6$, $\lambda{=}0.3$; CKRNN $k_1^{\mathrm{intra}}{=}5$,
+$k_1^{\mathrm{inter}}{=}20$), CA-Jaccard reaches 86.95\% mAP / 98.39\% Rank-1
+in-domain, versus 86.66\% / 97.56\% for plain $k$-reciprocal re-ranking run
+through the same implementation at the same parameters: camera-awareness helps
+at matched settings ($+0.29$\,pp mAP, $+0.83$\,pp Rank-1), and its Rank-1
+exceeds even our tuned configuration's 97.79\%. Its mAP nevertheless remains
+3.0\,pp below our tuned standard $k$-reciprocal (89.99\%)---a
+defaults-versus-tuned comparison, disclosed as such. Under zero-shot transfer
+the picture does not improve: on VeRi-Wild (3{,}000 protocol) CA-Jaccard scores
+34.88\% mAP / 52.9\% Rank-1---no better than tuned standard $k$-reciprocal
+(34.85\%) and below AQE-only (35.93\%, Rank-1 60.3\%)---while plain
+$k$-reciprocal at CA-Jaccard's milder defaults ($k_1{=}30$, $\lambda{=}0.3$) is
+approximately neutral (36.03\%, within the AQE-only confidence interval). No
+re-ranking variant we tested retains its in-domain benefit under domain shift,
+indicating the failure mode is the transferred feature geometry rather than
+camera-unawareness. (The $N{=}41{,}861$ transfer runs use a memory-lean port of
+the official implementation, validated to reproduce it exactly in-domain; the
+port is released.) We did not test orientation-guided
+expansion~\cite{zhang2022vehiclererank} or database-side multi-view aggregation
+under this pipeline; the released float16 feature dumps make such comparisons
+possible on CPU without re-running extraction.

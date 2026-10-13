@@ -1,0 +1,62 @@
+% ===== UNIT 04: Contributions (1.3) =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+\subsection{Contributions}
+The contributions of this work are as follows:
+\begin{itemize}
+  \item \textbf{C1---Reproducible ViT-B/16 pipeline and a
+    recipe-versus-post-processing analysis.} We release a fully specified
+    ViT-B/16 retrieval pipeline (CLIP initialisation, a tuned metric objective,
+    an optimised augmentation pipeline, AQE $+$ $k$-reciprocal
+    re-ranking~\cite{zhong2017rerank}, flip TTA) reaching \textbf{89.97\% mAP /
+    97.79\% Rank-1} on VeRi-776. Crucially, we test \emph{what} drives this
+    number: applying our identical post-processing to the official TransReID
+    and CLIP-ReID checkpoints lifts them to \textbf{91.12\%} and
+    \textbf{91.80\% mAP}---both slightly \emph{above} ours---while all three
+    are within 0.9\,pp without post-processing
+    (82.11\,/\,82.99\,/\,82.22\%; Table~\ref{tab:matched}). Our recipe thus
+    confers no advantage over these baselines at matched conditions: the ViT-B
+    retrieval gains are attributable to post-processing, and we position
+    Stream~1 as a reproducible baseline rather than a superior recipe. Among
+    single models reported \emph{with} post-processing, MBR4B-LAI
+    (92.1\% mAP~\cite{luo2023mbr4b}) is also higher.
+  \item \textbf{C2---Marginal new best mAP via training-free fusion.}
+    Score-level fusion with CLIP-SENet~\cite{lu2025clipsenet} achieves
+    \textbf{93.32\% mAP / 98.45\% Rank-1}, $+0.42$\,pp mAP above the best
+    previously published result (92.9\%~\cite{lu2025clipsenet}) and
+    $+1.88$\,pp above our own reproduction of that stream (91.44\%). Rank-1
+    (98.45\%) is competitive with but does not exceed CLIP-SENet standalone
+    Rank-1 (98.7\%). Because the $+0.42$\,pp margin is small, is obtained over
+    a concurrent unrefereed preprint, and reuses that model's checkpoint, we
+    frame it as a demonstration of feature complementarity---which a paired
+    bootstrap confirms is statistically significant over the best single
+    stream (95\% CI $[1.39, 2.37]$\,pp mAP; Section~\ref{sec:holdout})---rather
+    than a decisive state of the art.
+  \item \textbf{C3---Consistent-protocol ablation path.} A comprehensive
+    ablation traces the complete performance trajectory from the 82.3\%
+    TransReID baseline to 93.3\% mAP under a single consistent post-processing
+    protocol, separating post-processing contributions from recipe
+    contributions rather than conflating them.
+  \item \textbf{C4---Reproducible public release with validation and cost
+    analysis.} All checkpoints (SHA-256 pinned), evaluation notebooks,
+    configuration files, per-query evaluation dumps, and the post-processing
+    pipeline are publicly released. Every reported number is the deterministic
+    re-evaluation of a frozen, hash-pinned checkpoint and is thus
+    \emph{exactly} re-computable from the release; from-scratch retraining is
+    reproducible within a $\pm0.55$\,pp seed band
+    (Section~\ref{sec:seed_variance}). Headline numbers use hyperparameters
+    selected on the standard evaluation split---disclosed, not implicit---with
+    held-out validation bounding the resulting optimism to $\leq$0.2\,pp mAP
+    (Section~\ref{sec:holdout}), and the latency and memory of every pipeline
+    stage---extraction, TTA, AQE, re-ranking, fusion---are measured for
+    deployment planning (Section~\ref{sec:cost}).
+  \item \textbf{C5---Cross-dataset transfer study.} A zero-shot
+    VeRi-776$\rightarrow$VeRi-Wild evaluation across all three official test
+    protocols (with paired-bootstrap CIs and released per-query dumps) shows
+    the ViT-B stream transfers competitively with published cross-domain
+    methods that draw on over twenty times more source identities or adapt on
+    unlabelled target data, while the two-stream fusion does \emph{not}
+    transfer at any scale---evidence, corroborated by a CityFlowV2 MTMC port,
+    that its VeRi-776 advantage is domain-specific
+    (Section~\ref{sec:veriwild}).
+\end{itemize}

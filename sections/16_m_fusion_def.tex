@@ -1,0 +1,42 @@
+% ===== UNIT 16: Score-level fusion: definition + figure (3.5 part 1) =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+\subsection{Score-level fusion}
+Given post-processed similarity matrices $\mathbf{S}_{\mathrm{ViT}}$ and
+$\mathbf{S}_{\mathrm{CLIP}}$, the fused similarity is:
+\begin{equation}
+  \mathbf{S}_{\mathrm{fusion}} =
+    w_1\,\mathbf{S}_{\mathrm{ViT}} + w_2\,\mathbf{S}_{\mathrm{CLIP}},
+  \quad w_1+w_2=1
+  \label{eq:fusion}
+\end{equation}
+Concretely, the fusion pipeline uses the \textbf{1536D} concat-patch flip-TTA
+Stream~1 representation (the best-mAP Stream~1 configuration of
+Section~\ref{sec:method}, \emph{not} the 768D CLS-only variant) together with
+the 2048D Stream~2 representation: AQE $k{=}3$ is applied to \emph{each}
+stream, the resulting cosine-similarity matrices are combined via
+Eq.~\eqref{eq:fusion}, and a \emph{single} joint $k$-reciprocal re-ranking
+($k_1{=}80, k_2{=}15, \lambda{=}0.2$) is applied to the fused matrix. The
+fusion therefore re-applies a common AQE $k{=}3$ to both streams; it does
+\emph{not} reuse Stream~2's standalone AQE $k{=}10$ / re-ranking $50/10/0.1$,
+which characterise the standalone CLIP-SENet result (91.44\% mAP) only.
+
+This order of operations is empirically preferred, as
+Figure~\ref{fig:order} illustrates: re-ranking each stream separately with its
+standalone parameters and fusing the post-re-ranking distances instead yields
+92.73\% mAP / 97.68\% Rank-1, $0.59$\,pp mAP below the deployed
+fuse-then-jointly-re-rank order (93.32\%\,/\,98.45\%)---the joint
+$k$-reciprocal neighbourhoods benefit from cross-stream consensus that
+per-stream re-ranking discards.
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{Fig2}
+  \caption{Order of operations in the fusion pipeline. \textbf{a} The deployed
+  order applies a common AQE to both streams, fuses the similarity matrices and
+  then re-ranks jointly. \textbf{b} The alternative order re-ranks each stream
+  with its own standalone parameters and fuses the resulting distances, which
+  discards cross-stream consensus in the $k$-reciprocal neighbourhoods and
+  costs 0.59\,pp mAP. Values are mAP\,/\,Rank-1 in \%}
+  \label{fig:order}
+\end{figure*}

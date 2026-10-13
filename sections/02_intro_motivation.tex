@@ -1,0 +1,25 @@
+% ===== UNIT 02: Motivation + paper organisation (1.1, 1.4) =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+\subsection{Motivation}
+Vehicle re-identification is a core enabling technology for intelligent
+transportation systems (ITS), supporting applications including urban traffic
+surveillance, law enforcement, smart city infrastructure, and autonomous fleet
+management~\cite{liu2016veri,liu2018provid}. The task requires matching the
+same physical vehicle across multiple spatially distributed cameras whose
+fields of view do not overlap, under conditions of substantial appearance
+variation: the same vehicle may be observed from different angles, under
+different illumination conditions, at varying resolutions, and after arbitrary
+time intervals~\cite{liu2016veri}.
+
+The VeRi-776 dataset~\cite{liu2016veri,liu2018provid}, introduced by Liu
+\emph{et al.} at ICME 2016 and expanded through the PROVID framework published
+in \emph{IEEE Transactions on Multimedia} in 2018, has become the standard
+benchmark for vehicle ReID evaluation. It contains over 50\,000 images of 776
+vehicles captured by 20 cameras covering a $1.0\,\text{km}^{2}$ urban area over
+24 hours, with each vehicle appearing in 2 to 18 cameras under varied
+viewpoints, illuminations, and occlusions~\cite{liu2016veri,liu2018provid}. The
+standard evaluation protocol employs 37\,781 training images of 576
+identities, 11\,579 gallery images, and 1\,678 query images across 200 test
+identities~\cite{liu2018provid}. Performance is measured by mean Average
+Precision (mAP) and Rank-1 Cumulative Matching Characteristic (CMC).

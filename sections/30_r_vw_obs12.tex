@@ -1,0 +1,34 @@
+% ===== UNIT 30: VeRi-Wild: observations 1-2, fusion does not transfer (5.10 part 2) =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+Four observations follow (Table~\ref{tab:veriwild} and
+Figure~\ref{fig:transfer}). First, the ViT-B stream \emph{transfers}, and does
+so at every gallery scale: 31.7\,/\,26.7\,/\,20.9\% mAP raw and
+35.9\,/\,30.5\,/\,23.8\% with AQE on the 3{,}000\,/\,5{,}000\,/\,10{,}000
+protocols---far below its in-domain 89.97\% (as expected for a
+40{,}671-identity in-the-wild target with no adaptation), but a consistent,
+non-trivial signal that the CLIP-initialised ViT-B embedding is not merely fit
+to VeRi-776. Its degradation with gallery scale ($-12.1$\,pp mAP from the
+smallest to the largest protocol) parallels the published VehicleID-sourced
+methods ($-11.4$\,pp for direct-transfer VAPC, $-10.0$\,pp for ECN),
+indicating a shared gallery-size mechanism rather than a pipeline artefact.
+Rank-1 trails the VehicleID-sourced methods by more than mAP does, consistent
+with their source providing over twenty times more identities for top-1
+discrimination.
+
+Second, and more informative, the score-level \emph{fusion does not survive the
+domain shift at any scale}: at the VeRi-776-tuned weight $w_1{=}0.35$ it
+reaches 28.7\,/\,24.2\,/\,18.5\% mAP raw and 33.6\,/\,28.1\,/\,21.4\% with AQE,
+\emph{below} the stronger single stream in both conditions at every protocol.
+Under transfer the CLIP-SENet stream is substantially weaker
+(20.2\,/\,16.8\,/\,12.2\% mAP), and the weight tuned on VeRi-776---which
+weights that stream at $0.65$---drags the fusion below ViT-B alone. (The
+table's fusion rows apply each stream's \emph{standalone} AQE setting
+($k{=}3/k{=}10$) uniformly across scales; under the exactly deployed fusion
+configuration---common AQE $k{=}3$ with joint re-ranking---the 3{,}000-protocol
+fusion reaches 32.8\% mAP with AQE and 31.4\% with joint re-ranking, leading to
+the same conclusion.) This directly corroborates the CityFlowV2 result noted in
+Section~\ref{sec:limitations}, where a direct port of the same fusion degraded
+MTMC IDF1 by $\approx$1.8\,pp: the two-stream complementarity, and the weight
+that governs it, are properties of the VeRi-776 domain rather than transferable
+re-identification mechanisms.

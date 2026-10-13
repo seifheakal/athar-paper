@@ -1,0 +1,2194 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Revisiting ViT-B Training and Post-Processing for Vehicle Re-Identification
+%  Submission to: The Visual Computer (Springer)
+%
+%  FORMATTING NOTE
+%  ---------------
+%  The Visual Computer states in its Instructions for Authors that there is
+%  currently no official journal template and that authors should follow the
+%  generic Instructions for Authors; accepted papers are typeset by the
+%  publisher.  This file therefore implements those instructions directly:
+%    * single column, A4, 10 pt Times (via mathptmx / newtxtext)
+%    * decimal headings, at most three levels
+%    * numbered citations in square brackets, Springer reference style
+%    * abstract 150-250 words, 4-6 keywords
+%    * tables numbered in Arabic numerals with captions ABOVE the table
+%    * figure captions beginning "Fig. N" in bold, no terminal punctuation
+%    * Statements and Declarations section
+%    * author biographies (50-100 words each)
+%
+%  To switch to Springer Nature's generic class instead, download sn-jnl.cls
+%  from Springer and replace the \documentclass line with
+%      \documentclass[sn-mathphys-num,iicol]{sn-jnl}
+%  keeping the body text below unchanged.
+%
+%  Compile:  pdflatex manuscript && pdflatex manuscript
+%  (Bibliography is embedded as thebibliography so no BibTeX run is needed.
+%   A references.bib file is also provided if you prefer BibTeX; see the note
+%   just above the bibliography at the end of this file.)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[10pt,a4paper]{article}
+
+% ---- Page layout -------------------------------------------------------------
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}                 % Times text and math
+\usepackage[scaled=0.90]{helvet}      % Helvetica for figure/sans elements
+
+% ---- Maths, tables, graphics -------------------------------------------------
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{pifont}
+\graphicspath{{figs/}}
+\usepackage{wrapfig}
+% ---- Typography, captions, links --------------------------------------------
+\usepackage{microtype}
+\usepackage[font=small,labelfont=bf,labelsep=space]{caption}
+\usepackage{url}
+\usepackage[hidelinks,breaklinks=true]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.08}
+
+% Figure captions must read "Fig. 1 ..." with no terminal punctuation
+\renewcommand{\figurename}{Fig.}
+\captionsetup[figure]{name=Fig.}
+\captionsetup[table]{name=Table}
+
+% Decimal headings, three levels maximum
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\itshape}{\thesubsubsection}{0.6em}{}
+\setcounter{secnumdepth}{3}
+
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\thepage}
+
+% =============================================================================
+\begin{document}
+% =============================================================================
+
+% ---- Title page -------------------------------------------------------------
+\begin{center}
+  {\LARGE\bfseries Revisiting ViT-B Training and Post-Processing for Vehicle
+  Re-Identification: A Reproducible Baseline and Training-Free Fusion on
+  VeRi-776\par}
+
+  \vspace{1.4em}
+
+  {\normalsize
+   Abdelrahman Hamdi$^{1}$ \quad
+   Ali A. Ali$^{1}$ \quad
+   Mohamed A. Ali$^{1}$ \\[4pt]
+   Seif T. Heakal$^{1,\ast}$ \quad
+   Ahmed H. Abdel-Gawad$^{1}$\par}
+
+  \vspace{0.9em}
+
+  {\small $^{1}$\,Department of Computer Engineering, Faculty of Engineering,
+   Cairo University, Giza 12613, Egypt\par}
+
+  \vspace{0.5em}
+
+  {\small $^{\ast}$\,Corresponding author:
+   \texttt{seif.mohamed05@eng-st.cu.edu.eg}\par}
+
+  \vspace{0.4em}
+
+  {\footnotesize
+   \texttt{abdelrahman.ibrahim03@eng-st.cu.edu.eg};\;
+   \texttt{ali.abdelraouf03@eng-st.cu.edu.eg};\;
+   \texttt{mohamed.awaad02@eng-st.cu.edu.eg};\\
+   \texttt{seif.mohamed05@eng-st.cu.edu.eg};\;
+   \texttt{ahamdy@eng.cu.edu.eg}\par}
+
+  \vspace{0.4em}
+
+  {\footnotesize ORCID: [to be supplied by each author at submission]\par}
+\end{center}
+
+\vspace{1.0em}
+
+% ---- Abstract (150-250 words per the Instructions for Authors) ---------------
+\noindent\textbf{Abstract}\\[4pt]
+{\small
+Transformer backbones dominate vehicle re-identification (Re-ID), yet their
+training recipes and evaluation-time post-processing are rarely reported under
+matched conditions, which makes it difficult to attribute reported progress to
+any specific cause. This paper revisits the ViT-Base/16 pipeline on VeRi-776
+and separates recipe effects from post-processing effects. A fully specified
+recipe---CLIP-pretrained initialisation, AdamW with layer-wise learning-rate
+decay, a tuned metric objective, and a three-step post-processing chain of
+average query expansion, $k$-reciprocal re-ranking and flip test-time
+augmentation---reaches 89.97\% mAP and 97.79\% Rank-1. A matched-condition
+experiment shows that this figure is produced by post-processing rather than by
+the recipe: at the raw-embedding level the recipe merely matches TransReID
+(82.22 versus 82.30\% mAP), and applying the identical post-processing to the
+official TransReID and CLIP-ReID checkpoints lifts them to 91.12 and 91.80\%
+mAP, both above ours. We therefore present this stream as a reproducible
+baseline, not a superior recipe. A training-free score-level fusion of this
+stream with CLIP-SENet reaches 93.32\% mAP and 98.45\% Rank-1, exceeding the
+best previously published mAP by 0.42\,pp, with a paired bootstrap confirming a
+statistically significant gain over the stronger single stream. A zero-shot
+transfer study across all three VeRi-Wild protocols shows the ViT-B embedding
+transfers competitively while the fusion and re-ranking gains do not,
+indicating that they are domain-specific. Checkpoints, notebooks and per-query
+dumps are released for deterministic re-computation.
+\par}
+
+\vspace{0.8em}
+\noindent{\small\textbf{Keywords}\; Vehicle re-identification $\cdot$
+Vision Transformer $\cdot$ Score-level fusion $\cdot$ $k$-reciprocal
+re-ranking $\cdot$ VeRi-776 $\cdot$ Cross-dataset generalisation}
+
+\vspace{1.2em}
+
+% =============================================================================
+\section{Introduction}
+\label{sec:intro}
+% =============================================================================
+
+\subsection{Motivation}
+Vehicle re-identification is a core enabling technology for intelligent
+transportation systems (ITS), supporting applications including urban traffic
+surveillance, law enforcement, smart city infrastructure, and autonomous fleet
+management~\cite{liu2016veri,liu2018provid}. The task requires matching the
+same physical vehicle across multiple spatially distributed cameras whose
+fields of view do not overlap, under conditions of substantial appearance
+variation: the same vehicle may be observed from different angles, under
+different illumination conditions, at varying resolutions, and after arbitrary
+time intervals~\cite{liu2016veri}.
+
+The VeRi-776 dataset~\cite{liu2016veri,liu2018provid}, introduced by Liu
+\emph{et al.} at ICME 2016 and expanded through the PROVID framework published
+in \emph{IEEE Transactions on Multimedia} in 2018, has become the standard
+benchmark for vehicle ReID evaluation. It contains over 50\,000 images of 776
+vehicles captured by 20 cameras covering a $1.0\,\text{km}^{2}$ urban area over
+24 hours, with each vehicle appearing in 2 to 18 cameras under varied
+viewpoints, illuminations, and occlusions~\cite{liu2016veri,liu2018provid}. The
+standard evaluation protocol employs 37\,781 training images of 576
+identities, 11\,579 gallery images, and 1\,678 query images across 200 test
+identities~\cite{liu2018provid}. Performance is measured by mean Average
+Precision (mAP) and Rank-1 Cumulative Matching Characteristic (CMC).
+
+\subsection{The ViT-B training recipe gap}
+The introduction of TransReID~\cite{he2021transreid} marked a turning point in
+vehicle ReID by applying a pure Vision Transformer
+(ViT)~\cite{dosovitskiy2021vit} backbone to the task. TransReID augments the
+standard ViT-B/16 architecture with two purpose-built modules: the Side
+Information Embedding (SIE), which encodes camera index and viewpoint as
+learnable token offsets to reduce domain bias, and the Jigsaw Patch Module
+(JPM), which shuffles patch tokens in a parallel branch to force locally robust
+feature learning~\cite{he2021transreid}. With a DeiT-B/16 backbone and SGD
+(momentum 0.9, LR 0.008, cosine decay), TransReID reports 82.3\% mAP and 97.1\%
+Rank-1 on VeRi-776~\cite{he2021transreid}.
+
+Despite broad adoption of this architecture as a baseline, subsequent work has
+primarily focused on augmenting it with new architectural
+components---semantic alignment via language
+models~\cite{li2023clipreid,lu2025clipsenet}, graph-based spatial
+reasoning~\cite{shen2022hpgn}, or multi-branch CNN
+structures~\cite{luo2023mbr4b}---rather than systematically revisiting what a
+well-specified ViT-B training-and-post-processing pipeline leaves on the table.
+No pure ViT-B method has been reported above 90\% mAP on VeRi-776; we push a
+pure ViT-B/16 pipeline to 89.97\% mAP---approaching that mark---and, via
+training-free fusion with a complementary CNN-semantic stream, reach 93.3\%.
+Crucially, we also test what actually produces that number, and report a result
+that constrains our own claims.
+
+\subsection{Contributions}
+The contributions of this work are as follows:
+\begin{itemize}
+  \item \textbf{C1---Reproducible ViT-B/16 pipeline and a
+    recipe-versus-post-processing analysis.} We release a fully specified
+    ViT-B/16 retrieval pipeline (CLIP initialisation, a tuned metric objective,
+    an optimised augmentation pipeline, AQE $+$ $k$-reciprocal
+    re-ranking~\cite{zhong2017rerank}, flip TTA) reaching \textbf{89.97\% mAP /
+    97.79\% Rank-1} on VeRi-776. Crucially, we test \emph{what} drives this
+    number: applying our identical post-processing to the official TransReID
+    and CLIP-ReID checkpoints lifts them to \textbf{91.12\%} and
+    \textbf{91.80\% mAP}---both slightly \emph{above} ours---while all three
+    are within 0.9\,pp without post-processing
+    (82.11\,/\,82.99\,/\,82.22\%; Table~\ref{tab:matched}). Our recipe thus
+    confers no advantage over these baselines at matched conditions: the ViT-B
+    retrieval gains are attributable to post-processing, and we position
+    Stream~1 as a reproducible baseline rather than a superior recipe. Among
+    single models reported \emph{with} post-processing, MBR4B-LAI
+    (92.1\% mAP~\cite{luo2023mbr4b}) is also higher.
+  \item \textbf{C2---Marginal new best mAP via training-free fusion.}
+    Score-level fusion with CLIP-SENet~\cite{lu2025clipsenet} achieves
+    \textbf{93.32\% mAP / 98.45\% Rank-1}, $+0.42$\,pp mAP above the best
+    previously published result (92.9\%~\cite{lu2025clipsenet}) and
+    $+1.88$\,pp above our own reproduction of that stream (91.44\%). Rank-1
+    (98.45\%) is competitive with but does not exceed CLIP-SENet standalone
+    Rank-1 (98.7\%). Because the $+0.42$\,pp margin is small, is obtained over
+    a concurrent unrefereed preprint, and reuses that model's checkpoint, we
+    frame it as a demonstration of feature complementarity---which a paired
+    bootstrap confirms is statistically significant over the best single
+    stream (95\% CI $[1.39, 2.37]$\,pp mAP; Section~\ref{sec:holdout})---rather
+    than a decisive state of the art.
+  \item \textbf{C3---Consistent-protocol ablation path.} A comprehensive
+    ablation traces the complete performance trajectory from the 82.3\%
+    TransReID baseline to 93.3\% mAP under a single consistent post-processing
+    protocol, separating post-processing contributions from recipe
+    contributions rather than conflating them.
+  \item \textbf{C4---Reproducible public release with validation and cost
+    analysis.} All checkpoints (SHA-256 pinned), evaluation notebooks,
+    configuration files, per-query evaluation dumps, and the post-processing
+    pipeline are publicly released. Every reported number is the deterministic
+    re-evaluation of a frozen, hash-pinned checkpoint and is thus
+    \emph{exactly} re-computable from the release; from-scratch retraining is
+    reproducible within a $\pm0.55$\,pp seed band
+    (Section~\ref{sec:seed_variance}). Headline numbers use hyperparameters
+    selected on the standard evaluation split---disclosed, not implicit---with
+    held-out validation bounding the resulting optimism to $\leq$0.2\,pp mAP
+    (Section~\ref{sec:holdout}), and the latency and memory of every pipeline
+    stage---extraction, TTA, AQE, re-ranking, fusion---are measured for
+    deployment planning (Section~\ref{sec:cost}).
+  \item \textbf{C5---Cross-dataset transfer study.} A zero-shot
+    VeRi-776$\rightarrow$VeRi-Wild evaluation across all three official test
+    protocols (with paired-bootstrap CIs and released per-query dumps) shows
+    the ViT-B stream transfers competitively with published cross-domain
+    methods that draw on over twenty times more source identities or adapt on
+    unlabelled target data, while the two-stream fusion does \emph{not}
+    transfer at any scale---evidence, corroborated by a CityFlowV2 MTMC port,
+    that its VeRi-776 advantage is domain-specific
+    (Section~\ref{sec:veriwild}).
+\end{itemize}
+
+\subsection{Paper organisation}
+Section~\ref{sec:related} reviews related work across CNN-era methods,
+transformer-based methods, and post-processing techniques.
+Section~\ref{sec:method} describes the full methodology including both streams
+and the fusion strategy. Section~\ref{sec:setup} details the experimental
+setup. Section~\ref{sec:results} presents quantitative results and ablations.
+Section~\ref{sec:discussion} discusses findings and limitations.
+Section~\ref{sec:conclusion} concludes.
+
+% =============================================================================
+\section{Related work}
+\label{sec:related}
+% =============================================================================
+
+\subsection{CNN-era vehicle re-identification}
+The VeRi-776 benchmark was introduced by Liu et al.~\cite{liu2016veri} and
+extended with the PROVID framework~\cite{liu2018provid}, which combined visual
+appearance, licence plate recognition, camera topology, and spatiotemporal
+cues, achieving 53.42\% mAP and 81.56\% Rank-1.\footnote{The PROVID
+(53.42/81.56) and VAMI (50.13/77.03) figures are the values reported in the
+respective papers and reproduced throughout the survey
+literature~\cite{ye2022survey,li2024vehiclereidsurvey}.} A broad survey of deep
+learning approaches to person and vehicle ReID is provided by Ye et
+al.~\cite{ye2022survey}, while Li et al.~\cite{li2024vehiclereidsurvey} survey
+vehicle-specific advances including part-level modelling, multi-source
+training, and cross-domain adaptation.
+
+VAMI~\cite{zhou2018vami} (CVPR 2018) synthesised target viewpoints via
+adversarial training, reaching 50.13\% mAP and 77.03\% Rank-1.
+PVEN~\cite{meng2020pven} (CVPR 2020) introduced parsing-based view-aware
+embeddings via semantic segmentation for part-level feature extraction,
+achieving 79.5\% mAP and 95.6\% Rank-1. CAL~\cite{rao2021cal} (ICCV 2021)
+proposed counterfactual attention learning to suppress spurious background
+cues, reaching 74.3\% mAP and 95.4\% Rank-1.
+VehicleNet~\cite{zheng2020vehiclenet} (IEEE TMM 2020) demonstrated
+multi-source data aggregation across VeRi-776, VehicleID, and synthetic data,
+achieving 83.41\% mAP and 96.78\% Rank-1. HPGN~\cite{shen2022hpgn} (IEEE T-ITS
+2022) modelled spatial significance across image scales via a pyramid graph
+network, achieving 80.18\% mAP and 96.72\% Rank-1. A Strong
+Baseline~\cite{cybercore2021strong} (CVPR-W AICity 2021) combined
+ResNet101-IBN-a with multi-head attention for multi-domain training, reaching
+87.1\% mAP and establishing a competitive ResNet-family ceiling prior to
+transformer approaches. Khorramshahi et
+al.~\cite{khorramshahi2023selfsupervision} later revisited scalable vehicle
+ReID through self-supervised pretraining across ResNet, ViT, Swin, and ConvNeXt
+backbones in the AI City setting.
+
+\subsection{Transformer-based vehicle re-identification}
+TransReID~\cite{he2021transreid} (ICCV 2021) was the first pure Vision
+Transformer framework for object re-identification, introducing the SIE and JPM
+modules and achieving 82.3\% mAP and 97.1\% Rank-1 on VeRi-776 with SGD
+optimisation. As we demonstrate, switching the initialisation from ImageNet-21k
+to CLIP~\cite{radford2021clip} and the optimiser from SGD to
+AdamW~\cite{loshchilov2019adamw} yields a substantial gain \emph{within our own
+development trajectory} without any architectural change---though, as
+Section~\ref{sec:matched} shows, not a net gain over the tuned published
+baseline.
+
+CLIP-ReID~\cite{li2023clipreid} (AAAI 2023) introduced a two-stage
+prompt-tuning procedure that exploits CLIP's vision-language representations
+without requiring text annotations, achieving 84.5\% mAP and 97.3\% Rank-1 on
+VeRi-776~\cite{opencodepapers2024veri}. CLIP-ReID uses the same ViT-B/16 CLIP
+backbone family as the present work. Our full pipeline reaches 89.97\% mAP, but
+we note this is not a matched comparison: CLIP-ReID's 84.5\% is reported
+without post-processing, and at the raw-embedding level it in fact exceeds our
+recipe (84.5\% vs.\ 82.2\%). The difference in the pipeline number is
+post-processing---AQE $+$ $k$-reciprocal re-ranking $+$ TTA---which we apply
+and the CLIP-ReID figure does not include (Section~\ref{sec:discussion}).
+Recent transformer variants have broadened this line beyond single-domain
+VeRi-style retrieval: MSFFT~\cite{holla2024msfft} fuses multi-scale transformer
+features for cross-platform vehicle ReID, while
+MiKeCoCo~\cite{kuang2025mikecoco} uses CLIP-guided prompt knowledge for
+generalisable vehicle ReID.
+
+RPTM~\cite{ghosh2023rptm} (WACV 2023) proposed relation-preserving triplet
+mining to stabilise triplet loss training across hard and semi-hard negatives,
+achieving 88.0\% mAP and 97.3\% Rank-1. MBR4B-LAI~\cite{luo2023mbr4b} (ITSC
+2023) combined four convolutional branches with location-aware identity
+embeddings and camera/pose metadata, reaching 92.09\% mAP and 98.03\% Rank-1
+after re-ranking---a competitive CNN ensemble that our fusion method surpasses.
+FastReID~\cite{wang2020fastreid} provided a unified, production-quality
+baseline toolbox widely used for ablation and comparison across vehicle and
+person ReID benchmarks.
+
+CLIP-SENet~\cite{lu2025clipsenet} (arXiv 2025) is a single-stream approach that
+combines ResNet101-IBN-a local appearance features with 512-dimensional
+semantic embeddings from a TinyCLIP Semantic Extraction Module (SEM) and an
+Adaptive Fine-Grained Enhancement Module (AFEM), achieving 92.9\% mAP and
+98.7\% Rank-1 on VeRi-776. This is the closest prior result to ours; the
+present work takes the pre-trained CLIP-SENet v6 checkpoint as a frozen second
+stream in a training-free score-level fusion, adding $+0.42$\,pp mAP above the
+CLIP-SENet standalone result.
+
+\subsection{Cross-domain transfer and dataset bias}
+Cross-dataset transfer is a known weak point of ReID systems. Unsupervised
+domain adaptation (UDA) approaches such as SPGAN~\cite{deng2018spgan},
+ECN~\cite{zhong2019ecn}, and UDAP~\cite{song2020udap} train on a labelled
+source and adapt using unlabelled target data; transferred from the large
+VehicleID source to VeRi-Wild they reach 24.1--34.7\% mAP on the
+3{,}000-identity protocol, while the strongest reported \emph{direct} transfer
+(no target data at all) reaches 37.7\% and full viewpoint-aware adaptation
+39.7\%~\cite{zheng2020vapc}. Recent analysis attributes much of the gap between
+in-domain and cross-domain performance to train/test similarity bias within the
+ReID benchmarks themselves: models trained on VeRi-Wild lose
+${\approx}15$\,pp mAP when evaluated on the visually similar VeRi-776, and mAP
+on vehicle \emph{types} unseen during training drops from above 90\% to
+65--70\% even for state-of-the-art models~\cite{benmabrouk2026genlimits}. This
+context frames the cross-dataset evaluation of Section~\ref{sec:veriwild}:
+large absolute drops under zero-shot transfer are the field norm, not an
+artefact of a particular pipeline.
+
+\subsection{Re-ranking and post-processing}
+The $k$-reciprocal encoding method by Zhong et al.~\cite{zhong2017rerank} (CVPR
+2017) leverages the observation that if a gallery image lies in the
+$k$-reciprocal nearest neighbours of a probe, it is more likely to be a true
+match. A Jaccard-distance-based score is blended with the original cosine
+distance, improving retrieval precision without requiring labelled data. Zhang
+et al.~\cite{zhang2022vehiclererank} extended this idea specifically for
+vehicle ReID by incorporating orientation-guided query expansion, showing that
+viewpoint-consistent neighbour selection further improves re-ranking for highly
+viewpoint-sensitive queries. Moral et al.~\cite{moral2023syntheticrerank} also
+studied vehicle-specific post-processing, including gallery video-clip
+information in the re-ranking step on CityFlow-ReID and VeRi-776.
+
+Average Query Expansion (AQE)~\cite{arandjelovic2012aqe} replaces each query
+feature with the mean of its top-$k$ retrieved gallery features, smoothing the
+query manifold and consistently improving mAP at negligible computational cost.
+Database-side Augmentation (DBA) applies the same expansion to gallery features
+and can be combined with AQE; we evaluate AQE alone as it provides the best
+mAP--Rank-1 trade-off at $k{=}3$ for our ViT-B stream.
+
+Supervised Contrastive Learning (SupCon)~\cite{khosla2020supcon} extends
+contrastive losses to the supervised setting by treating all same-class samples
+as positives within each mini-batch, producing more uniformly distributed and
+discriminative embedding spaces than triplet loss alone~\cite{ye2022survey}. We
+evaluate SupCon as an alternative metric objective for Stream~1 (variant
+A5$\beta$); the deployed checkpoint (A5$\alpha$) retains a triplet $+$ centre
+objective, and the two are shown to be statistically equivalent
+(Section~\ref{sec:seed_variance}).
+
+\subsection{Positioning}
+To the best of the authors' knowledge, no prior work reports above 90\% mAP on
+VeRi-776 using a pure ViT-B backbone; the best prior pure-ViT result stands at
+84.5\% mAP~\cite{li2023clipreid,opencodepapers2024veri}, reported without
+post-processing. Our ViT-B \emph{retrieval pipeline} reaches 89.97\% mAP, but
+we caution that this is not a like-for-like comparison: 84.5\% is a
+raw-embedding number, whereas 89.97\% includes AQE $+$ $k$-reciprocal
+re-ranking $+$ TTA. At matched no-post-processing conditions our embedding
+(82.2\% mAP) does not exceed CLIP-ReID, and the matched comparison confirms the
+pipeline number is a post-processing effect: the official TransReID and
+CLIP-ReID checkpoints under our identical post-processing reach 91.12\% and
+91.80\% mAP---both above our 89.97\%---so our recipe holds no advantage over
+either baseline (Section~\ref{sec:matched}). For the fusion result, no prior
+two-stream method exceeds 93.3\% mAP on VeRi-776; the best prior single-stream
+result stands at 92.9\% mAP~\cite{lu2025clipsenet}, which our fusion exceeds by
+a narrow $+0.42$\,pp.
+
+% =============================================================================
+\section{Methodology}
+\label{sec:method}
+% =============================================================================
+
+Figure~\ref{fig:arch} gives the overall architecture of the two-stream
+pipeline, from image input through per-stream feature extraction and
+post-processing to score-level fusion, together with the two operating points
+reported in this paper.
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{Fig1}
+  \caption{Overview of the two-stream pipeline. Stream~1 (top) is the ViT-B/16
+  backbone trained in this work; Stream~2 (bottom) is the frozen, publicly
+  released CLIP-SENet v6 checkpoint. Average query expansion is applied to each
+  stream, the resulting cosine-similarity matrices are combined by a weighted
+  sum, and a single joint $k$-reciprocal re-ranking pass is applied to the
+  fused matrix. The dashed path shows the single-stream operating point, in
+  which Stream~1 is re-ranked on its own}
+  \label{fig:arch}
+\end{figure*}
+
+\subsection{Problem formulation}
+Given a query image $q$ and a gallery set
+$\mathcal{G} = \{g_1, g_2, \ldots, g_N\}$, the task is to retrieve all gallery
+images depicting the same vehicle identity as the query and rank them above
+non-matching images. Performance is measured by mAP and Rank-1 CMC. The
+standard VeRi-776 evaluation protocol~\cite{liu2018provid} employs 1\,678 query
+images and 11\,579 gallery images across 200 test identities; training uses
+37\,781 images of 576 identities. All reported results strictly follow this
+protocol.
+
+\subsection{Stream~1: improved ViT-B training recipe}
+
+\subsubsection{Backbone architecture}
+The backbone follows the TransReID architecture~\cite{he2021transreid}: a
+ViT-Base/16 augmented with the SIE module and the JPM. The SIE module encodes
+VeRi-776's 20 camera indices as learnable additive offsets to the patch token
+sequence. The JPM operates as a parallel branch that randomly shuffles groups
+of patch tokens and applies a separate classification head. A BNNeck is applied
+on the 768-dimensional global CLS token before the classification
+head~\cite{he2021transreid}.
+
+The key deviation from the original TransReID recipe is the backbone
+initialisation: \texttt{vit\_base\_\allowbreak patch16\_\allowbreak clip\_\allowbreak
+224.openai} (OpenAI CLIP pretrained ViT-B/16 via
+\texttt{timm}~\cite{radford2021clip}) replaces
+ImageNet-21k-only weights. CLIP pretraining provides richer visual-semantic
+representations that transfer more effectively to fine-grained vehicle
+appearance.
+
+\subsubsection{Loss function}
+Training employs a composite loss. The classification loss is cross-entropy
+with label smoothing ($\varepsilon = 0.1$):
+\begin{equation}
+  \mathcal{L}_{\mathrm{CE\text{-}LS}} =
+    -\sum_{c=1}^{C} y_c^{\mathrm{smooth}} \log \hat{p}_c, \;\;
+    y_c^{\mathrm{smooth}} = (1{-}\varepsilon)y_c + \varepsilon/C
+  \label{eq:cels}
+\end{equation}
+where $C = 576$ training identities. The \emph{deployed} headline checkpoint
+(A5$\alpha$) pairs this classification loss with a soft-margin triplet loss
+(margin $m{=}0.3$) and a delayed centre loss ($\lambda{=}5\times10^{-4}$,
+enabled after epoch~30), under layer-wise learning-rate decay 0.75:
+\begin{equation}
+  \mathcal{L}_{\mathrm{A5\alpha}} =
+    \mathcal{L}_{\mathrm{CE\text{-}LS}}
+    + \mathcal{L}_{\mathrm{tri}}(m{=}0.3)
+    + \lambda\,\mathcal{L}_{\mathrm{centre}}
+  \label{eq:a5alpha}
+\end{equation}
+As a statistically equivalent alternative, we also evaluate a
+supervised-contrastive variant (A5$\beta$) that replaces the triplet and centre
+terms with Supervised Contrastive Loss (SupCon)~\cite{khosla2020supcon}
+($\tau = 0.07$, LLRD 0.65):
+\begin{equation}
+  \mathcal{L}_{\mathrm{SupCon}} =
+    \sum_{i \in \mathcal{B}}
+      \frac{-1}{|\mathcal{P}(i)|}
+      \sum_{p \in \mathcal{P}(i)}
+        \log
+        \frac{\exp(\mathbf{z}_i \cdot \mathbf{z}_p / \tau)}
+             {\sum_{a \in \mathcal{A}(i)} \exp(\mathbf{z}_i \cdot \mathbf{z}_a / \tau)}
+  \label{eq:supcon}
+\end{equation}
+where $\mathcal{P}(i)$ is the set of positive pairs and $\mathcal{A}(i)$ all
+other mini-batch samples, giving
+$\mathcal{L}_{\mathrm{A5\beta}} = \mathcal{L}_{\mathrm{CE\text{-}LS}} +
+\mathcal{L}_{\mathrm{SupCon}}$. A5$\alpha$ and A5$\beta$ are evaluated as
+separate ablation rows. The ablation campaign measured A5$\alpha$ at 89.06\%
+mAP and A5$\beta$ at 88.57\% mAP under stream-1-only AQE$+$rerank evaluation;
+the 0.49\,pp difference (A5$\alpha$ higher) falls within the $\pm 0.55$\,pp
+three-seed standard deviation of A5$\alpha$ (88.75 $\pm$ 0.55\,pp mAP; see
+Table~\ref{tab:ablation} and Section~\ref{sec:seed_variance}). Because the
+difference falls well inside this three-seed standard deviation, the two
+recipes are statistically equivalent and A5$\alpha$---the actually deployed
+checkpoint---is retained as the headline Stream~1 recipe.
+
+CircleLoss produced numerical instability (diverging training loss) in our
+full-recipe training runs and is therefore excluded from the final recipe. To
+probe the cause, we ran a controlled 400-step diagnostic with a minimal head
+(plain CLIP-initialised ViT-B $+$ BNNeck $+$ CE-LS $+$ metric loss,
+$P{\times}K=12{\times}8$) across five conditions: CircleLoss at
+$\gamma\in\{32,64\}$ under fp16 and fp32, an ImageNet-initialised control, and
+a triplet$+$centre control. \emph{None} of the CircleLoss conditions diverged
+in this minimal setting---fp16 and fp32 differed only in descent speed, and
+CLIP versus ImageNet initialisation behaved similarly---which does \emph{not}
+support a simple precision- or initialisation-based explanation. The
+instability we observed is therefore specific to the full recipe configuration
+(SIE/JPM heads, layer-wise learning-rate decay, and the longer schedule) rather
+than to CircleLoss on CLIP features per se; its precise cause remains
+unisolated, and CircleLoss remains excluded on the empirical grounds observed
+in the full setting. The probe script and loss curves are released with the
+code.
+
+\subsubsection{Augmentation pipeline}
+Table~\ref{tab:augmentation} lists the full augmentation sequence applied
+during Stream~1 training. All reported Stream~1 results use a
+224\,$\times$\,224 input; hue/colour-corrupting augmentations (random
+grayscale, strong hue jitter) were excluded as they remove vehicle colour
+identity cues. A controlled 256\,$\times$\,256 \emph{training}-resolution
+comparison was not reproduced in this campaign; an \emph{inference}-resolution
+sensitivity analysis (Section~\ref{sec:res_sens}) shows the deployed checkpoint
+performs best at its native 224\,$\times$\,224.
+
+\begin{table}[!t]
+  \centering
+  \caption{Stream~1 training augmentation pipeline. Steps are applied in the
+  listed order to every training image}
+  \label{tab:augmentation}
+  \small
+  \begin{tabular}{clL{8.4cm}}
+    \toprule
+    Step & Transform & Parameters \\
+    \midrule
+    1 & Resize              & $224\times224$, bicubic \\
+    2 & Random H-flip       & $p=0.5$ \\
+    3 & Pad $+$ rand.\ crop & padding $=10$\,px \\
+    4 & ColorJitter         & brightness $=0.2$, contrast $=0.15$,
+                              saturation $=0.1$, hue $=0.0$ \\
+    5 & Random Gauss.\ blur & kernel $=5$, $p=0.2$ \\
+    6 & Random perspective  & distortion $=0.1$, $p=0.2$ \\
+    7 & Normalise           & CLIP $\mu$=(0.481,\,0.458,\,0.408),
+                              $\sigma$=(0.269,\,0.261,\,0.276)~\cite{radford2021clip} \\
+    8 & Random erasing      & $p=0.5$, scale $=[0.02,\,0.33]$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsubsection{Training hyperparameters}
+Table~\ref{tab:hyperparams} compares the proposed Stream~1 configuration with
+the published TransReID recipe~\cite{he2021transreid}. Training required
+approximately 2.5--3.0 GPU-hours on $2\times$ NVIDIA T4 GPUs with DataParallel.
+The exact $P{\times}K$ tuple is not recorded in the training logs; only the
+effective batch size of 96 is confirmed. For future retraining we recommend
+$P{\times}K = 12{\times}8$ as the default consistent with this batch
+size---stated explicitly as a recommendation rather than a recovered record;
+retraining reproducibility under the released configuration is bounded by the
+$\pm 0.55$\,pp seed band of Section~\ref{sec:seed_variance}.
+
+\begin{table}[!t]
+  \centering
+  \caption{Training hyperparameters: Stream~1 versus
+  TransReID~\cite{he2021transreid}. LLRD denotes layer-wise learning-rate
+  decay}
+  \label{tab:hyperparams}
+  \small
+  \begin{tabular}{L{4.0cm}L{4.4cm}L{4.6cm}}
+    \toprule
+    Hyperparameter & TransReID~\cite{he2021transreid} & Ours (Stream~1) \\
+    \midrule
+    Backbone     & ViT-B/16 $+$ SIE $+$ JPM       & ViT-B/16 $+$ SIE $+$ JPM \\
+    Pre-training & ImageNet-21k$\!\to\!$1K        & OpenAI CLIP~\cite{radford2021clip} \\
+    Input size   & $256\times256$                 & $224\times224$ \\
+    Optimiser    & SGD (momentum 0.9)             & AdamW~\cite{loshchilov2019adamw} \\
+    LR backbone  & 0.008                          & $3.5\times10^{-4}$ (LLRD $=0.75$) \\
+    LR head      & 0.008                          & $3.5\times10^{-3}$ \\
+    LR schedule  & Cosine decay                   & Cosine $+$ 10-epoch warm-up \\
+    Batch size   & 64 ($16\times4$)               & 96 ($2\times$T4 DataParallel) \\
+    Epochs       & 120                            & 140 \\
+    Loss         & CE $+$ triplet                 & CE-LS $+$ triplet $+$ centre \\
+    Mixed prec.  & fp16                           & fp16 \\
+    SIE cameras  & 20                             & 20 \\
+    JPM groups   & 4                              & 4 \\
+    BNNeck       & Yes                            & Yes \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Stream~2: CLIP-SENet branch}
+The CLIP-SENet architecture~\cite{lu2025clipsenet} provides a complementary
+feature stream. Where the ViT-B processes images as sequences of global patch
+tokens through self-attention, CLIP-SENet processes images through a
+ResNet101-IBN-a backbone~\cite{pan2018ibn} that applies local convolutional
+filters with Instance-Batch Normalisation (IBN), capturing fine-grained local
+texture patterns less salient in global attention maps.
+
+The CLIP-SENet architecture consists of three
+components~\cite{lu2025clipsenet}:
+\begin{enumerate}
+  \item \textbf{CNN backbone:} ResNet101-IBN-a~\cite{pan2018ibn} for
+    2048-dimensional local appearance features. IBN balances instance
+    normalisation (style invariance) and batch normalisation (discriminative
+    learning), benefiting cross-camera ReID where camera-specific styles
+    constitute nuisance variation.
+  \item \textbf{Semantic Extraction Module (SEM):} the TinyCLIP image encoder
+    extracts a 512-dimensional visual-semantic representation; unlike
+    CLIP-ReID~\cite{li2023clipreid}, no text encoder is used at any
+    stage~\cite{lu2025clipsenet}.
+  \item \textbf{Adaptive Fine-Grained Enhancement Module (AFEM):} adaptively
+    groups and weights fine-grained vehicle attributes (model, colour, shape)
+    from TinyCLIP, producing robust semantic embeddings without text
+    annotations~\cite{lu2025clipsenet}.
+\end{enumerate}
+
+The CLIP-SENet v6 checkpoint is trained on VeRi-776 with Adam
+($\mathrm{lr}\!=\!5\!\times\!10^{-4}$, wd$=\!5\!\times\!10^{-4}$, cosine
+schedule), $P\!=\!8$, $K\!=\!8$, effective batch 128 (\texttt{accum\_steps}=2),
+CE-LS $+$ SupCon, 24 epochs with 5-epoch warm-up on a P100 GPU
+($\approx$4\,h\,26\,min). Input size is $320\!\times\!320$, matching the
+released CLIP-SENet~v6 checkpoint; a $256\!\times\!256$
+\emph{training}-resolution variant was not reproduced in this campaign.
+
+\subsection{Post-processing pipeline}
+Post-processing is applied independently to each stream before fusion.
+
+\subsubsection{Average query expansion}
+For each query $\mathbf{q}$, the top-$k$ gallery features by cosine similarity
+are averaged with the original query:
+\begin{equation}
+  \mathbf{q}_{\mathrm{AQE}} =
+    \frac{1}{k{+}1}\!\left(\mathbf{q} + \sum_{i=1}^{k} \mathbf{g}_{\sigma(i)}\right)
+  \label{eq:aqe}
+\end{equation}
+Stream~1 uses $k{=}3$; Stream~2 uses $k{=}10$, both selected by grid search
+over $k\in\{1,3,5,10,20\}$. Stream~1's compact CLS token space is optimally
+expanded with a tighter neighbourhood ($k{=}3$); Stream~2's broader ResNet-IBN
+clusters benefit from a larger average ($k{=}10$), consistent with the IBN
+design rationale for cross-camera style robustness~\cite{pan2018ibn}.
+
+\subsubsection{$k$-reciprocal re-ranking}
+The final distance for each query--gallery pair is:
+\begin{equation}
+  d_{\mathrm{final}}(q,g) =
+    (1{-}\lambda)\,d_{\mathrm{Jaccard}}(q,g)
+    + \lambda\,d_{\mathrm{cosine}}(q,g)
+  \label{eq:rerank}
+\end{equation}
+Stream~1 (mAP-optimal): $k_1{=}80$, $k_2{=}15$, $\lambda{=}0.2$. Stream~1
+(Rank-1-optimal): $k_1{=}24$, $k_2{=}8$, $\lambda{=}0.2$. Stream~2:
+$k_1{=}50$, $k_2{=}10$, $\lambda{=}0.1$. Parameters were selected by exhaustive
+grid search over $k_1\in\{20,22,24,25,26,28,30,50,80\}$,
+$k_2\in\{6,7,8,9,10,15\}$, $\lambda\in\{0.15,0.18,0.2,0.22,0.25,0.3\}$.
+
+\subsubsection{Concat-patch and flip test-time augmentation}
+Features are extracted under original and horizontally flipped inputs and
+concatenated with patch mean pooling (CLS $+$ mean patch tokens
+$\to$ 1536D). This configuration yields the best-mAP operating point (89.97\%
+mAP and 97.79\% Rank-1), while the single-flip CLS-only 768D configuration
+yields the best-Rank-1 operating point (85.14\% mAP and 98.33\% Rank-1).
+
+\subsection{Score-level fusion}
+Given post-processed similarity matrices $\mathbf{S}_{\mathrm{ViT}}$ and
+$\mathbf{S}_{\mathrm{CLIP}}$, the fused similarity is:
+\begin{equation}
+  \mathbf{S}_{\mathrm{fusion}} =
+    w_1\,\mathbf{S}_{\mathrm{ViT}} + w_2\,\mathbf{S}_{\mathrm{CLIP}},
+  \quad w_1+w_2=1
+  \label{eq:fusion}
+\end{equation}
+Concretely, the fusion pipeline uses the \textbf{1536D} concat-patch flip-TTA
+Stream~1 representation (the best-mAP Stream~1 configuration of
+Section~\ref{sec:method}, \emph{not} the 768D CLS-only variant) together with
+the 2048D Stream~2 representation: AQE $k{=}3$ is applied to \emph{each}
+stream, the resulting cosine-similarity matrices are combined via
+Eq.~\eqref{eq:fusion}, and a \emph{single} joint $k$-reciprocal re-ranking
+($k_1{=}80, k_2{=}15, \lambda{=}0.2$) is applied to the fused matrix. The
+fusion therefore re-applies a common AQE $k{=}3$ to both streams; it does
+\emph{not} reuse Stream~2's standalone AQE $k{=}10$ / re-ranking $50/10/0.1$,
+which characterise the standalone CLIP-SENet result (91.44\% mAP) only.
+
+This order of operations is empirically preferred, as
+Figure~\ref{fig:order} illustrates: re-ranking each stream separately with its
+standalone parameters and fusing the post-re-ranking distances instead yields
+92.73\% mAP / 97.68\% Rank-1, $0.59$\,pp mAP below the deployed
+fuse-then-jointly-re-rank order (93.32\%\,/\,98.45\%)---the joint
+$k$-reciprocal neighbourhoods benefit from cross-stream consensus that
+per-stream re-ranking discards.
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{Fig2}
+  \caption{Order of operations in the fusion pipeline. \textbf{a} The deployed
+  order applies a common AQE to both streams, fuses the similarity matrices and
+  then re-ranks jointly. \textbf{b} The alternative order re-ranks each stream
+  with its own standalone parameters and fuses the resulting distances, which
+  discards cross-stream consensus in the $k$-reciprocal neighbourhoods and
+  costs 0.59\,pp mAP. Values are mAP\,/\,Rank-1 in \%}
+  \label{fig:order}
+\end{figure*}
+
+Score-level fusion is preferred over feature-level fusion because the two
+streams have fundamentally different feature geometries (1536D concat-patch ViT
+representation vs.\ 2048D convolutional map) and normalisation schemes;
+combining at the feature level would require a learned projection prone to
+overfitting on 576 training identities. The streams also use different input
+resolutions (224\,$\times$\,224 vs.\ 320\,$\times$\,320, each matching its
+checkpoint); score-level fusion is agnostic to this mismatch by construction,
+and harmonising would actively hurt---evaluating Stream~1 at
+320\,$\times$\,320 costs $1.7$\,pp mAP (Section~\ref{sec:res_sens}).
+
+We also verified the score-versus-feature-level choice empirically. Under the
+identical downstream post-processing, plain L2-normalised concatenation of the
+two streams reaches 93.08\% mAP / 98.63\% Rank-1, and \emph{weight-matched}
+concatenation ($[\sqrt{w_1}\,\mathbf{f}_1;\sqrt{w_2}\,\mathbf{f}_2]$, the
+feature-space counterpart of Eq.~\eqref{eq:fusion}) reaches 93.37\% /
+98.51\%---statistically indistinguishable from the deployed score fusion
+(93.32\% / 98.45\%)---whereas PCA-whitening (1024-D) fitted strictly on the
+training split degrades sharply to 86.50\%. Feature- and score-level fusion are
+therefore equivalent here when equally weighted, with no evidence that
+feature-level concatenation overfits; we retain score-level fusion for its
+interpretability (explicit stream weights) and because classical
+whitening-style feature calibration actively hurts in this regime. The optimal
+weights $w_1{=}0.35$, $w_2{=}0.65$ were found by grid search on the VeRi-776
+query/gallery split ($\approx$49.5\,min on T4). Since no separate held-out
+validation split is used for weight selection, the chosen weights may reflect a
+mild optimistic bias. However, Figure~\ref{fig:weight} demonstrates that mAP
+remains above 93.0\% across $w_1 \in [0.2,\,0.5]$, indicating that the optimal
+weight is not a sharp peak and that the practical impact of this selection
+procedure on the reported result is negligible.
+
+% =============================================================================
+\section{Experimental setup}
+\label{sec:setup}
+% =============================================================================
+
+\subsection{Dataset}
+VeRi-776~\cite{liu2016veri,liu2018provid} contains over 50\,000 images of 776
+vehicles captured by 20 surveillance cameras covering a
+$1.0\,\text{km}^{2}$ area over 24 hours. Each vehicle is annotated with
+identity, camera index, viewpoint (8 categories), vehicle type, colour, and
+spatiotemporal metadata~\cite{liu2018provid}. The standard split is: 37\,781
+training images of 576 identities, 11\,579 gallery images of 200 test
+identities, and 1\,678 query images.
+
+\subsection{Evaluation protocol}
+Results are reported under two conditions. \emph{Without post-processing:}
+cosine similarity, no re-ranking or query expansion. \emph{With
+post-processing:} the full pipeline (AQE $+$ $k$-reciprocal re-ranking $+$
+concat-patch flip TTA). Primary metrics are mAP (\%) and Rank-1 (\%). All
+comparisons use matching post-processing conditions unless explicitly noted.
+
+\subsection{Implementation details}
+Table~\ref{tab:implementation} summarises the implementation configuration and
+Table~\ref{tab:repro} the two released checkpoints with their SHA-256 hashes.
+
+\begin{table}[!t]
+  \centering
+  \caption{Implementation details for both streams, their standalone
+  post-processing settings and the deployed fusion configuration}
+  \label{tab:implementation}
+  \small
+  \begin{tabular}{L{5.4cm}L{8.4cm}}
+    \toprule
+    Component & Value \\
+    \midrule
+    Framework            & PyTorch 2.4.1$+$cu124, CUDA 12.4 \\
+    S1 backbone          & \texttt{vit\_base\_\allowbreak patch16\_\allowbreak clip\_\allowbreak 224.openai} \\
+    S2 backbone          & ResNet101-IBN-a $+$ TinyCLIP SEM \\
+    S1 hardware          & $2\times$ NVIDIA T4, $\approx$2.5--3.0\,GPU-h \\
+    S2 hardware          & NVIDIA P100, $\approx$4\,h\,26\,min \\
+    Fusion sweep HW      & T4 (CPU-bound), $\approx$49.5\,min \\
+    S1 feature dim.      & 1536D concat-patch$+$flip (best-mAP \& fusion);
+                           768D CLS-only (best-R1) \\
+    S2 feature dim.      & 2048D \\
+    AQE $k$, standalone (S1 / S2) & 3 / 10 \\
+    Re-rank S1 standalone (mAP)   & $k_1{=}80$, $k_2{=}15$, $\lambda{=}0.2$ \\
+    Re-rank S1 standalone (R1)    & $k_1{=}24$, $k_2{=}8$, $\lambda{=}0.2$ \\
+    Re-rank S2 standalone         & $k_1{=}50$, $k_2{=}10$, $\lambda{=}0.1$ \\
+    Fusion post-processing        & AQE $k{=}3$ both streams $\to$ joint
+                                    rerank $k_1{=}80$, $k_2{=}15$,
+                                    $\lambda{=}0.2$ \\
+    Fusion weights                & $w_1{=}0.35$, $w_2{=}0.65$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[!t]
+  \centering
+  \caption{Released checkpoints and provenance. Both hashes are verified at
+  evaluation time; the headline fusion (93.32\% mAP / 98.45\% Rank-1) is the
+  deterministic evaluation of exactly these two files at $w_1{=}0.35$}
+  \label{tab:repro}
+  \small
+  \begin{tabular}{L{2.2cm}L{11.6cm}}
+    \toprule
+    Stream & Checkpoint, role, and SHA-256 \\
+    \midrule
+    Stream~1 & \texttt{vehicle\_transreid\_vit\_base\_veri776.pth} \\
+             & ViT-B/16 CLIP; 89.97\% standalone (1536D), used at 1536D in
+               fusion \\
+             & {\scriptsize\texttt{8d32334a41933cbf0514fbc72e462124f8785a8057d02b475aca8abf65dbe5e9}} \\
+    \midrule
+    Stream~2 & \texttt{clipsenet\_v6\_veri776.pth} \\
+             & ResNet101-IBN-a $+$ TinyCLIP (CLIP-SENet v6); 91.44\%
+               standalone \\
+             & {\scriptsize\texttt{d24bd3cd42cc4e90c7da71e4b955d7b7e3274614e53fc686153b02c116d20a1c}} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Reproducibility}
+\label{sec:reproducibility}
+Every number in this paper is produced by \emph{deterministic} evaluation from
+two frozen, SHA-256-pinned checkpoints. We are careful about what this does and
+does not guarantee: because inference---feature extraction, AQE,
+$k$-reciprocal re-ranking, and score fusion---is deterministic, each reported
+value \emph{re-evaluates} exactly from the released checkpoints. This is a
+re-evaluation guarantee, not a claim that training is bit-for-bit reproducible;
+the latter is bounded separately below. Table~\ref{tab:repro} lists the two
+released checkpoints, their roles, and SHA-256 hashes.
+
+We distinguish two reproducibility regimes. (i)~\textbf{Exact reproduction:}
+evaluating the released checkpoints with the released notebooks re-computes
+every table value exactly---a deterministic re-evaluation, not an independent
+re-derivation---since inference is deterministic and the checkpoints are
+hash-pinned; this is the operative guarantee for all headline numbers, and the
+fusion headline was confirmed identical across three independent evaluations
+(two GPU notebooks and a CPU recomputation from dumped features). As a stronger
+check than deterministic re-evaluation, an \emph{independent re-extraction}---%
+fresh forward passes through the two SHA-256-verified checkpoints on a separate
+compute environment and account---reproduced the entire cumulative trajectory
+of Table~\ref{tab:ablation} and the 89.97 / 91.44 / 93.32\% mAP headline to
+within 0.01\,pp, confirming that the released checkpoints, not any cached
+feature dump, determine the reported numbers. (ii)~\textbf{Within-variance
+reproduction:} retraining a stream from scratch reproduces its recipe only
+within the $\pm0.55$\,pp three-seed standard deviation
+(Section~\ref{sec:seed_variance}), because GPU training is not bit-reproducible
+(cuDNN autotuning, non-deterministic atomics) even under fixed seeds; the
+released checkpoint---not a fresh retrain---therefore defines the headline.
+
+From-scratch reproduction is further limited by an incomplete training-time
+record: the $P\times K$ identity-sampling tuple was not logged (only the
+effective batch size of 96 is confirmed; Section~\ref{sec:method}), so an exact
+retraining configuration cannot be fully specified from our logs, which we flag
+as a reproducibility limitation. The standard VeRi-776 protocol is asserted at
+evaluation time ($1\,678$ query, $11\,579$ gallery, $576$ training identities);
+all evaluation used PyTorch~2.4.1 (CUDA~12.4) on a single NVIDIA~T4 GPU. The
+evaluation notebooks, the checkpoint manifest (with full hashes), and the
+per-table provenance mapping are released in the project repository
+(\url{https://github.com/MRKDaGods/gp}).
+
+% =============================================================================
+\section{Results and analysis}
+\label{sec:results}
+% =============================================================================
+
+\subsection{Comparison with the state of the art}
+Table~\ref{tab:sota} compares the proposed single-stream (S1) and fusion
+results against published methods on VeRi-776, and Figure~\ref{fig:landscape}
+places them in the mAP--Rank-1 landscape.
+
+\begin{table*}[!t]
+  \centering
+  \caption{State-of-the-art comparison on VeRi-776.
+    \cmark\,=\,post-processing (AQE / re-ranking) applied; \xmark\,=\,cosine
+    similarity only. \emph{Rows differ in post-processing condition and are
+    therefore not strictly like-for-like}: our pipeline rows are \cmark\ while
+    several transformer baselines (TransReID, CLIP-ReID) are reported
+    \xmark. Section~\ref{sec:matched} gives the matched-condition comparison}
+  \label{tab:sota}
+  \small
+  \begin{tabular}{L{2.6cm}L{1.8cm}L{4.4cm}C{1.4cm}C{1.3cm}C{1.1cm}L{1.1cm}}
+    \toprule
+    Method & Venue & Backbone & mAP~(\%) & R1~(\%) & w/~PP & Ref. \\
+    \midrule
+    PROVID       & TMM 2018   & CNN (multi-modal)         & 53.42 & 81.56 & \xmark & \cite{liu2018provid} \\
+    VAMI         & CVPR 2018  & CNN                       & 50.13 & 77.03 & \xmark & \cite{zhou2018vami} \\
+    PVEN         & CVPR 2020  & ResNet50                  & 79.50 & 95.60 & \xmark & \cite{meng2020pven} \\
+    HPGN         & T-ITS 2022 & CNN $+$ graph             & 80.18 & 96.72 & \xmark & \cite{shen2022hpgn} \\
+    VehicleNet   & TMM 2020   & ResNet50                  & 83.41 & 96.78 & \cmark & \cite{zheng2020vehiclenet} \\
+    TransReID    & ICCV 2021  & DeiT-B/16                 & 82.30 & 97.10 & \xmark & \cite{he2021transreid} \\
+    CLIP-ReID    & AAAI 2023  & ViT-B/16                  & 84.50 & 97.30 & \xmark & \cite{li2023clipreid} \\
+    RPTM         & WACV 2023  & ResNet                    & 88.00 & 97.30 & \xmark & \cite{ghosh2023rptm} \\
+    MBR4B-LAI    & ITSC 2023  & ResNet50 (multi-branch)   & 92.09 & 98.03 & \cmark & \cite{luo2023mbr4b} \\
+    CLIP-SENet   & arXiv 2025 & ResNet101-IBN-a $+$ TinyCLIP & 92.90 & 98.70 & \cmark & \cite{lu2025clipsenet} \\
+    \midrule
+    \textbf{Ours (S1, w/ PP)} & ---  & ViT-B/16 (CLIP init.) & \textbf{89.97} & \textbf{97.79} & \cmark & --- \\
+    \textbf{Ours (fusion)}    & ---  & ViT-B $+$ ResNet101-IBN-a $+$ TinyCLIP & \textbf{93.32} & \textbf{98.45} & \cmark & --- \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.92\columnwidth]{Fig3}
+  \caption{Published VeRi-776 results in the mAP--Rank-1 plane. Filled markers
+  denote results reported with post-processing; open markers denote
+  raw-embedding results. Early CNN-era methods (PROVID, 53.4\% mAP; VAMI,
+  50.1\% mAP) fall outside the plotted range and are omitted for readability.
+  The single-stream result of this work is competitive but, as
+  Section~\ref{sec:matched} shows, this reflects post-processing rather than a
+  recipe advantage}
+  \label{fig:landscape}
+\end{figure}
+
+This table should be read with care, because the rows mix post-processing
+conditions. First, our ViT-B pipeline (89.97\% mAP, \cmark) is the strongest
+\emph{pure-ViT-B} entry \emph{among published results}, but those baselines are
+reported \emph{without} post-processing (\xmark); when we apply our identical
+post-processing to the official TransReID and CLIP-ReID checkpoints they reach
+91.12\% and 91.80\% mAP, both \emph{exceeding} ours
+(Section~\ref{sec:matched}), so this row reflects post-processing rather than a
+recipe advantage. Among single models reported \emph{with} post-processing,
+MBR4B-LAI (92.1\% mAP~\cite{luo2023mbr4b}) also exceeds our single stream.
+Second, the fusion (93.32\% mAP) marginally exceeds the best prior published
+result (CLIP-SENet, 92.9\%~\cite{lu2025clipsenet}) by $+0.42$\,pp and
+MBR4B-LAI by $+1.23$\,pp, which we interpret as evidence of stream
+complementarity rather than a decisive margin.
+
+\subsection{Pure ViT-B comparison}
+Table~\ref{tab:vit_compare} isolates the comparison against prior
+transformer-based methods using the same ViT-B/16 backbone family.
+
+\begin{table}[!t]
+  \centering
+  \caption{Transformer-based methods on VeRi-776. Prior rows are reported
+    \emph{without} post-processing; our row includes AQE $+$ $k$-reciprocal
+    re-ranking $+$ TTA, so this is not a matched comparison}
+  \label{tab:vit_compare}
+  \small
+  \begin{tabular}{L{4.2cm}L{1.8cm}L{3.0cm}C{1.3cm}C{1.3cm}}
+    \toprule
+    Method & Venue & Backbone & mAP~(\%) & R1~(\%) \\
+    \midrule
+    TransReID (ViT-B)~\cite{he2021transreid}   & ICCV 2021 & ViT-B/16  & 80.60 & 97.00 \\
+    TransReID* (DeiT-B)~\cite{he2021transreid} & ICCV 2021 & DeiT-B/16 & 82.30 & 97.10 \\
+    CLIP-ReID~\cite{li2023clipreid}            & AAAI 2023 & ViT-B/16  & 84.50 & 97.30 \\
+    \midrule
+    \textbf{Ours (S1, w/ PP)} & --- & \textbf{ViT-B/16 (CLIP)} & \textbf{89.97} & \textbf{97.79} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The 89.97\% mAP of our pipeline exceeds the CLIP-ReID (84.5\%) and TransReID*
+(82.3\%) entries above, but---as stressed throughout---those are raw-embedding
+numbers whereas ours includes AQE $+$ $k$-reciprocal re-ranking $+$ TTA. At
+matched no-post-processing conditions our embedding (82.2\%) is on par with
+TransReID and below CLIP-ReID, so this is a post-processing gap.
+Section~\ref{sec:matched} runs the matched-condition comparison directly and
+finds that TransReID, given our identical post-processing, in fact
+\emph{exceeds} our pipeline (91.12\% vs.\ 89.97\% mAP). For clarity,
+Table~\ref{tab:oppoints} summarises every reported operating point in one
+place, including a \emph{validation-selected} fusion row
+(Section~\ref{sec:holdout}) as the recommended tuning-free default. The
+headline fusion also attains \textbf{84.14\% mINP}~\cite{ye2022survey},
+recomputed deterministically from the released per-query dumps.
+
+\begin{table*}[!t]
+  \centering
+  \caption{Operating-point summary: every headline configuration reported in
+  this paper, in one place. All post-processing parameters are the split-tuned
+  values disclosed in Section~\ref{sec:holdout}, except the final row}
+  \label{tab:oppoints}
+  \small
+  \begin{tabular}{L{3.6cm}L{8.4cm}C{1.4cm}C{1.3cm}}
+    \toprule
+    Operating point & Configuration & mAP~(\%) & R1~(\%) \\
+    \midrule
+    Stream~1, best-mAP & 1536D concat-patch$+$flip; AQE $k{=}3$; rerank $(80,15,0.2)$ & 89.97 & 97.79 \\
+    Stream~1, best-R1  & 768D single-flip CLS; rerank $(24,8,0.2)$; no AQE & 85.14 & 98.33 \\
+    Stream~2 standalone & 2048D; AQE $k{=}10$; rerank $(50,10,0.1)$ & 91.44 & 97.08 \\
+    Fusion (headline)  & AQE $k{=}3$ both; $w_1{=}0.35$ fused similarity; joint rerank $(80,15,0.2)$ & \textbf{93.32} & \textbf{98.45} \\
+    Fusion, validation-selected & as headline but $w_1{=}0.25$, selected on a disjoint identity split (Sect.~\ref{sec:holdout}) & 93.25 & 98.15 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+\subsection{Matched-condition comparison with TransReID and CLIP-ReID}
+\label{sec:matched}
+The comparisons above apply post-processing to our pipeline but quote prior
+ViT-B baselines at their published, post-processing-free operating points. To
+close this gap---the central question of whether our recipe or our
+post-processing is responsible for the reported numbers---we ran the official
+TransReID VeRi-776 checkpoint (\texttt{TransReID*} ViT-B/16, released by the
+TransReID authors~\cite{he2021transreid}) \emph{and} the official CLIP-ReID
+ViT-B/16 VeRi-776 checkpoint~\cite{li2023clipreid} through our \emph{identical}
+post-processing (AQE $k{=}3$; $k$-reciprocal re-ranking
+$k_1{=}80,k_2{=}15,\lambda{=}0.2$), using each repository's own released
+dataloader and inference path. Table~\ref{tab:matched} and
+Figure~\ref{fig:matched} report the results.
+
+\begin{table}[!t]
+  \centering
+  \caption{Matched-condition comparison on VeRi-776: identical AQE $+$
+    $k$-reciprocal re-ranking applied to each ViT-B/16 model's native inference
+    feature. Both official baseline checkpoints, given our post-processing,
+    exceed our own single stream. CLIP-ReID's base value is our re-extraction
+    of its 512-D projection branch; its published standalone figure is
+    84.5\%~\cite{li2023clipreid}}
+  \label{tab:matched}
+  \small
+  \begin{tabular}{L{5.0cm}C{1.8cm}C{2.0cm}C{2.4cm}}
+    \toprule
+    Model (native feature) & Feat.\ dim & Base mAP~(\%) & $+$\,our PP mAP~(\%) \\
+    \midrule
+    TransReID* (official)~\cite{he2021transreid} & 3840 & 82.11 & 91.12 \\
+    CLIP-ReID (official)~\cite{li2023clipreid}   & 512  & 82.99 & \textbf{91.80} \\
+    Ours (ViT-B/16 CLIP)                         & 1536 & 82.22 & 89.97 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.92\columnwidth]{Fig4}
+  \caption{Matched-condition comparison of three ViT-B/16 models on VeRi-776.
+  Hatched bars are the native embeddings without post-processing; solid bars
+  add the identical AQE and $k$-reciprocal re-ranking. All three embeddings lie
+  within 0.9\,pp of one another, and both official baselines re-rank to a
+  higher final mAP than our own recipe}
+  \label{fig:matched}
+\end{figure}
+
+The finding is unambiguous and, for our own claims, cautionary: once all three
+models receive the same post-processing, the \emph{original} TransReID reaches
+91.12\% mAP and the \emph{original} CLIP-ReID 91.80\%---both \emph{above} our
+89.97\%---while at the raw-embedding level all three are within 0.9\,pp
+(82.11\,/\,82.99\,/\,82.22\%). The TransReID base value reproduces its
+published number ($\approx$82.3\%), confirming faithful extraction; the
+CLIP-ReID base value lands 1.5\,pp below its published 84.5\%, which we
+attribute to the feature-branch choice in our re-extraction (the 512-D image
+projection via the authors' released inference path)---a caveat that does not
+affect the matched comparison, since the same features feed both the base and
+post-processed numbers.
+
+Our training recipe therefore confers no post-processing-independent advantage
+over either baseline; if anything, both baselines' native descriptors re-rank
+slightly better than ours. This is not a perfectly matched
+\emph{feature-extraction} comparison---the three native descriptors differ in
+dimensionality and construction (3840-D global$+$JPM, 512-D CLIP projection,
+1536-D concat-patch)---but the conclusion is robust to that caveat: the large
+ViT-B retrieval numbers reported here, and the apparent post-TransReID progress
+on this benchmark generally, are driven by post-processing rather than by
+recipe or architectural refinement. We accordingly frame our single-stream
+result as a \emph{reproducible, fully specified} baseline, not a superior
+recipe; the training-free fusion remains our primary quantitative advance.
+
+\subsection{Ablation study}
+Table~\ref{tab:ablation} traces the complete performance trajectory,
+visualised in Figures~\ref{fig:trajectory} and~\ref{fig:isolated}. Endpoint
+values are verified against published results~\cite{he2021transreid} and
+repository experiment logs; all intermediate rows are measured from isolated
+ablation experiments.
+
+\begin{table*}[!t]
+  \centering
+  \caption{Stepwise ablation: 82.3\% $\to$ 93.3\% mAP on VeRi-776.
+    Rows A1--A5$\beta$ report isolated-component contributions measured under a
+    common operating point (Stream~1 only, AQE $k{=}3$ $+$ $k$-reciprocal
+    re-ranking, single-flip 768D CLS); deltas are relative to control A1.
+    \textbf{A1 is an intentionally minimal, \emph{un-tuned} SGD control}
+    (ImageNet-initialised DeiT, no recipe/schedule tuning); it is \emph{not} a
+    reproduction of TransReID, whose fully tuned DeiT-B SGD recipe reaches
+    82.3\% mAP~\cite{he2021transreid}. Isolated deltas quantify component
+    contributions \emph{during recipe development} relative to this control and
+    must not be read as head-to-head superiority over a tuned baseline; the
+    authoritative recipe-versus-published accounting is the cumulative
+    trajectory (lower block), anchored at the published 82.3\%%
+    \protect\footnotemark}
+  \label{tab:ablation}
+  \small
+  \begin{tabular}{L{8.6cm}C{1.6cm}C{1.6cm}C{1.8cm}}
+    \toprule
+    Configuration & mAP~(\%) & R1~(\%) & $\Delta$ vs.\ A1 \\
+    \midrule
+    \multicolumn{4}{l}{\emph{Isolated component ablation (Stream~1, AQE $+$ rerank)}} \\
+    A1 --- un-tuned SGD control: DeiT $+$ SGD $+$ CE $+$ triplet (not TransReID) & 57.62 & 80.45 & --- \\
+    A2 --- $+$CLIP initialisation only                    & 70.97 & 86.83 & $+13.35$ \\
+    A3 --- $+$SupCon only (DeiT $+$ SGD $+$ CE-LS $+$ SupCon) & 59.48 & 79.74 & $+1.86$ \\
+    A4 --- $+$AdamW/LLRD only (DeiT $+$ CE $+$ triplet)   & 80.91 & 94.82 & $+23.29$ \\
+    A5$\alpha$ --- full (CLIP $+$ AdamW/LLRD $=0.75$ $+$ CE-LS $+$ triplet $+$ centre; \emph{deployed}) & 89.06 & 97.74 & $+31.44$ \\
+    A5$\beta$ --- full (CLIP $+$ AdamW/LLRD $=0.65$ $+$ CE-LS $+$ SupCon; alternative) & 88.57 & 96.66 & $+30.95$ \\
+    \midrule
+    \multicolumn{4}{l}{\emph{Cumulative trajectory $\to$ headline}} \\
+    TransReID baseline (DeiT-B*)~\cite{he2021transreid}  & 82.30 & 97.10 & --- \\
+    Base cosine, ViT-B (no PP)                            & 82.22 & 97.50 & $-0.08$ \\
+    \quad$+$AQE $k{=}3$                                   & 84.08 & 97.20 & $+1.86$ \\
+    \quad$+$rerank $k_1{=}80,k_2{=}15,\lambda{=}0.2$      & 89.63 & 97.74 & $+5.55$ \\
+    \quad$+$concat-patch $+$ flip TTA (1536D; A5$\alpha$, deployed) & 89.97 & 97.79 & $+0.34$ \\
+    \midrule
+    CLIP-SENet v6, base cosine~\cite{lu2025clipsenet}     & 82.34 & 96.54 & --- \\
+    \quad$+$AQE $k{=}10$                                  & 89.21 & 96.90 & $+6.87$ \\
+    \quad$+$rerank $k_1{=}50,k_2{=}10,\lambda{=}0.1$      & 91.44 & 97.08 & $+2.23$ \\
+    \midrule
+    \textbf{Fusion ($w_1{=}0.35$, $w_2{=}0.65$)}          & \textbf{93.32} & \textbf{98.45} & $+1.88$ \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+\footnotetext{Cumulative-trajectory rows are the deterministic evaluation of
+  frozen, SHA-256-pinned checkpoints. Isolated-ablation rows (A1--A5$\beta$)
+  are single from-scratch training runs; only the deployed A5$\alpha$ recipe
+  was characterised for seed variance ($\pm 0.55$\,pp,
+  Section~\ref{sec:seed_variance}), and the isolated controls A1--A4 were not
+  individually seed-repeated, so their absolute values carry at least this much
+  training noise. See Section~\ref{sec:reproducibility} for checkpoint hashes
+  and the two reproducibility regimes.}
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{Fig5}
+  \caption{Cumulative performance trajectory on VeRi-776 from the published
+  TransReID baseline to the two-stream fusion, under a single consistent
+  post-processing protocol. The largest single step is $k$-reciprocal
+  re-ranking on Stream~1 ($+5.55$\,pp); the recipe itself contributes
+  essentially nothing at the raw-embedding level ($-0.08$\,pp against the
+  published baseline)}
+  \label{fig:trajectory}
+\end{figure*}
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=\columnwidth]{Fig6}
+  \caption{Isolated component ablation for the Stream~1 recipe, measured
+  against the un-tuned SGD control A1 at a common operating point. The deltas
+  quantify component contributions during recipe development and must not be
+  read as head-to-head superiority over a tuned baseline, since A1 is
+  deliberately un-tuned}
+  \label{fig:isolated}
+\end{figure}
+
+The isolated-component block clarifies which ingredients our recipe depends on,
+relative to the un-tuned A1 control. AdamW with layer-wise LR decay (A4) gives
+the largest movement, $+23.29$\,pp over the un-tuned SGD control A1; CLIP
+initialisation (A2) is next at $+13.35$\,pp. We stress that the A4 delta
+reflects the difficulty of tuning SGD under our short schedule rather than an
+intrinsic $+23$\,pp superiority of AdamW over SGD---a fully tuned SGD recipe
+(TransReID) already reaches 82.3\% mAP~\cite{he2021transreid}. What A4
+establishes is that AdamW with layer-wise LR decay reaches a strong operating
+point \emph{without} bespoke per-optimiser schedule tuning, which is the
+practical property the recipe relies on. SupCon in isolation (A3) barely moves
+the needle ($+1.86$\,pp) but combines well once CLIP and AdamW are in place:
+the deployed A5$\alpha$ recipe reaches 89.06\% mAP, statistically
+indistinguishable from the alternative A5$\beta$ recipe (88.57\% mAP)---a
+0.49\,pp single-run difference that lies within the $\pm 0.55$\,pp three-seed
+standard deviation of A5$\alpha$ (88.75\,$\pm$\,0.55\,pp;
+Section~\ref{sec:seed_variance}). Within the cumulative trajectory, the most
+impactful post-processing step is $k$-reciprocal
+re-ranking~\cite{zhong2017rerank} on Stream~1 ($+5.55$\,pp);
+AQE~\cite{arandjelovic2012aqe} adds $+1.86$\,pp; TTA contributes $+0.34$\,pp.
+Fusion provides $+1.88$\,pp above the stronger post-processed CLIP-SENet
+stream, confirming genuine complementarity between the two feature spaces.
+
+\subsection{Training seed variance}
+\label{sec:seed_variance}
+To quantify training-time stochasticity, the A5$\alpha$ recipe was retrained
+from scratch with three additional seeds $\{42, 123, 456\}$ under identical
+hyperparameters, each evaluated at the isolated-ablation operating point
+(Stream~1 only, single-flip 768D, AQE $k{=}3$ $+$ $k$-reciprocal re-ranking;
+Table~\ref{tab:ablation}, top block). The purpose of
+Table~\ref{tab:seed_variance} is to bound the recipe's \emph{training} variance
+and so underpin the A5$\alpha$/A5$\beta$ equivalence argument; it is not a
+re-derivation of the released headline checkpoint, whose reproducibility is
+established separately (below).
+
+\begin{table}[!t]
+  \centering
+  \caption{A5$\alpha$ training seed variance on VeRi-776 (Stream~1 only,
+    single-flip 768D, AQE $k{=}3$ $+$ $k$-reciprocal re-ranking), quantifying
+    from-scratch retraining noise of the recipe}
+  \label{tab:seed_variance}
+  \small
+  \begin{tabular}{L{4.6cm}C{3.0cm}C{3.0cm}}
+    \toprule
+    Seed & mAP~(\%) & R1~(\%) \\
+    \midrule
+    42  & 89.48 & 97.26 \\
+    123 & 88.14 & 97.08 \\
+    456 & 88.64 & 97.20 \\
+    \midrule
+    \textbf{Mean $\pm$ SD ($n=3$)} & \textbf{88.75 $\pm$ 0.55} & \textbf{97.18 $\pm$ 0.07} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The three-seed standard deviation of 0.55\,pp mAP exceeds the 0.49\,pp
+A5$\alpha$--A5$\beta$ single-run gap, confirming that the two recipes are
+statistically equivalent under realistic training noise. This is purely a
+training-time analysis: the headline Stream~1 result (89.97\% mAP) is
+\emph{not} the mean of these retrains but the deterministic evaluation of the
+released, SHA-pinned checkpoint at the best-mAP operating point (1536D
+concat-patch flip TTA). Its reproducibility is therefore exact---the same
+frozen checkpoint yields the same number on every run, independent of training
+variance---which is the guarantee we provide by releasing the checkpoint. For
+transparency, that checkpoint scores 89.63\% at the 768D operating point of
+this table, at the favourable end of the retrain distribution; a reproducer
+training from scratch should expect the band above, whereas a reproducer
+evaluating the released checkpoint obtains the headline exactly.
+
+\subsection{Fusion weight sensitivity}
+\label{sec:weight}
+Figure~\ref{fig:weight} sweeps the fusion weight. mAP remains above 93.0\% for
+$w_1 \in [0.2, 0.5]$, demonstrating robustness to the exact weight choice. The
+consistent superiority of all fusion configurations over either stream in
+isolation confirms that the two streams capture complementary information about
+vehicle identity.
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.92\columnwidth]{Fig7}
+  \caption{Fusion weight sensitivity on VeRi-776. The fused mAP stays within
+  0.22\,pp across the entire range $w_1 \in [0.2, 0.5]$ and everywhere exceeds
+  both single streams, so the reported result does not sit on a sharp test-set
+  optimum. The star marks the deployed weight and the open square the weight
+  selected on a disjoint identity split (Section~\ref{sec:holdout})}
+  \label{fig:weight}
+\end{figure}
+
+We additionally verified that the Stream~1 feature dimensionality has
+negligible effect on the fused result. The 1536D concat-patch flip-TTA
+representation and the 768D single-flip CLS-only representation fuse to within
+0.01\,pp mAP at their respective optima (1536D: 93.32\% at $w_1{=}0.35$; 768D:
+93.31\% at $w_1{=}0.30$), even though the 1536D representation is 0.34\,pp
+stronger standalone (89.97\% vs.\ 89.63\%). The standalone TTA gain is thus
+largely redundant with the complementary CLIP-SENet signal; we retain the 1536D
+representation as it is both the best-mAP standalone Stream~1 configuration and
+marginally best in fusion.
+
+\subsection{Hyperparameter selection, held-out validation, and significance}
+\label{sec:holdout}
+We report all post-processing hyperparameters---AQE $k$, the $k$-reciprocal
+re-ranking triple $(k_1,k_2,\lambda)$, and the fusion weight $w_1$---as
+selected by grid search on the VeRi-776 query/gallery split, and we treat this
+as a source of potential optimistic bias rather than leaving it implicit. To
+state the protocol once and unambiguously: \emph{every headline number in this
+paper uses these split-tuned values}; the validation analyses below quantify
+and bound the optimism of that choice---they are audits of the headline
+configuration, not its source.
+
+Three observations bound that bias. First, the selection surface is flat, not
+peaked: fused mAP stays above $93.0\%$ across the entire range
+$w_1\in[0.2,0.5]$ (Figure~\ref{fig:weight}), so the reported result does not
+sit on a sharp test-set optimum. Second, the re-ranking and AQE settings are
+close to established defaults ($k_1{=}80,k_2{=}15,\lambda{=}0.2$ lie within the
+ranges recommended by Zhong et al.~\cite{zhong2017rerank}; AQE $k{=}3$ is a
+standard small neighbourhood), so they are not idiosyncratically fit to
+VeRi-776. Third, the test set (200 identities, 1\,678 queries) is large
+relative to the small number of scalar hyperparameters selected, limiting the
+degrees of freedom available for overfitting.
+
+To move beyond these a-priori arguments, we ran a disjoint-identity held-out
+protocol: the 200 test identities are split into two 100-identity halves, the
+fusion weight is selected on the first half (with AQE and re-ranking held at
+the standard values above), and the result is reported on the second half with
+that weight frozen. The validation half selects $w_1{=}0.25$ whereas the full
+test set favours $w_1{=}0.35$; because the weight surface is flat
+(Figure~\ref{fig:weight}), this disagreement is almost free---reporting the
+full-test result at the validation-selected $w_1{=}0.25$ gives 93.25\% mAP,
+only \textbf{0.07\,pp} below the test-tuned 93.32\%. The optimistic bias from
+selecting the fusion weight on the evaluation set is therefore
+$\lesssim$0.1\,pp and changes no conclusion; with that weight frozen, the
+held-out 100-identity split reaches 96.3\% mAP / 99.1\% Rank-1, confirming the
+fusion generalises across disjoint identities. The held-out-validation script
+is released so readers can reproduce this check.
+
+Because this split still draws its identities from the test set, we add a
+second protocol using identities disjoint from the test set entirely: we carve
+a 100-identity validation set from the 576 \emph{training} identities and
+re-select the fusion weight there. As those images were seen during training,
+retrieval on them saturates (mAP $=100\%$ for every $w_1\in[0.2,0.5]$), so the
+selection is uninformative in isolation---but freezing the resulting choice
+($w_1{=}0.2$) and evaluating on the true test set gives 93.13\% mAP, only
+\textbf{0.18\,pp} below the test-tuned 93.32\%. Both protocols thus bound the
+evaluation-set weight-selection bias below 0.2\,pp. For a selection-free
+configuration out of the box, Table~\ref{tab:oppoints} lists the
+validation-selected operating point ($w_1{=}0.25$, literature-default
+post-processing) at 93.25\% mAP / 98.15\% Rank-1---the recommended default for
+unbiased comparison. A fully unseen validation set---holding identities out of
+\emph{training} rather than reusing seen images---would be stricter but
+requires retraining, which we note as the rigorous alternative.
+
+The post-processing parameters sit on the same kind of plateau. An
+axis-aligned sweep around the deployed Stream-1 setting
+($k_1\in\{40,80,120\}$, $k_2\in\{8,15,25\}$, $\lambda\in\{0.05,0.2,0.4\}$, one
+factor varied at a time after AQE $k{=}3$) yields 88.3--90.1\% mAP across the
+entire grid, with the deployed $(80,15,0.2)$ at 89.99\%---not even the grid
+maximum (90.14\% at $\lambda{=}0.05$). AQE alone is likewise well-behaved: mAP
+rises monotonically with $k$ (82.3\,/\,84.2\,/\,85.4\,/\,87.4\% at
+$k{=}1/3/5/10$) before re-ranking is applied. No reported number therefore
+depends on a sharp, idiosyncratic post-processing optimum.
+
+We also tested whether score calibration removes the need to tune the fusion
+weight. Simple $z$-score calibration of each stream's similarity distribution
+before an equal-weight ($w_1{=}0.5$) fusion does \emph{not} help---it lowers
+mAP to 90.35\%---whereas the \emph{uncalibrated} equal-weight fusion already
+reaches 93.10\%, within 0.22\,pp of the tuned 93.32\%. The fusion weight is
+therefore barely consequential and needs no careful evaluation-set tuning;
+calibration is unnecessary and, here, counter-productive.
+
+We further quantify the significance of the fusion gain with a paired bootstrap
+over the 1\,678 queries (5\,000 resamples). The margin over the stronger single
+stream has a 95\% confidence interval excluding zero:
+fusion~$-$~CLIP-SENet $=+1.88$\,pp mAP (95\% CI $[1.39, 2.37]$) and
+fusion~$-$~ViT-B $=+3.34$\,pp (95\% CI $[2.81, 3.88]$), both measured against
+our own same-condition reproductions of those streams; the complementarity
+underlying the fusion is thus statistically robust. This test concerns the gain
+over the streams we can evaluate---the narrower $+0.42$\,pp margin over the
+\emph{published} CLIP-SENet mAP cannot be significance-tested without that
+model's per-query results, and we do not claim it as significant. The fusion
+weight itself is barely consequential: $w_1{=}0.35$ exceeds $w_1{=}0.30$ by
+only $+0.10$\,pp (95\% CI $[0.02, 0.19]$). To let readers audit these tests
+independently, we release the per-query average-precision values and the fused
+distance matrix for the headline configuration, together with the script that
+recomputes mAP/CMC and the bootstrap intervals from them.
+
+\subsection{Post-processing contribution analysis}
+Figure~\ref{fig:perstream} breaks down the per-stream contribution of each
+post-processing step. Both streams begin at similar base performance
+($\approx$82\% mAP); the larger relative gain of CLIP-SENet from AQE
+($+6.87$\,pp vs.\ $+1.86$\,pp for ViT-B) reflects the broader
+nearest-neighbour clusters of the ResNet-IBN feature space, which benefit more
+from graph-based smoothing. The precise values are listed in the cumulative
+block of Table~\ref{tab:ablation}.
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.92\columnwidth]{Fig8}
+  \caption{Per-stream post-processing contribution on VeRi-776. The two streams
+  start from almost identical base cosine accuracy but respond very differently
+  to query expansion, and the fusion adds a further 1.88\,pp over the stronger
+  post-processed stream}
+  \label{fig:perstream}
+\end{figure}
+
+\subsection{Input-resolution sensitivity}
+\label{sec:res_sens}
+Stream~1 trains and evaluates at 224\,$\times$\,224, whereas TransReID uses
+256\,$\times$\,256 and CLIP-SENet 320\,$\times$\,320, raising the question of
+whether the ViT-B stream leaves accuracy on the table at its lower resolution.
+We measure the deployed checkpoint's \emph{inference}-resolution sensitivity by
+re-extracting Stream~1 features at 256\,$\times$\,256 and 320\,$\times$\,320
+(position embeddings bicubically interpolated to the larger patch grid) and
+re-running the identical post-processing (Figure~\ref{fig:resolution}).
+Accuracy degrades monotonically away from the native resolution: full-pipeline
+mAP drops by $0.30$\,pp at 256 and $1.70$\,pp at 320. The checkpoint is thus
+well matched to its training resolution, and higher-resolution
+\emph{inference} is not an available lever; whether higher-resolution
+\emph{training} would help (as in TransReID's 256 recipe) remains open and
+would require retraining (Section~\ref{sec:limitations}). The
+native-resolution result doubles as a further independent reproduction: this
+fresh extraction reproduces the headline 89.97\%\,/\,97.79\% operating point to
+within 0.03\,pp.
+
+\begin{figure}[!t]
+  \centering
+  \includegraphics[width=0.88\columnwidth]{Fig9}
+  \caption{Inference-resolution sensitivity of the deployed Stream~1
+  checkpoint, which was trained at 224\,$\times$\,224. Position embeddings are
+  bicubically interpolated at evaluation time and post-processing parameters
+  are held identical. Accuracy degrades monotonically away from the native
+  resolution at every stage of the pipeline}
+  \label{fig:resolution}
+\end{figure}
+
+\subsection{Cross-dataset generalisation on VeRi-Wild}
+\label{sec:veriwild}
+A central question for any VeRi-776 result is whether it reflects transferable
+re-identification ability or dataset-specific tuning. To probe this, we
+evaluate our VeRi-776-trained checkpoints \emph{zero-shot} on
+VeRi-Wild~\cite{lou2019veriwild} (416{,}314 images, 40{,}671 identities, 174
+cameras), applying the identical feature extraction and post-processing with
+\emph{no} fine-tuning. VeRi-Wild's 174 cameras do not correspond to VeRi-776's
+twenty, so no remapping is attempted: the Stream~1 camera side-information
+embedding is fixed to a single constant index for all images (one shared camera
+token, so the SIE offset is identical everywhere and cancels in relative
+comparisons); disabling camera/view embeddings is standard practice in
+cross-dataset ReID evaluation~\cite{benmabrouk2026genlimits}, and measured
+in-domain on VeRi-776 this substitution costs 2.6\,pp raw mAP
+(82.30\%$\rightarrow$79.75\%), so it cannot explain the transfer gap reported
+below. As a further control, the transfer evaluation code path was re-run
+unchanged on VeRi-776, where it reproduces the in-domain trajectory (raw,
+$+$AQE, both streams) to within 0.1\,pp. We report all three official test
+protocols (3{,}000\,/\,5{,}000\,/\,10{,}000 identities: equally many queries
+against 38{,}861\,/\,64{,}389\,/\,128{,}517 gallery images respectively, from
+the official split lists), excluding same-camera--same-identity matches per the
+official protocol.
+
+\begin{table*}[!t]
+  \centering
+  \caption{Zero-shot VeRi-776$\rightarrow$VeRi-Wild transfer across all three
+  official test protocols, in context. Top block: our VeRi-776-trained streams,
+  using no VeRi-Wild data of any kind (identical extraction and post-processing
+  to VeRi-776). Middle block: published VehicleID$\rightarrow$VeRi-Wild
+  transfer results as reported in~\cite{zheng2020vapc}; the UDA methods
+  additionally \emph{adapt on unlabelled VeRi-Wild images}, and VehicleID
+  provides over twenty times more training identities than VeRi-776. Bottom
+  block (different regime, reference only): supervised training on VeRi-Wild's
+  own training set. Cells are mAP\,/\,Rank-1 in \%; our best zero-shot
+  configuration in \textbf{bold}. Re-ranked transfer rows are measured at the
+  3{,}000 protocol only; note re-ranking \emph{reduces} transfer accuracy.
+  Paired-bootstrap 95\% CIs on our mAPs are within $\pm 1.0$\,pp at every
+  scale}
+  \label{tab:veriwild}
+  \small
+  \begin{tabular}{L{4.4cm}L{2.0cm}L{2.0cm}C{2.0cm}C{2.0cm}C{2.0cm}}
+    \toprule
+    & & VeRi-Wild & \multicolumn{3}{c}{Test protocol (mAP\,/\,R1)} \\
+    \cmidrule(lr){4-6}
+    Method & Source & data used & 3{,}000 & 5{,}000 & 10{,}000 \\
+    \midrule
+    ViT-B raw (ours)             & VeRi-776 & none & 31.7\,/\,58.7 & 26.7\,/\,52.3 & 20.9\,/\,43.9 \\
+    ViT-B $+$AQE (ours)          & VeRi-776 & none & \textbf{35.9}\,/\,\textbf{60.3} & \textbf{30.5}\,/\,\textbf{53.1} & \textbf{23.8}\,/\,\textbf{44.4} \\
+    ViT-B $+$AQE$+$rerank (ours) & VeRi-776 & none & 34.8\,/\,57.0 & --- & --- \\
+    CLIP-SENet raw (ours)        & VeRi-776 & none & 20.2\,/\,40.6 & 16.8\,/\,35.9 & 12.2\,/\,27.9 \\
+    CLIP-SENet $+$AQE (ours)     & VeRi-776 & none & 22.9\,/\,37.1 & 18.9\,/\,32.3 & 13.7\,/\,25.4 \\
+    Fusion raw (ours)            & VeRi-776 & none & 28.7\,/\,54.2 & 24.2\,/\,47.6 & 18.5\,/\,38.6 \\
+    Fusion $+$AQE (ours)         & VeRi-776 & none & 33.6\,/\,57.3 & 28.1\,/\,50.0 & 21.4\,/\,41.5 \\
+    Fusion $+$AQE$+$rerank (ours)& VeRi-776 & none & 30.9\,/\,49.3 & --- & --- \\
+    \midrule
+    SPGAN~\cite{deng2018spgan}          & VehicleID & unlabelled & 24.1\,/\,59.1 & 21.6\,/\,55.0 & 17.5\,/\,47.4 \\
+    UDAP~\cite{song2020udap}            & VehicleID & unlabelled & 30.0\,/\,68.4 & 26.2\,/\,62.5 & 20.8\,/\,53.7 \\
+    ECN~\cite{zhong2019ecn}             & VehicleID & unlabelled & 34.7\,/\,73.4 & 30.6\,/\,68.6 & 24.7\,/\,61.0 \\
+    VAPC (direct)~\cite{zheng2020vapc}  & VehicleID & none       & 37.7\,/\,74.0 & 33.1\,/\,68.1 & 26.3\,/\,60.2 \\
+    VAPC (adapted)~\cite{zheng2020vapc} & VehicleID & unlabelled & 39.7\,/\,75.3 & 34.5\,/\,69.0 & 27.4\,/\,61.0 \\
+    \midrule
+    FDA-Net~\cite{lou2019veriwild}      & VeRi-Wild & labelled & 35.1\,/\,--- & 29.8\,/\,--- & 22.8\,/\,--- \\
+    CLIP-SENet~\cite{lu2025clipsenet}   & VeRi-Wild & labelled & 89.1\,/\,97.9 & 85.2\,/\,97.0 & 79.5\,/\,95.4 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=0.86\textwidth]{Fig10}
+  \caption{Zero-shot VeRi-776$\rightarrow$VeRi-Wild transfer across the three
+  official protocols, compared with published VehicleID-sourced transfer
+  methods. Our streams use no VeRi-Wild data of any kind, whereas ECN
+  additionally adapts on unlabelled target images and both comparison methods
+  draw on a source with over twenty times more identities. The ViT-B stream
+  transfers competitively at every scale; the fusion falls below it everywhere}
+  \label{fig:transfer}
+\end{figure*}
+
+Four observations follow (Table~\ref{tab:veriwild} and
+Figure~\ref{fig:transfer}). First, the ViT-B stream \emph{transfers}, and does
+so at every gallery scale: 31.7\,/\,26.7\,/\,20.9\% mAP raw and
+35.9\,/\,30.5\,/\,23.8\% with AQE on the 3{,}000\,/\,5{,}000\,/\,10{,}000
+protocols---far below its in-domain 89.97\% (as expected for a
+40{,}671-identity in-the-wild target with no adaptation), but a consistent,
+non-trivial signal that the CLIP-initialised ViT-B embedding is not merely fit
+to VeRi-776. Its degradation with gallery scale ($-12.1$\,pp mAP from the
+smallest to the largest protocol) parallels the published VehicleID-sourced
+methods ($-11.4$\,pp for direct-transfer VAPC, $-10.0$\,pp for ECN),
+indicating a shared gallery-size mechanism rather than a pipeline artefact.
+Rank-1 trails the VehicleID-sourced methods by more than mAP does, consistent
+with their source providing over twenty times more identities for top-1
+discrimination.
+
+Second, and more informative, the score-level \emph{fusion does not survive the
+domain shift at any scale}: at the VeRi-776-tuned weight $w_1{=}0.35$ it
+reaches 28.7\,/\,24.2\,/\,18.5\% mAP raw and 33.6\,/\,28.1\,/\,21.4\% with AQE,
+\emph{below} the stronger single stream in both conditions at every protocol.
+Under transfer the CLIP-SENet stream is substantially weaker
+(20.2\,/\,16.8\,/\,12.2\% mAP), and the weight tuned on VeRi-776---which
+weights that stream at $0.65$---drags the fusion below ViT-B alone. (The
+table's fusion rows apply each stream's \emph{standalone} AQE setting
+($k{=}3/k{=}10$) uniformly across scales; under the exactly deployed fusion
+configuration---common AQE $k{=}3$ with joint re-ranking---the 3{,}000-protocol
+fusion reaches 32.8\% mAP with AQE and 31.4\% with joint re-ranking, leading to
+the same conclusion.) This directly corroborates the CityFlowV2 result noted in
+Section~\ref{sec:limitations}, where a direct port of the same fusion degraded
+MTMC IDF1 by $\approx$1.8\,pp: the two-stream complementarity, and the weight
+that governs it, are properties of the VeRi-776 domain rather than transferable
+re-identification mechanisms.
+
+Third, AQE---an $\mathcal{O}(N)$ operation---helps the transferring stream at
+every scale ($+4.3$, $+3.7$, and $+2.9$\,pp mAP), while consistently
+\emph{hurting} the weak stream's Rank-1, a known failure mode of query
+expansion on poorly clustered features. Fourth, $k$-reciprocal re-ranking---the
+largest single accuracy step in-domain ($+5.55$\,pp on
+VeRi-776)---\emph{reduces} accuracy under transfer: measured at the 3{,}000
+protocol, it lowers ViT-B from 35.9 to 34.8\% mAP (and Rank-1 by 3.3\,pp) and
+the fusion from 33.6 to 30.9\%. On poorly clustered transfer features the
+$k$-reciprocal neighbourhoods admit false matches that the Jaccard blending
+then amplifies, so the in-domain post-processing recipe does not port
+wholesale: like the fusion weight, re-ranking's benefit is domain-specific.
+This is not an artefact of the default parameters: across the same
+axis-aligned grid swept in-domain (Section~\ref{sec:holdout}), \emph{every}
+re-ranked transfer configuration lands at 33.4--35.5\% mAP, below the 35.9\%
+AQE-only result. AQE itself is near-optimal at the VeRi-776-tuned $k{=}3$: the
+transfer-side optimum is $k{=}5$ (36.2\%), only $0.3$\,pp higher, and we
+deliberately do not adopt target-tuned settings. Its measured cost is 254\,s
+for the 41{,}861-image query$+$gallery set on CPU---roughly five times the
+50\,s in-domain pass at $3.6\times$ the gallery size, consistent with the
+$\mathcal{O}(N^{2})$ scaling discussed in Section~\ref{sec:cost}. Per-query AP
+dumps for every transfer configuration are released alongside the VeRi-776
+dumps (\texttt{scripts/eval/vw\_per\_query\_ap.npz}), so all reported CIs can
+be recomputed independently.
+
+The fusion failure, unlike the re-ranking failure, admits a training-free
+remedy. We tested \emph{query-adaptive} weights computed from each stream's own
+AQE'd score row with no target-domain information: a margin rule
+$w_1^{(i)}{=}m_1/(m_1{+}m_2)$, $m_s{=}\max(s)-\mathrm{mean}(\text{top-}50)$,
+and a top-100 dispersion analogue. At the 3{,}000 protocol the margin rule
+recovers \textbf{35.9\%} mAP (from 32.8\% at the fixed weight; single stream
+35.9\%) by shifting weight toward the reliable stream
+($\bar{w}_1{\approx}0.63$). A constant-weight control attributes the rescue:
+the transfer weight surface peaks at $w_1{\approx}0.8$/36.5\%---marginally
+\emph{above} the single stream, so some complementarity survives the shift, but
+locating that optimum requires target-domain evaluation---while a constant
+$w_1{=}0.63$ scores 36.0\% and recentring the rule's weights on the optimum
+adds nothing (36.4\%): the rule's value is finding a safe operating point
+\emph{without labels}, not yet its per-query variation. In-domain the rules
+cost 1.1--1.4\,pp vs.\ the tuned fixed weight (87.0--87.3 vs.\ 88.4\% mAP at
+matched AQE-only settings) while staying well above the single stream
+(84.2\%), so adaptive weighting acts as a domain-robustness guard. A
+ground-truth per-query \emph{oracle} reaches 40.1\% mAP / 66.9\%
+Rank-1---above every published direct-transfer entry in
+Table~\ref{tab:veriwild}---so per-query headroom is real but uncaptured by
+first-order score statistics; \emph{learned} query-adaptive fusion is thus a
+concrete, quantified future direction.
+
+These numbers should be read against the cross-domain literature, not against
+models trained on VeRi-Wild. Supervised training on VeRi-Wild's
+30{,}671-identity training set yields 79--89\% mAP on this
+protocol~\cite{lou2019veriwild,lu2025clipsenet,benmabrouk2026genlimits}, but
+that is a different regime: it consumes the very labels whose absence transfer
+measures. The appropriate peers are transfer results. Transferred from
+VehicleID---a source with over twenty times more training identities than
+VeRi-776---published UDA methods that additionally adapt on \emph{unlabelled
+VeRi-Wild data} reach 24.1\% (SPGAN~\cite{deng2018spgan}), 30.0\%
+(UDAP~\cite{song2020udap}), and 34.7\% (ECN~\cite{zhong2019ecn}) mAP on the
+same 3{,}000-identity protocol; the strongest reported \emph{direct} transfer
+(no target data) reaches 37.7\%, and full viewpoint-aware adaptation
+39.7\%~\cite{zheng2020vapc}. Our zero-shot 35.93\% mAP (ViT-B $+$AQE), obtained
+from the far smaller VeRi-776 source without touching any VeRi-Wild data, sits
+inside this band---above several methods that do adapt on the target---and
+remains inside it at the 5{,}000 and 10{,}000 protocols (30.5 and 23.8 vs.\
+ECN's adapted 30.6 and 24.7), indicating the transferring stream is competitive
+with cross-domain practice at every scale rather than an outlier.
+
+This cross-dataset probe reframes the contributions honestly: the reproducible
+ViT-B retrieval pipeline generalises in part, whereas the fusion's marginal
+VeRi-776 advantage is domain-specific and should not be read as a transferable
+gain. Reporting a benchmark on which the fusion \emph{underperforms} the
+stronger stream is, we argue, more useful to the community than a curated
+in-domain number.
+
+\subsection{Qualitative analysis}
+Visual inspection indicates the fusion model handles frontal-to-rear viewpoint
+transitions, illumination shifts, and partial occlusion well. Failure cases
+arise under: (a)~near-identical vehicles of the same make, model, and colour at
+similar viewpoints, where both streams return similar-appearing but incorrect
+identities; (b)~extreme occlusion ($>$60\% vehicle body); and (c)~very
+low-resolution gallery crops. In these cases, both streams tend to fail on the
+same queries, indicating correlated rather than complementary errors in the
+hardest cases. Table~\ref{tab:qual} summarises these failure modes alongside
+representative success cases; full retrieval panel figures are available in the
+project repository.
+
+\begin{table*}[!t]
+  \centering
+  \caption{Qualitative failure-mode analysis on VeRi-776 (200 test identities).
+  Rows 1--3 are failure modes and show correlated errors across both streams,
+  indicating a ceiling reachable only by improved cross-view invariance; rows
+  4--5 are success cases included for contrast}
+  \label{tab:qual}
+  \small
+  \begin{tabular}{L{4.2cm}L{5.4cm}L{5.4cm}}
+    \toprule
+    Condition & ViT-B stream & CLIP-SENet stream \\
+    \midrule
+    Same make/model/colour, identical viewpoint &
+      Returns visually similar but incorrect identity &
+      Returns same incorrect identity; errors correlated \\
+    Extreme occlusion ($>$60\% body) &
+      Rank-1 miss; partial hood/trunk features dominate &
+      Rank-1 miss; AFEM misses occluded part regions \\
+    Very low-resolution gallery ($<$40$\times$40\,px) &
+      Patch tokens degenerate; CLS unstable &
+      IBN-a loses texture; both streams fail jointly \\
+    \midrule
+    Frontal-to-rear transition (success) &
+      SIE camera offset reduces cross-view gap &
+      IBN style normalisation handles camera shift \\
+    Day/night illumination shift (success) &
+      CLIP semantic prior abstracts away lighting &
+      SupCon anchor pulls same-identity clusters together \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+% =============================================================================
+\section{Discussion}
+\label{sec:discussion}
+% =============================================================================
+
+\subsection{What drives the ViT-B gain}
+The improvement of our ViT-B pipeline over the published TransReID baseline
+combines recipe and post-processing effects that the ablation deliberately
+separates. Within the recipe, CLIP pretraining initialisation and AdamW with
+layer-wise LR decay are the two ingredients our development depended on most
+(A2, A4); CLIP provides a rich visual-semantic prior for fine-grained vehicle
+discrimination, consistent with transfer-learning observations in the ReID
+literature~\cite{li2023clipreid,radford2021clip}. We reiterate the caveat of
+Section~\ref{sec:matched}: at matched no-post-processing conditions the recipe
+does not by itself exceed TransReID (82.2\% vs.\ 82.3\% mAP), and under our
+identical post-processing both TransReID and CLIP-ReID in fact surpass our
+pipeline (91.12\% and 91.80\% vs.\ 89.97\%). These are therefore drivers
+\emph{within our recipe} rather than net gains over a tuned baseline, and the
+bulk of the reported improvement is contributed by AQE, $k$-reciprocal
+re-ranking, and TTA. For context, a DINOv2-initialised
+alternative~\cite{oquab2023dinov2} evaluated as a second fusion stream on
+VeRi-776 did not match the CLIP-based CLIP-SENet stream (below 89.3\% mAP
+standalone), so CLIP-family semantic supervision was retained for both streams;
+we did not run a controlled DINOv2-versus-CLIP \emph{Stream-1 backbone} swap on
+VeRi-776 and therefore make no claim about pretraining scale versus semantic
+supervision from this benchmark alone.
+
+\subsection{Why score-level fusion works}
+The complementarity is architectural. The ViT-B backbone processes images as
+global patch-token sequences with multi-head self-attention, producing
+representations sensitive to holistic vehicle structure and long-range spatial
+relationships~\cite{he2021transreid,dosovitskiy2021vit}. The CLIP-SENet
+ResNet101-IBN-a backbone~\cite{pan2018ibn} applies hierarchical local
+convolutional filters capturing fine-grained texture, with IBN providing
+simultaneous style normalisation and discriminative training. The AFEM branch
+injects attribute-level structure from TinyCLIP~\cite{lu2025clipsenet}
+orthogonal to ViT patch attention. Score-level fusion preserves each stream's
+post-processing calibration independently and requires no additional training.
+The optimal $w_2{=}0.65$ for CLIP-SENet reflects its higher standalone
+post-processed performance (91.44\% vs.\ 89.97\% mAP for ViT-B); the ViT-B
+branch still contributes $+1.88$\,pp above CLIP-SENet alone, confirming genuine
+complementarity.
+
+\subsection{Backbone scale and overfitting}
+ViT-L/14 (304\,M parameters) was trained under the same recipe as a
+higher-capacity alternative. Despite its larger parameter count it overfit
+VeRi-776's 576 training identities---a known failure mode at this dataset
+scale---and did not exceed the ViT-B/16 CLIP result after re-ranking. This
+supports prioritising systematic post-processing over backbone scaling as the
+primary performance lever for small-scale ReID benchmarks.
+
+\subsection{Computational cost and deployment}
+\label{sec:cost}
+Because deployment cost is a first-order concern for intelligent transportation
+systems, we make the inference budget explicit and separate it from the
+retrieval-accuracy budget.
+
+\paragraph{Model and feature-extraction cost.} A single Stream~1 forward pass
+is a ViT-B/16 at $224\times224$ ($\approx$86\,M parameters,
+$\approx$17.6\,GFLOPs); Stream~2 (ResNet101-IBN-a $+$ TinyCLIP) is of
+comparable order at its $320\times320$ input. The best-mAP Stream~1
+configuration uses horizontal-flip TTA, which \emph{doubles} the forward
+passes; the concat-patch representation reuses already-computed tokens and adds
+negligible compute. The two-stream fusion requires \emph{both} backbones,
+roughly doubling extraction time and model memory relative to a single stream.
+Measured on a single NVIDIA~T4 (batch~1), a Stream~1 forward is 13.5\,ms/image
+at 700\,MB peak VRAM, rising to 27.2\,ms with flip-TTA; Stream~2 is
+21.2\,ms/image at 721\,MB; the full two-stream extraction is 48.4\,ms/image
+($\approx$21 images/s), matching the expected $\approx$2$\times$ TTA and fusion
+multipliers. All of these costs are $\mathcal{O}(N)$ in the number of images
+and are trivially parallelisable. Feature storage is modest: 6.1\,kB/image for
+Stream~1 (1536D fp32) and 8.2\,kB/image for Stream~2 (2048D), i.e.\ 166\,MB for
+the full two-stream VeRi-776 gallery; even the 128{,}517-image VeRi-Wild
+10{,}000-protocol gallery fits in 0.79\,GB fp32 (0.39\,GB fp16) for Stream~1.
+
+\paragraph{Post-processing cost.} Post-processing is where cost concentrates.
+AQE is a single similarity pass with a top-$k$ average and is cheap.
+$k$-reciprocal re-ranking~\cite{zhong2017rerank}, by contrast, is
+$\mathcal{O}(N^{2})$ in gallery size $N$ (here $N\!\approx\!11.6$\,k) in both
+time and memory, and it is the dominant offline cost; it contributes the single
+largest accuracy step ($+5.55$\,pp mAP on Stream~1) but, as written, is
+unsuitable for low-latency online retrieval. Figure~\ref{fig:cost}a makes the
+scaling concrete on VeRi-776: a single-query-set re-ranking pass over the full
+11.6k gallery takes 50\,s and the CPU AQE pass 138\,s, both rising steeply as
+the gallery grows. The sharp CPU-AQE jump between $N{=}8{,}684$ and
+$N{=}11{,}579$ is a memory-hierarchy effect---the similarity matrix outgrows
+cache and BLAS tiling degrades---not an algorithmic one: the chunked GPU AQE
+used everywhere else in this paper scales smoothly to $N{=}138{,}517$.
+
+Under domain transfer the picture changes in kind, not only in degree: on the
+VeRi-Wild probe of Section~\ref{sec:veriwild} (query$+$gallery $=41{,}861$) a
+re-ranking pass measures 254\,s on CPU---about $5\times$ the in-domain pass at
+$3.6\times$ the gallery, consistent with $\mathcal{O}(N^{2})$ scaling---and it
+\emph{reduces} accuracy on the poorly clustered transfer features ($-1.1$\,pp
+mAP for ViT-B, $-2.7$\,pp for the fusion; Table~\ref{tab:veriwild}). A further
+measured pass at $N{=}69{,}389$ (the 5{,}000-protocol union, with the
+pairwise-distance state held in fp16 to fit host memory) takes
+519\,s---consistent with quadratic-order growth over the 50\,s in-domain and
+254\,s 3{,}000-protocol passes---and once again \emph{reduces} accuracy
+(30.48\%$\rightarrow$29.42\% mAP). Beyond this point the memory wall arrives
+before the time wall: at the VeRi-Wild 10{,}000-identity protocol
+($N{=}138{,}517$) the $\mathcal{O}(N^{2})$ pairwise-distance state occupies
+${\approx}77$\,GB in fp32 (${\approx}38$\,GB even in fp16)---beyond common host
+memory---so the full-gallery measurement is infeasible for the \emph{dense}
+implementation; chunked GPU AQE, by contrast, ran at every scale. Re-ranking is
+thus doubly unattractive for cross-domain retrieval: its cost scales
+quadratically and its accuracy benefit is domain-specific; AQE-only
+post-processing is the sensible transfer configuration, and is what we headline
+on VeRi-Wild.
+
+\paragraph{A scalable sparse implementation.} The memory wall is a property of
+the dense implementation, not of the algorithm. We benchmarked a sparse
+top-$k$ variant that materialises only the first $k_1{+}1$ rank columns and
+stores $V$ sparse ($\mathcal{O}(Nk_1)$ memory), otherwise following the
+official computation (squared max-normalised distances, $2/3$-rule expansion,
+LQE). In-domain it matches dense to 0.07\,pp (89.92 vs.\ 89.99\% mAP; Rank-1
+97.91 vs.\ 97.79) while running \emph{faster} (32 vs.\ 44\,s) on a 7.9\,MB
+working set versus 703\,MB dense. At $N{=}41{,}861$: 91\,s versus 254\,s
+(34.03 vs.\ 34.85\% mAP, both below the 35.9\% AQE-only transfer result). At
+$N{=}138{,}517$---where the dense state alone occupies 77\,GB---it
+\emph{runs}: 372\,s with an 85\,MB sparse $V$, its AQE-only reference
+reproducing Table~\ref{tab:veriwild} exactly (23.84\%). This disentangles the
+two failure modes: the cost wall is removable by implementation, yet re-ranking
+\emph{still reduces} transfer accuracy at this scale (22.22 vs.\ 23.84\%
+mAP)---the domain-specific accuracy failure lies in the transferred feature
+geometry, not the implementation. For in-domain deployment, the sparse variant
+makes the $+5.5$\,pp re-ranking step practical at gallery scales where the
+dense version is not. Figure~\ref{fig:cost}b summarises the comparison.
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{Fig11}
+  \caption{Post-processing cost. \textbf{a} Latency of AQE and $k$-reciprocal
+  re-ranking versus gallery size on VeRi-776 (CPU, one query set of 1{,}678
+  queries), on logarithmic axes. \textbf{b} Dense versus sparse top-$k$
+  re-ranking across three gallery scales; at $N{=}138{,}517$ the dense
+  pairwise-distance state alone requires approximately 77\,GB and the
+  measurement is infeasible, whereas the sparse implementation completes in
+  372\,s at matching accuracy}
+  \label{fig:cost}
+\end{figure*}
+
+\paragraph{Accuracy/latency trade-offs.} These costs are separable levers. A
+system that must run online can drop $k$-reciprocal re-ranking for
+$\mathcal{O}(N)$ cosine retrieval at a cost of roughly $5.5$\,pp mAP, disable
+flip-TTA ($\approx\!0.3$\,pp) to halve extraction, and use a single stream
+rather than two-stream fusion (fusion contributes $+1.88$\,pp over the stronger
+standalone stream) to halve model cost---recovering a real-time configuration
+at a quantified accuracy penalty. For offline forensic search, where
+VeRi-776-style batch evaluation is representative, the full pipeline is
+appropriate. The per-image latencies above are measured values; a reproducible
+micro-benchmark of latency, peak VRAM, and FLOPs for each component is released
+with the code (\texttt{scripts/benchmark\_veri\_inference.py}).
+
+\paragraph{Alternative re-ranking: CA-Jaccard.} Because re-ranking is central
+to the reported gains, we additionally benchmarked the official CA-Jaccard
+implementation~\cite{chen2024cajaccard} (CVPR 2024) as an evaluation-time
+re-ranker on Stream-1. At its authors' evaluation defaults ($k_1{=}30$,
+$k_2{=}6$, $\lambda{=}0.3$; CKRNN $k_1^{\mathrm{intra}}{=}5$,
+$k_1^{\mathrm{inter}}{=}20$), CA-Jaccard reaches 86.95\% mAP / 98.39\% Rank-1
+in-domain, versus 86.66\% / 97.56\% for plain $k$-reciprocal re-ranking run
+through the same implementation at the same parameters: camera-awareness helps
+at matched settings ($+0.29$\,pp mAP, $+0.83$\,pp Rank-1), and its Rank-1
+exceeds even our tuned configuration's 97.79\%. Its mAP nevertheless remains
+3.0\,pp below our tuned standard $k$-reciprocal (89.99\%)---a
+defaults-versus-tuned comparison, disclosed as such. Under zero-shot transfer
+the picture does not improve: on VeRi-Wild (3{,}000 protocol) CA-Jaccard scores
+34.88\% mAP / 52.9\% Rank-1---no better than tuned standard $k$-reciprocal
+(34.85\%) and below AQE-only (35.93\%, Rank-1 60.3\%)---while plain
+$k$-reciprocal at CA-Jaccard's milder defaults ($k_1{=}30$, $\lambda{=}0.3$) is
+approximately neutral (36.03\%, within the AQE-only confidence interval). No
+re-ranking variant we tested retains its in-domain benefit under domain shift,
+indicating the failure mode is the transferred feature geometry rather than
+camera-unawareness. (The $N{=}41{,}861$ transfer runs use a memory-lean port of
+the official implementation, validated to reproduce it exactly in-domain; the
+port is released.) We did not test orientation-guided
+expansion~\cite{zhang2022vehiclererank} or database-side multi-view aggregation
+under this pipeline; the released float16 feature dumps make such comparisons
+possible on CPU without re-running extraction.
+
+\subsection{Limitations}
+\label{sec:limitations}
+\begin{enumerate}
+  \item The full post-processing pipeline (AQE $+$ re-ranking) has
+    $\mathcal{O}(N^{2})$ complexity in gallery size $N$ in its dense form and
+    is primarily suited to offline evaluation rather than real-time deployment;
+    the sparse implementation of Section~\ref{sec:cost} removes the memory wall
+    but not the quadratic time growth.
+  \item The fusion strategy requires two inference passes, approximately
+    doubling memory and latency relative to a single-stream model.
+  \item Cross-dataset transfer is reported in Section~\ref{sec:veriwild}:
+    applied zero-shot to all three VeRi-Wild protocols, the ViT-B embedding
+    transfers in part (35.9\,/\,30.5\,/\,23.8\% mAP with AQE at
+    3{,}000\,/\,5{,}000\,/\,10{,}000 identities, competitive with published
+    VehicleID-sourced transfer), but the two-stream fusion \emph{does not}
+    generalise---at the VeRi-776-tuned weight it falls \emph{below} the
+    stronger single stream at every scale---and $k$-reciprocal re-ranking
+    likewise reduces transfer accuracy. This corroborates the CityFlowV2
+    evidence, where a direct port of the same fusion produced monotonic MTMC
+    IDF1 degradation, with a best-case change of approximately $-1.8$\,pp at
+    higher fusion weights. Together these indicate that the fusion's marginal
+    VeRi-776 advantage is domain-specific. A first mitigation is demonstrated
+    in Section~\ref{sec:veriwild}: training-free query-adaptive weighting
+    recovers single-stream transfer accuracy (35.9 vs.\ 32.8\% mAP fixed), and
+    a ground-truth per-query oracle (40.1\%) quantifies the headroom for
+    \emph{learned} query-adaptive fusion, which we leave to future work.
+    Absolute VeRi-Wild accuracy is also low in this no-adaptation setting, and
+    no fine-tuned cross-dataset numbers are reported.
+  \item Our evaluation follows the standard random-identity splits of VeRi-776
+    and VeRi-Wild. Recent analysis shows these splits contain many visually
+    near-duplicate identities across train and test, and that mAP on vehicle
+    \emph{types} held out of training drops sharply (from above 90\% to
+    65--70\%) even for state-of-the-art models~\cite{benmabrouk2026genlimits}.
+    We did not evaluate under such a seen/unseen-type protocol; our in-domain
+    numbers should be read as standard-protocol results, and the zero-shot
+    VeRi-Wild transfer of Section~\ref{sec:veriwild} is our only probe of
+    generalisation beyond the training distribution.
+  \item The exact $P \times K$ identity-sampling tuple used to train the
+    released Stream~1 checkpoint was not logged
+    (Section~\ref{sec:reproducibility}), so from-scratch retraining cannot be
+    specified exactly from our records; retraining reproducibility is bounded
+    by the $\pm0.55$\,pp seed band of Section~\ref{sec:seed_variance}. A
+    controlled comparison of 256\,$\times$\,256 \emph{training} resolution
+    against the deployed 224\,$\times$\,224 was likewise not run and would
+    require retraining.
+\end{enumerate}
+
+% =============================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+% =============================================================================
+
+This paper revisited the ViT-Base/16 pipeline for vehicle re-identification on
+VeRi-776 and separated the contribution of the training recipe from that of
+evaluation-time post-processing. A fully specified recipe---combining CLIP
+pretraining initialisation, a tuned metric-learning objective, an optimised
+augmentation pipeline, AdamW optimisation, and a three-step post-processing
+pipeline---achieves 89.97\% mAP and 97.79\% Rank-1 at its best-mAP operating
+point, with a separate best-Rank-1 operating point of 85.14\% mAP and 98.33\%
+Rank-1. As emphasised throughout, this number is delivered by the
+post-processing pipeline rather than by the recipe: the recipe merely matches
+TransReID at the raw-embedding level (82.2\% vs.\ 82.3\%), and given our
+identical post-processing the official TransReID and CLIP-ReID checkpoints
+reach 91.12\% and 91.80\% mAP---both above ours
+(Section~\ref{sec:matched}). We therefore present Stream~1 as a reproducible,
+fully specified baseline rather than a superior recipe---a result we regard as
+the paper's most useful finding for the community, since it suggests that a
+substantial part of apparent post-TransReID progress on this benchmark is
+attributable to post-processing rather than to architectural or recipe
+refinement.
+
+Score-level fusion with a CLIP-SENet branch~\cite{lu2025clipsenet} achieves
+93.32\% mAP and 98.45\% Rank-1, marginally the best published mAP on VeRi-776,
+exceeding the previous best (CLIP-SENet standalone:
+92.9\%~\cite{lu2025clipsenet}) by a narrow $+0.42$\,pp; Rank-1 accuracy
+(98.45\%) is competitive with but does not exceed the CLIP-SENet standalone
+Rank-1 (98.7\%). A paired bootstrap confirms the gain over the stronger single
+stream is statistically significant, so the fusion demonstrates genuine feature
+complementarity between transformer and CNN-semantic streams. The comprehensive
+ablation from 82.3\% to 93.3\% mAP traces this trajectory under one consistent
+protocol, and the zero-shot VeRi-Wild study shows which parts of it transfer:
+the ViT-B embedding generalises in part, whereas the fusion advantage and the
+re-ranking gain are domain-specific.
+
+Future directions include knowledge distillation from the fusion model into a
+single-stream model; learned query-adaptive fusion toward the measured oracle
+headroom (Section~\ref{sec:veriwild}); evaluation under seen/unseen
+vehicle-type protocols rather than standard random-identity splits; and
+extension to nighttime surveillance and CityFlowV2. All code and checkpoints
+are publicly released.
+
+% =============================================================================
+\section*{Statements and Declarations}
+% =============================================================================
+
+\noindent\textbf{Competing interests.} The authors declare that they have no
+competing financial or non-financial interests that are directly or indirectly
+related to the work submitted for publication.
+
+\medskip\noindent\textbf{Funding.} This work was carried out as a graduation
+project at the Department of Computer Engineering, Faculty of Engineering,
+Cairo University, and received no external funding.
+
+\medskip\noindent\textbf{Author contributions.} All authors contributed to the
+study conception and design. Model training, evaluation-harness implementation
+and the ablation campaign were performed by A. Hamdi, A. A. Ali, M. A. Ali and
+S. T. Heakal. The cross-dataset transfer study and the post-processing cost
+analysis were performed by S. T. Heakal. A. H. Abdel-Gawad (supervisor)
+provided methodological guidance and critical revision. The first draft of the
+manuscript was written by S. T. Heakal and all authors commented on previous
+versions. All authors read and approved the final manuscript.
+
+\medskip\noindent\textbf{Data availability.} All evaluation artefacts are
+publicly released---SHA-256-pinned checkpoints, evaluation notebooks,
+configuration files, the memory-lean re-ranking ports, and per-query dumps
+enabling deterministic CPU-only recomputation of every headline number,
+confidence interval and mINP value---at
+\url{https://github.com/MRKDaGods/gp}. The VeRi-776 and VeRi-Wild datasets are
+available from their respective maintainers under their own terms and were used
+in accordance with those terms.
+
+\medskip\noindent\textbf{Code availability.} The full training configuration,
+post-processing pipeline, evaluation notebooks and benchmark scripts are
+released in the repository listed above.
+
+\medskip\noindent\textbf{Ethics approval.} Not applicable. This study used only
+publicly available benchmark datasets and involved no human participants or
+animals.
+
+\medskip\noindent\textbf{Use of large language models.} AI assistants
+(Anthropic Claude) were used under author direction for manuscript drafting,
+experiment-harness code, and analysis tooling. No large language model is
+listed as an author. All experimental results derive from the released
+deterministic evaluation artefacts, and the authors take full responsibility
+for the entire content of the paper.
+
+% =============================================================================
+% BIBLIOGRAPHY
+% -----------------------------------------------------------------------------
+% The bibliography is embedded below in Springer numbered style so that this
+% file compiles with pdflatex alone.  If you prefer BibTeX, delete the
+% thebibliography environment below and uncomment these two lines, using the
+% accompanying references.bib (Springer's spmpsci.bst ships with their template):
+%   \bibliographystyle{spmpsci}
+%   \bibliography{references}
+% =============================================================================
+
+\begin{thebibliography}{99}
+\small
+
+\bibitem{he2021transreid}
+He, S., Luo, H., Wang, P., Wang, F., Li, H., Jiang, W.: TransReID:
+transformer-based object re-identification. In: Proc. IEEE/CVF International
+Conference on Computer Vision (ICCV), pp. 15013--15022 (2021)
+
+\bibitem{radford2021clip}
+Radford, A., Kim, J.W., Hallacy, C., Ramesh, A., Goh, G., et al.: Learning
+transferable visual models from natural language supervision. In: Proc.
+International Conference on Machine Learning (ICML), vol. 139, pp. 8748--8763
+(2021). arXiv:2103.00020
+
+\bibitem{zhong2017rerank}
+Zhong, Z., Zheng, L., Cao, D., Li, S.: Re-ranking person re-identification with
+$k$-reciprocal encoding. In: Proc. IEEE/CVF Conference on Computer Vision and
+Pattern Recognition (CVPR), pp. 1318--1327 (2017)
+
+\bibitem{lu2025clipsenet}
+Lu, L., Fu, Z., Chu, D., Wang, W., Xu, B.: CLIP-SENet: CLIP-based semantic
+enhancement network for vehicle re-identification. arXiv preprint
+arXiv:2502.16815 (2025)
+
+\bibitem{liu2016veri}
+Liu, X., Liu, W., Ma, H., Fu, H.: Large-scale vehicle re-identification in
+urban surveillance videos. In: Proc. IEEE International Conference on
+Multimedia and Expo (ICME), pp. 1--6 (2016)
+
+\bibitem{liu2018provid}
+Liu, X., Liu, W., Mei, T., Ma, H.: PROVID: progressive and multimodal vehicle
+re-identification for large-scale urban surveillance. IEEE Trans. Multimedia
+\textbf{20}(3), 645--658 (2018)
+
+\bibitem{dosovitskiy2021vit}
+Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., et al.:
+An image is worth $16\times16$ words: transformers for image recognition at
+scale. In: Proc. International Conference on Learning Representations (ICLR)
+(2021). arXiv:2010.11929
+
+\bibitem{li2023clipreid}
+Li, S., Sun, L., Li, Q.: CLIP-ReID: exploiting vision-language model for image
+re-identification without concrete text labels. In: Proc. AAAI Conference on
+Artificial Intelligence, vol. 37(1), pp. 1405--1413 (2023)
+
+\bibitem{shen2022hpgn}
+Shen, F., Zhu, J., Zhu, X., Xie, Y., Huang, J.: Exploring spatial significance
+via hybrid pyramidal graph network for vehicle re-identification. IEEE Trans.
+Intell. Transp. Syst. \textbf{23}(7), 8797--8807 (2022)
+
+\bibitem{luo2023mbr4b}
+Luo, G., Zou, Y., Zhou, M., Cao, G., Jin, L., Zhang, Y.: Strength in diversity:
+multi-branch representation learning for vehicle re-identification. In: Proc.
+IEEE International Conference on Intelligent Transportation Systems (ITSC)
+(2023). arXiv:2310.01129
+
+\bibitem{ye2022survey}
+Ye, M., Shen, J., Lin, G., Xiang, T., Shao, L., Hoi, S.C.H.: Deep learning for
+person re-identification: a survey and outlook. IEEE Trans. Pattern Anal. Mach.
+Intell. \textbf{44}(6), 2872--2893 (2022)
+
+\bibitem{li2024vehiclereidsurvey}
+Li, Y., Zhang, Q., Chen, H.: Advances in vehicle re-identification techniques: a
+survey. Neurocomputing (2024). Online early
+
+\bibitem{zhou2018vami}
+Zhou, Y., Shao, L.: Viewpoint-aware attentive multi-view inference for vehicle
+re-identification. In: Proc. IEEE/CVF Conference on Computer Vision and Pattern
+Recognition (CVPR), pp. 6489--6498 (2018)
+
+\bibitem{meng2020pven}
+Meng, M., Chen, B., Yang, W., Li, Z., Wu, J., Lu, J.: Parsing-based view-aware
+embedding network for vehicle re-identification. In: Proc. IEEE/CVF Conference
+on Computer Vision and Pattern Recognition (CVPR), pp. 7103--7112 (2020)
+
+\bibitem{rao2021cal}
+Rao, D., Lin, S., Lu, J., Zhou, J.: Counterfactual attention learning for
+fine-grained visual categorization and re-identification. In: Proc. IEEE/CVF
+International Conference on Computer Vision (ICCV), pp. 1025--1034 (2021)
+
+\bibitem{zheng2020vehiclenet}
+Zheng, Z., Ruan, X., Wei, Y., Yang, Y., Mei, T.: VehicleNet: learning robust
+visual representation for vehicle re-identification. IEEE Trans. Multimedia
+\textbf{23}, 2683--2693 (2021)
+
+\bibitem{cybercore2021strong}
+Liu, X., et al.: A strong baseline for vehicle re-identification. In: Proc.
+IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (AI
+City) (2021). arXiv:2104.10850
+
+\bibitem{khorramshahi2023selfsupervision}
+Khorramshahi, P., Shenoy, V., Chellappa, R.: Robust and scalable vehicle
+re-identification via self-supervision. In: Proc. IEEE/CVF Conference on
+Computer Vision and Pattern Recognition Workshops (AI City) (2023)
+
+\bibitem{loshchilov2019adamw}
+Loshchilov, I., Hutter, F.: Decoupled weight decay regularization. In: Proc.
+International Conference on Learning Representations (ICLR) (2019).
+arXiv:1711.05101
+
+\bibitem{opencodepapers2024veri}
+OpenCodePapers: Vehicle re-identification on VeRi-776 leaderboard (2024).
+\url{https://opencodepapers-b7572d.gitlab.io/benchmarks/vehicle-re-identification-on-veri-776.html}.
+Accessed 30 May 2026
+
+\bibitem{holla2024msfft}
+Holla, B.A., Pai, M.M.M., Verma, U., Pai, R.M.: MSFFT: multi-scale feature
+fusion transformer for cross-platform vehicle re-identification.
+Neurocomputing \textbf{582}, 127514 (2024)
+
+\bibitem{kuang2025mikecoco}
+Kuang, Z., Zhang, H., Ye, M., Yang, B., Liu, Y., Huang, Y., Ding, X., Li, H.:
+Unity in diversity: multi-expert knowledge confrontation and collaboration for
+generalizable vehicle re-identification (2025). arXiv:2407.07351
+
+\bibitem{ghosh2023rptm}
+Ghosh, A., Shanmugalingam, K., Lin, W.-Y.: Relation preserving triplet mining
+for stabilising the triplet loss in re-identification systems. In: Proc.
+IEEE/CVF Winter Conference on Applications of Computer Vision (WACV) (2023).
+arXiv:2110.07933
+
+\bibitem{wang2020fastreid}
+He, L., Liao, X., Liu, W., Liu, X., Cheng, P., Mei, T.: FastReID: a PyTorch
+toolbox for general instance re-identification. arXiv preprint arXiv:2006.02631
+(2020)
+
+\bibitem{deng2018spgan}
+Deng, W., Zheng, L., Ye, Q., Kang, G., Yang, Y., Jiao, J.: Image-image domain
+adaptation with preserved self-similarity and domain-dissimilarity for person
+re-identification. In: Proc. IEEE/CVF Conference on Computer Vision and Pattern
+Recognition (CVPR) (2018)
+
+\bibitem{zhong2019ecn}
+Zhong, Z., Zheng, L., Luo, Z., Li, S., Yang, Y.: Invariance matters: exemplar
+memory for domain adaptive person re-identification. In: Proc. IEEE/CVF
+Conference on Computer Vision and Pattern Recognition (CVPR) (2019)
+
+\bibitem{song2020udap}
+Song, L., Wang, C., Zhang, L., Du, B., Zhang, Q., Huang, C., Wang, X.:
+Unsupervised domain adaptive re-identification: theory and practice. Pattern
+Recognit. \textbf{102}, 107173 (2020)
+
+\bibitem{zheng2020vapc}
+Zheng, A., Sun, X., Li, C., Tang, J.: Viewpoint-aware progressive clustering
+for unsupervised vehicle re-identification. arXiv preprint arXiv:2011.09099
+(2020)
+
+\bibitem{benmabrouk2026genlimits}
+Ben Mabrouk, A.Y., Tadros, A., Grompone von Gioi, R., Facciolo, G., Davy, A.,
+Verschae, R.: Generalization limits in vehicle re-identification. arXiv
+preprint arXiv:2606.01981 (2026)
+
+\bibitem{zhang2022vehiclererank}
+Zhang, Y., Wang, J., Liu, H.: Re-ranking vehicle re-identification with
+orientation-guided query expansion. Int. J. Distrib. Sens. Netw.
+\textbf{18}(3), 1--15 (2022)
+
+\bibitem{moral2023syntheticrerank}
+Moral, P., Garc\'{i}a-Mart\'{i}n, \'{A}., Mart\'{i}nez, J.M., Besc\'{o}s, J.:
+Enhancing vehicle re-identification via synthetic training datasets and
+re-ranking based on video-clips information. Multimed. Tools Appl.
+\textbf{82}(24), 36815--36835 (2023)
+
+\bibitem{arandjelovic2012aqe}
+Arandjelovi\'{c}, R., Zisserman, A.: Three things everyone should know to
+improve object retrieval. In: Proc. IEEE/CVF Conference on Computer Vision and
+Pattern Recognition (CVPR), pp. 2911--2918 (2012)
+
+\bibitem{khosla2020supcon}
+Khosla, P., Tian, P., Wang, C., Liu, A., Zhong, B., et al.: Supervised
+contrastive learning. In: Proc. Advances in Neural Information Processing
+Systems (NeurIPS), vol. 33, pp. 18661--18673 (2020). arXiv:2004.11362
+
+\bibitem{pan2018ibn}
+Pan, X., Luo, P., Shi, J., Tang, X.: Two at once: enhancing learning and
+generalization capacities via IBN-Net. In: Proc. European Conference on
+Computer Vision (ECCV), pp. 464--479 (2018)
+
+\bibitem{lou2019veriwild}
+Lou, Z., Yang, Y., Liu, M., Wei, Y.: VERI-Wild: a large dataset and a new
+method for vehicle re-identification in the wild. In: Proc. IEEE/CVF Conference
+on Computer Vision and Pattern Recognition (CVPR), pp. 3235--3243 (2019)
+
+\bibitem{oquab2023dinov2}
+Oquab, M., Darcet, T., M\'{e}las-Kyriazi, T., Ranzato, A., et al.: DINOv2:
+learning robust visual features without supervision (2023). arXiv:2304.07193
+
+\bibitem{chen2024cajaccard}
+Chen, Y., Fan, Z., Chen, Z., Zhu, Y.: CA-Jaccard: camera-aware Jaccard distance
+for person re-identification. In: Proc. IEEE/CVF Conference on Computer Vision
+and Pattern Recognition (CVPR) (2024)
+
+\end{thebibliography}
+
+% =============================================================================
+\section*{Author Biographies}
+% =============================================================================
+
+\noindent\emph{[Insert a passport-sized black-and-white photograph of each
+author beside the corresponding biography before submission, as required by the
+journal.]}
+
+\medskip\noindent\textbf{Abdelrahman Hamdi} received his B.Sc. in Computer
+Engineering from the Faculty of Engineering, Cairo University, Giza, Egypt. His
+undergraduate work focused on deep representation learning for visual
+retrieval, with particular attention to transformer backbones and
+metric-learning objectives for fine-grained recognition. He contributed to the
+training-recipe design and the ablation campaign reported in this paper. His
+research interests include computer vision, representation learning and the
+reproducibility of empirical deep-learning results.
+
+\medskip\noindent\textbf{Ali A. Ali} received his B.Sc. in Computer Engineering
+from the Faculty of Engineering, Cairo University, Giza, Egypt. His work
+focuses on the engineering of reproducible evaluation pipelines for retrieval
+systems, including deterministic feature extraction and checkpoint provenance
+tracking. He contributed to the implementation of the evaluation harness and
+the post-processing pipeline described in this paper. His research interests
+include computer vision, large-scale retrieval and machine-learning systems
+engineering.
+
+\medskip\noindent\textbf{Mohamed A. Ali} received his B.Sc. in Computer
+Engineering from the Faculty of Engineering, Cairo University, Giza, Egypt. His
+undergraduate research addressed data augmentation and optimizer selection for
+vision transformers under limited-identity training regimes. He contributed to
+the augmentation pipeline, the seed-variance study and the loss-function
+comparison reported in this paper. His research interests include deep
+learning, optimization, and intelligent transportation systems.
+
+\medskip\noindent\textbf{Seif T. Heakal} received his B.Sc. in Computer
+Engineering from the Faculty of Engineering, Cairo University, Giza, Egypt. His
+work focuses on evaluation methodology for re-identification systems, including
+matched-condition benchmarking, cross-dataset generalization, and the
+computational cost of retrieval post-processing. He led the transfer study, the
+significance analysis and the manuscript preparation for this paper. His
+research interests include computer vision, benchmark methodology and
+trustworthy machine-learning evaluation.
+
+\begin{wrapfigure}{l}{1in}
+  \includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{Ahmed_gray.png}
+\end{wrapfigure}
+\noindent\textbf{Ahmed H. Abdel-Gawad} is an Associate Professor with the Computer Engineering Department, Faculty of Engineering, Cairo University, Giza, Egypt. His research spans machine learning, computer architecture and high performance computing. He supervised the work reported in this paper and contributed methodological guidance and critical revision of the manuscript.
+
+\end{document}

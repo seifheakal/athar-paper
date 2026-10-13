@@ -1,0 +1,34 @@
+% ===== UNIT 38: Cost: scalable sparse implementation + figure (6.4 part 3) =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+\paragraph{A scalable sparse implementation.} The memory wall is a property of
+the dense implementation, not of the algorithm. We benchmarked a sparse
+top-$k$ variant that materialises only the first $k_1{+}1$ rank columns and
+stores $V$ sparse ($\mathcal{O}(Nk_1)$ memory), otherwise following the
+official computation (squared max-normalised distances, $2/3$-rule expansion,
+LQE). In-domain it matches dense to 0.07\,pp (89.92 vs.\ 89.99\% mAP; Rank-1
+97.91 vs.\ 97.79) while running \emph{faster} (32 vs.\ 44\,s) on a 7.9\,MB
+working set versus 703\,MB dense. At $N{=}41{,}861$: 91\,s versus 254\,s
+(34.03 vs.\ 34.85\% mAP, both below the 35.9\% AQE-only transfer result). At
+$N{=}138{,}517$---where the dense state alone occupies 77\,GB---it
+\emph{runs}: 372\,s with an 85\,MB sparse $V$, its AQE-only reference
+reproducing Table~\ref{tab:veriwild} exactly (23.84\%). This disentangles the
+two failure modes: the cost wall is removable by implementation, yet re-ranking
+\emph{still reduces} transfer accuracy at this scale (22.22 vs.\ 23.84\%
+mAP)---the domain-specific accuracy failure lies in the transferred feature
+geometry, not the implementation. For in-domain deployment, the sparse variant
+makes the $+5.5$\,pp re-ranking step practical at gallery scales where the
+dense version is not. Figure~\ref{fig:cost}b summarises the comparison.
+
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=\textwidth]{Fig11}
+  \caption{Post-processing cost. \textbf{a} Latency of AQE and $k$-reciprocal
+  re-ranking versus gallery size on VeRi-776 (CPU, one query set of 1{,}678
+  queries), on logarithmic axes. \textbf{b} Dense versus sparse top-$k$
+  re-ranking across three gallery scales; at $N{=}138{,}517$ the dense
+  pairwise-distance state alone requires approximately 77\,GB and the
+  measurement is infeasible, whereas the sparse implementation completes in
+  372\,s at matching accuracy}
+  \label{fig:cost}
+\end{figure*}

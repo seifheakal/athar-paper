@@ -1,0 +1,24 @@
+% ===== UNIT 25: Hyper-parameter selection and selection bias (5.7 part 1) =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+\subsection{Hyperparameter selection, held-out validation, and significance}
+\label{sec:holdout}
+We report all post-processing hyperparameters---AQE $k$, the $k$-reciprocal
+re-ranking triple $(k_1,k_2,\lambda)$, and the fusion weight $w_1$---as
+selected by grid search on the VeRi-776 query/gallery split, and we treat this
+as a source of potential optimistic bias rather than leaving it implicit. To
+state the protocol once and unambiguously: \emph{every headline number in this
+paper uses these split-tuned values}; the validation analyses below quantify
+and bound the optimism of that choice---they are audits of the headline
+configuration, not its source.
+
+Three observations bound that bias. First, the selection surface is flat, not
+peaked: fused mAP stays above $93.0\%$ across the entire range
+$w_1\in[0.2,0.5]$ (Figure~\ref{fig:weight}), so the reported result does not
+sit on a sharp test-set optimum. Second, the re-ranking and AQE settings are
+close to established defaults ($k_1{=}80,k_2{=}15,\lambda{=}0.2$ lie within the
+ranges recommended by Zhong et al.~\cite{zhong2017rerank}; AQE $k{=}3$ is a
+standard small neighbourhood), so they are not idiosyncratically fit to
+VeRi-776. Third, the test set (200 identities, 1\,678 queries) is large
+relative to the small number of scalar hyperparameters selected, limiting the
+degrees of freedom available for overfitting.

@@ -1,0 +1,49 @@
+% ===== UNIT 40: Limitations (6.5) =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+\subsection{Limitations}
+\label{sec:limitations}
+\begin{enumerate}
+  \item The full post-processing pipeline (AQE $+$ re-ranking) has
+    $\mathcal{O}(N^{2})$ complexity in gallery size $N$ in its dense form and
+    is primarily suited to offline evaluation rather than real-time deployment;
+    the sparse implementation of Section~\ref{sec:cost} removes the memory wall
+    but not the quadratic time growth.
+  \item The fusion strategy requires two inference passes, approximately
+    doubling memory and latency relative to a single-stream model.
+  \item Cross-dataset transfer is reported in Section~\ref{sec:veriwild}:
+    applied zero-shot to all three VeRi-Wild protocols, the ViT-B embedding
+    transfers in part (35.9\,/\,30.5\,/\,23.8\% mAP with AQE at
+    3{,}000\,/\,5{,}000\,/\,10{,}000 identities, competitive with published
+    VehicleID-sourced transfer), but the two-stream fusion \emph{does not}
+    generalise---at the VeRi-776-tuned weight it falls \emph{below} the
+    stronger single stream at every scale---and $k$-reciprocal re-ranking
+    likewise reduces transfer accuracy. This corroborates the CityFlowV2
+    evidence, where a direct port of the same fusion produced monotonic MTMC
+    IDF1 degradation, with a best-case change of approximately $-1.8$\,pp at
+    higher fusion weights. Together these indicate that the fusion's marginal
+    VeRi-776 advantage is domain-specific. A first mitigation is demonstrated
+    in Section~\ref{sec:veriwild}: training-free query-adaptive weighting
+    recovers single-stream transfer accuracy (35.9 vs.\ 32.8\% mAP fixed), and
+    a ground-truth per-query oracle (40.1\%) quantifies the headroom for
+    \emph{learned} query-adaptive fusion, which we leave to future work.
+    Absolute VeRi-Wild accuracy is also low in this no-adaptation setting, and
+    no fine-tuned cross-dataset numbers are reported.
+  \item Our evaluation follows the standard random-identity splits of VeRi-776
+    and VeRi-Wild. Recent analysis shows these splits contain many visually
+    near-duplicate identities across train and test, and that mAP on vehicle
+    \emph{types} held out of training drops sharply (from above 90\% to
+    65--70\%) even for state-of-the-art models~\cite{benmabrouk2026genlimits}.
+    We did not evaluate under such a seen/unseen-type protocol; our in-domain
+    numbers should be read as standard-protocol results, and the zero-shot
+    VeRi-Wild transfer of Section~\ref{sec:veriwild} is our only probe of
+    generalisation beyond the training distribution.
+  \item The exact $P \times K$ identity-sampling tuple used to train the
+    released Stream~1 checkpoint was not logged
+    (Section~\ref{sec:reproducibility}), so from-scratch retraining cannot be
+    specified exactly from our records; retraining reproducibility is bounded
+    by the $\pm0.55$\,pp seed band of Section~\ref{sec:seed_variance}. A
+    controlled comparison of 256\,$\times$\,256 \emph{training} resolution
+    against the deployed 224\,$\times$\,224 was likewise not run and would
+    require retraining.
+\end{enumerate}

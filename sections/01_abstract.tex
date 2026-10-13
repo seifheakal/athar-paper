@@ -1,0 +1,28 @@
+% ===== UNIT 01: Abstract =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+\noindent\textbf{Abstract}\\[4pt]
+{\small
+Transformer backbones dominate vehicle re-identification (Re-ID), yet their
+training recipes and evaluation-time post-processing are rarely reported under
+matched conditions, which makes it difficult to attribute reported progress to
+any specific cause. This paper revisits the ViT-Base/16 pipeline on VeRi-776
+and separates recipe effects from post-processing effects. A fully specified
+recipe---CLIP-pretrained initialisation, AdamW with layer-wise learning-rate
+decay, a tuned metric objective, and a three-step post-processing chain of
+average query expansion, $k$-reciprocal re-ranking and flip test-time
+augmentation---reaches 89.97\% mAP and 97.79\% Rank-1. A matched-condition
+experiment shows that this figure is produced by post-processing rather than by
+the recipe: at the raw-embedding level the recipe merely matches TransReID
+(82.22 versus 82.30\% mAP), and applying the identical post-processing to the
+official TransReID and CLIP-ReID checkpoints lifts them to 91.12 and 91.80\%
+mAP, both above ours. We therefore present this stream as a reproducible
+baseline, not a superior recipe. A training-free score-level fusion of this
+stream with CLIP-SENet reaches 93.32\% mAP and 98.45\% Rank-1, exceeding the
+best previously published mAP by 0.42\,pp, with a paired bootstrap confirming a
+statistically significant gain over the stronger single stream. A zero-shot
+transfer study across all three VeRi-Wild protocols shows the ViT-B embedding
+transfers competitively while the fusion and re-ranking gains do not,
+indicating that they are domain-specific. Checkpoints, notebooks and per-query
+dumps are released for deterministic re-computation.
+\par}

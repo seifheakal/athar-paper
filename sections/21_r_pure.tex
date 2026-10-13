@@ -1,0 +1,60 @@
+% ===== UNIT 21: Pure ViT-B comparison (5.2) =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+\subsection{Pure ViT-B comparison}
+Table~\ref{tab:vit_compare} isolates the comparison against prior
+transformer-based methods using the same ViT-B/16 backbone family.
+
+\begin{table}[!t]
+  \centering
+  \caption{Transformer-based methods on VeRi-776. Prior rows are reported
+    \emph{without} post-processing; our row includes AQE $+$ $k$-reciprocal
+    re-ranking $+$ TTA, so this is not a matched comparison}
+  \label{tab:vit_compare}
+  \small
+  \begin{tabular}{L{4.2cm}L{1.8cm}L{3.0cm}C{1.3cm}C{1.3cm}}
+    \toprule
+    Method & Venue & Backbone & mAP~(\%) & R1~(\%) \\
+    \midrule
+    TransReID (ViT-B)~\cite{he2021transreid}   & ICCV 2021 & ViT-B/16  & 80.60 & 97.00 \\
+    TransReID* (DeiT-B)~\cite{he2021transreid} & ICCV 2021 & DeiT-B/16 & 82.30 & 97.10 \\
+    CLIP-ReID~\cite{li2023clipreid}            & AAAI 2023 & ViT-B/16  & 84.50 & 97.30 \\
+    \midrule
+    \textbf{Ours (S1, w/ PP)} & --- & \textbf{ViT-B/16 (CLIP)} & \textbf{89.97} & \textbf{97.79} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The 89.97\% mAP of our pipeline exceeds the CLIP-ReID (84.5\%) and TransReID*
+(82.3\%) entries above, but---as stressed throughout---those are raw-embedding
+numbers whereas ours includes AQE $+$ $k$-reciprocal re-ranking $+$ TTA. At
+matched no-post-processing conditions our embedding (82.2\%) is on par with
+TransReID and below CLIP-ReID, so this is a post-processing gap.
+Section~\ref{sec:matched} runs the matched-condition comparison directly and
+finds that TransReID, given our identical post-processing, in fact
+\emph{exceeds} our pipeline (91.12\% vs.\ 89.97\% mAP). For clarity,
+Table~\ref{tab:oppoints} summarises every reported operating point in one
+place, including a \emph{validation-selected} fusion row
+(Section~\ref{sec:holdout}) as the recommended tuning-free default. The
+headline fusion also attains \textbf{84.14\% mINP}~\cite{ye2022survey},
+recomputed deterministically from the released per-query dumps.
+
+\begin{table*}[!t]
+  \centering
+  \caption{Operating-point summary: every headline configuration reported in
+  this paper, in one place. All post-processing parameters are the split-tuned
+  values disclosed in Section~\ref{sec:holdout}, except the final row}
+  \label{tab:oppoints}
+  \small
+  \begin{tabular}{L{3.6cm}L{8.4cm}C{1.4cm}C{1.3cm}}
+    \toprule
+    Operating point & Configuration & mAP~(\%) & R1~(\%) \\
+    \midrule
+    Stream~1, best-mAP & 1536D concat-patch$+$flip; AQE $k{=}3$; rerank $(80,15,0.2)$ & 89.97 & 97.79 \\
+    Stream~1, best-R1  & 768D single-flip CLS; rerank $(24,8,0.2)$; no AQE & 85.14 & 98.33 \\
+    Stream~2 standalone & 2048D; AQE $k{=}10$; rerank $(50,10,0.1)$ & 91.44 & 97.08 \\
+    Fusion (headline)  & AQE $k{=}3$ both; $w_1{=}0.35$ fused similarity; joint rerank $(80,15,0.2)$ & \textbf{93.32} & \textbf{98.45} \\
+    Fusion, validation-selected & as headline but $w_1{=}0.25$, selected on a disjoint identity split (Sect.~\ref{sec:holdout}) & 93.25 & 98.15 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}

@@ -1,0 +1,77 @@
+% ===== UNIT 18: Dataset, protocol, implementation details (4.1-4.3) =====
+% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Rules: keep every \cite, \ref, \label, number and table value unless you checked it against the logs.
+\subsection{Dataset}
+VeRi-776~\cite{liu2016veri,liu2018provid} contains over 50\,000 images of 776
+vehicles captured by 20 surveillance cameras covering a
+$1.0\,\text{km}^{2}$ area over 24 hours. Each vehicle is annotated with
+identity, camera index, viewpoint (8 categories), vehicle type, colour, and
+spatiotemporal metadata~\cite{liu2018provid}. The standard split is: 37\,781
+training images of 576 identities, 11\,579 gallery images of 200 test
+identities, and 1\,678 query images.
+
+\subsection{Evaluation protocol}
+Results are reported under two conditions. \emph{Without post-processing:}
+cosine similarity, no re-ranking or query expansion. \emph{With
+post-processing:} the full pipeline (AQE $+$ $k$-reciprocal re-ranking $+$
+concat-patch flip TTA). Primary metrics are mAP (\%) and Rank-1 (\%). All
+comparisons use matching post-processing conditions unless explicitly noted.
+
+\subsection{Implementation details}
+Table~\ref{tab:implementation} summarises the implementation configuration and
+Table~\ref{tab:repro} the two released checkpoints with their SHA-256 hashes.
+
+\begin{table}[!t]
+  \centering
+  \caption{Implementation details for both streams, their standalone
+  post-processing settings and the deployed fusion configuration}
+  \label{tab:implementation}
+  \small
+  \begin{tabular}{L{5.4cm}L{8.4cm}}
+    \toprule
+    Component & Value \\
+    \midrule
+    Framework            & PyTorch 2.4.1$+$cu124, CUDA 12.4 \\
+    S1 backbone          & \texttt{vit\_base\_\allowbreak patch16\_\allowbreak clip\_\allowbreak 224.openai} \\
+    S2 backbone          & ResNet101-IBN-a $+$ TinyCLIP SEM \\
+    S1 hardware          & $2\times$ NVIDIA T4, $\approx$2.5--3.0\,GPU-h \\
+    S2 hardware          & NVIDIA P100, $\approx$4\,h\,26\,min \\
+    Fusion sweep HW      & T4 (CPU-bound), $\approx$49.5\,min \\
+    S1 feature dim.      & 1536D concat-patch$+$flip (best-mAP \& fusion);
+                           768D CLS-only (best-R1) \\
+    S2 feature dim.      & 2048D \\
+    AQE $k$, standalone (S1 / S2) & 3 / 10 \\
+    Re-rank S1 standalone (mAP)   & $k_1{=}80$, $k_2{=}15$, $\lambda{=}0.2$ \\
+    Re-rank S1 standalone (R1)    & $k_1{=}24$, $k_2{=}8$, $\lambda{=}0.2$ \\
+    Re-rank S2 standalone         & $k_1{=}50$, $k_2{=}10$, $\lambda{=}0.1$ \\
+    Fusion post-processing        & AQE $k{=}3$ both streams $\to$ joint
+                                    rerank $k_1{=}80$, $k_2{=}15$,
+                                    $\lambda{=}0.2$ \\
+    Fusion weights                & $w_1{=}0.35$, $w_2{=}0.65$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[!t]
+  \centering
+  \caption{Released checkpoints and provenance. Both hashes are verified at
+  evaluation time; the headline fusion (93.32\% mAP / 98.45\% Rank-1) is the
+  deterministic evaluation of exactly these two files at $w_1{=}0.35$}
+  \label{tab:repro}
+  \small
+  \begin{tabular}{L{2.2cm}L{11.6cm}}
+    \toprule
+    Stream & Checkpoint, role, and SHA-256 \\
+    \midrule
+    Stream~1 & \texttt{vehicle\_transreid\_vit\_base\_veri776.pth} \\
+             & ViT-B/16 CLIP; 89.97\% standalone (1536D), used at 1536D in
+               fusion \\
+             & {\scriptsize\texttt{8d32334a41933cbf0514fbc72e462124f8785a8057d02b475aca8abf65dbe5e9}} \\
+    \midrule
+    Stream~2 & \texttt{clipsenet\_v6\_veri776.pth} \\
+             & ResNet101-IBN-a $+$ TinyCLIP (CLIP-SENet v6); 91.44\%
+               standalone \\
+             & {\scriptsize\texttt{d24bd3cd42cc4e90c7da71e4b955d7b7e3274614e53fc686153b02c116d20a1c}} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
