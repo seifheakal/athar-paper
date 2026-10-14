@@ -13,19 +13,30 @@ The paper was drafted with heavy AI assistance. **Goal: every unit below is rewr
 
 ## Rules
 
+- **Style rewrite only.** We are not re-checking results. Keep every number, table value, equation, `\cite{...}` and `\ref`/`\label` exactly as it is. Change the wording, not the content.
 - **Edit only your unit file.** Never edit `main.tex` (it only `\input`s the units) or someone else's file. This is what makes auto-merging safe.
-- **Do not change numbers, table values, citations (`\cite{...}`), `\ref`/`\label` keys or equations** unless you checked them against our logs/notebooks. Rewrite the *wording*, not the results. If a number looks wrong, write it under "Notes" below instead of silently changing it.
-- **Check every claim against what we actually did.** If a sentence says something we did not run or do not understand, cut it or ask.
-- Plain, direct sentences. Shorter is fine. If you would not say it out loud in a viva, rewrite it.
-- Keep the full original in [`original/main_ai_draft.tex`](original/main_ai_draft.tex) for reference; do not copy-paste from it.
+- Read the AI paragraph, then write it again from memory in your own voice instead of editing it sentence by sentence.
+- Keep the original in [`original/main_ai_draft.tex`](original/main_ai_draft.tex) for reference; do not copy-paste from it.
 - Compile before pushing (Overleaf import or `pdflatex main && pdflatex main`).
+
+### What makes text read as AI-written (remove these)
+
+- Em-dashes `---` used for asides. Use a comma, a full stop or brackets.
+- Stacked adjectives and big words: "fully specified", "rigorous", "comprehensive", "robust", "holistic", "notably", "crucially", "importantly", "furthermore", "moreover", "it is worth noting that".
+- Negation pairs: "not X, but Y", "rather than X", "merely", "does not just ... it also ...".
+- Lists of exactly three things in every sentence, and every paragraph ending with a neat summary line.
+- Very long sentences with three or four clauses. Split them.
+- "We therefore present...", "This paper revisits...", "indicating that...": use "so", "we show", "this suggests".
+- Hedging stacked up ("may potentially suggest"). Say it once or drop it.
+- Same sentence shape repeated. Mix short and long sentences.
+- Say it the way you would explain it to a classmate. If you would not say it out loud, rewrite it.
 
 Time estimates are rough (based on prose word count; tables/figures add checking time). ~words = prose only.
 
 
 ## Front matter
 
-- **01** [Abstract](sections/01_abstract.tex) - ~190 words, ~15 min *Do this LAST (after the rest) so it matches. Journal limit: 150-250 words.*  
+- **01** [Abstract](sections/01_abstract.tex) - ~190 words, ~15 min *Do this LAST so it matches the rewritten text. Journal limit: 150-250 words.*  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 
 ## 1 Introduction
@@ -131,11 +142,11 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 
 ## Back matter
 
-- **42** [Statements and declarations](sections/42_statements.tex) - ~263 words, ~20 min *Facts only. Update "Author contributions" and "Use of large language models" so they are true after the rewrite.*  
+- **42** [Statements and declarations](sections/42_statements.tex) - ~263 words, ~20 min *Keep it plain and factual. Make "Author contributions" and "Use of large language models" true after the rewrite.*  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
-- **43** [References - verify entries 1-19 (do NOT rewrite)](sections/43_refs_a.tex) - ~386 words, ~25 min *Check authors/years/venues/page numbers against the real papers; fix typos only.*  
+- **43** [References - verify entries 1-19 (do NOT rewrite)](sections/43_refs_a.tex) - ~386 words, ~25 min *Not a style rewrite. Fix typos and formatting only.*  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
-- **44** [References - verify entries 20-37 (do NOT rewrite)](sections/44_refs_b.tex) - ~377 words, ~25 min *Check authors/years/venues/page numbers against the real papers; fix typos only.*  
+- **44** [References - verify entries 20-37 (do NOT rewrite)](sections/44_refs_b.tex) - ~377 words, ~25 min *Not a style rewrite. Fix typos and formatting only.*  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
 
 ## Biographies
