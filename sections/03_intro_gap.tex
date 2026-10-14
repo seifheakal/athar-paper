@@ -1,27 +1,27 @@
 % ===== UNIT 03: The ViT-B training recipe gap (1.2) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsection{The ViT-B training recipe gap}
-The introduction of TransReID~\cite{he2021transreid} marked a turning point in
+The introduction of TransReID~\cite{he2021transreid} changed how people approached
 vehicle ReID by applying a pure Vision Transformer
 (ViT)~\cite{dosovitskiy2021vit} backbone to the task. TransReID augments the
-standard ViT-B/16 architecture with two purpose-built modules: the Side
+standard ViT-B/16 architecture with two extra modules: the Side
 Information Embedding (SIE), which encodes camera index and viewpoint as
 learnable token offsets to reduce domain bias, and the Jigsaw Patch Module
-(JPM), which shuffles patch tokens in a parallel branch to force locally robust
-feature learning~\cite{he2021transreid}. With a DeiT-B/16 backbone and SGD
+(JPM), which shuffles patch tokens in a parallel branch to force the model to learn local
+features~\cite{he2021transreid}. With a DeiT-B/16 backbone and SGD
 (momentum 0.9, LR 0.008, cosine decay), TransReID reports 82.3\% mAP and 97.1\%
 Rank-1 on VeRi-776~\cite{he2021transreid}.
 
 Despite broad adoption of this architecture as a baseline, subsequent work has
 primarily focused on augmenting it with new architectural
-components---semantic alignment via language
+components: semantic alignment via language
 models~\cite{li2023clipreid,lu2025clipsenet}, graph-based spatial
 reasoning~\cite{shen2022hpgn}, or multi-branch CNN
-structures~\cite{luo2023mbr4b}---rather than systematically revisiting what a
-well-specified ViT-B training-and-post-processing pipeline leaves on the table.
+structures~\cite{luo2023mbr4b}, rather than systematically revisiting what a
+properly tuned ViT-B training-and-post-processing pipeline leaves on the table.
 No pure ViT-B method has been reported above 90\% mAP on VeRi-776; we push a
-pure ViT-B/16 pipeline to 89.97\% mAP---approaching that mark---and, via
+pure ViT-B/16 pipeline to 89.97\% mAP, approaching that mark, and, via
 training-free fusion with a complementary CNN-semantic stream, reach 93.3\%.
-Crucially, we also test what actually produces that number, and report a result
+We also test what actually produces that number, and report a result
 that constrains our own claims.
