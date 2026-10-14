@@ -44,7 +44,7 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 - **02** [Motivation (1.1)](sections/02_intro_motivation.tex) - ~159 words, ~15 min  
   - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **03** [The ViT-B training recipe gap (1.2)](sections/03_intro_gap.tex) - ~169 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **04** [Contributions + paper organisation (1.3-1.4)](sections/04_intro_contrib.tex) - ~347 words, ~20 min  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
 
