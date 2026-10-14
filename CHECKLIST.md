@@ -140,13 +140,13 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 
 ## Biographies
 
-- **45** [Bio: Abdelrahman Hamdi (his own)](sections/45_bio_hamdi.tex) - ~64 words, ~10 min *Only this author writes this. 50-100 words.*  
+- **45** [Bio: Seif T. Heakal (his own)](sections/45_bio_seif.tex) - ~63 words, ~10 min *Only this author writes this. 50-100 words.*  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
-- **46** [Bio: Ali A. Ali (his own)](sections/46_bio_aali.tex) - ~61 words, ~10 min *Only this author writes this. 50-100 words.*  
+- **46** [Bio: Mohamed A. Ali (his own)](sections/46_bio_maali.tex) - ~58 words, ~10 min *Only this author writes this. 50-100 words.*  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
-- **47** [Bio: Mohamed A. Ali (his own)](sections/47_bio_maali.tex) - ~58 words, ~10 min *Only this author writes this. 50-100 words.*  
+- **47** [Bio: Ali A. Ali (his own)](sections/47_bio_aali.tex) - ~61 words, ~10 min *Only this author writes this. 50-100 words.*  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
-- **48** [Bio: Seif T. Heakal (his own)](sections/48_bio_seif.tex) - ~63 words, ~10 min *Only this author writes this. 50-100 words.*  
+- **48** [Bio: Abdelrahman Hamdi (his own)](sections/48_bio_hamdi.tex) - ~64 words, ~10 min *Only this author writes this. 50-100 words.*  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
 - **49** [Bio: Ahmed H. Abdel-Gawad (supervisor, his own)](sections/49_bio_ahmed.tex) - ~51 words, ~10 min *Only this author writes this. 50-100 words.*  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
