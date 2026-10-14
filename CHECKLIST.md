@@ -26,7 +26,7 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 ## Front matter
 
 - **01** [Abstract](sections/01_abstract.tex) - ~190 words, ~15 min *Do this LAST (after the rest) so it matches. Journal limit: 150-250 words.*  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 
 ## 1 Introduction
 
