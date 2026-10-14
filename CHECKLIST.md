@@ -2,7 +2,7 @@
 
 The paper was drafted with heavy AI assistance. **Goal: every unit below is rewritten in our own words by one of us, then read by a second person.** One unit = one file in [`sections/`](sections/) = one sitting (~10-25 min).
 
-**Progress: 0 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
+**Progress: 1 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
 
 ## How to take a unit
 
@@ -37,7 +37,7 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 ## Front matter
 
 - **01** [Abstract](sections/01_abstract.tex) - ~190 words, ~15 min *Do this LAST so it matches the rewritten text. Journal limit: 150-250 words.*  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 
 ## 1 Introduction
 
