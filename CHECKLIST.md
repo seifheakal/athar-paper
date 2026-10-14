@@ -165,11 +165,11 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 ## Final pass (after all units are Reviewed)
 
 - [ ] Whole paper read start-to-end by one person for flow and repeated phrases
-- [ ] Every number in abstract / intro / conclusion matches the results tables
+- [ ] Abstract, intro and conclusion say the same thing as the rewritten body
 - [ ] Statement on LLM use updated to match what was actually done
 - [ ] Compiles clean, no undefined refs/citations, abstract 150-250 words
 - [ ] Author names, emails, ORCIDs, photos filled in
 
-## Notes / suspicious numbers found while rewriting
+## Notes
 
 - (add as `- unit NN: ...`)
