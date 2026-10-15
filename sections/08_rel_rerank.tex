@@ -1,31 +1,9 @@
 % ===== UNIT 08: Re-ranking and post-processing (2.4) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsection{Re-ranking and post-processing}
-The $k$-reciprocal encoding method by Zhong et al.~\cite{zhong2017rerank} (CVPR
-2017) leverages the observation that if a gallery image lies in the
-$k$-reciprocal nearest neighbours of a probe, it is more likely to be a true
-match. A Jaccard-distance-based score is blended with the original cosine
-distance, improving retrieval precision without requiring labelled data. Zhang
-et al.~\cite{zhang2022vehiclererank} extended this idea specifically for
-vehicle ReID by incorporating orientation-guided query expansion, showing that
-viewpoint-consistent neighbour selection further improves re-ranking for highly
-viewpoint-sensitive queries. Moral et al.~\cite{moral2023syntheticrerank} also
-studied vehicle-specific post-processing, including gallery video-clip
-information in the re-ranking step on CityFlow-ReID and VeRi-776.
+Zhong et al.~\cite{zhong2017rerank} (CVPR 2017) introduced $k$-reciprocal encoding. The idea is simple. If a gallery image is among the $k$-reciprocal nearest neighbours of a probe, it is more likely to be a true match. A Jaccard-distance-based score is blended with the original cosine distance. This improves precision and needs no labelled data. Zhang et al.~\cite{zhang2022vehiclererank} adapted this idea to vehicle ReID with orientation-guided query expansion. They show that choosing neighbours with a consistent viewpoint helps queries that are very sensitive to viewpoint. Moral et al.~\cite{moral2023syntheticrerank} also studied vehicle-specific post-processing. They use gallery video-clip information in the re-ranking step on CityFlow-ReID and VeRi-776.
 
-Average Query Expansion (AQE)~\cite{arandjelovic2012aqe} replaces each query
-feature with the mean of its top-$k$ retrieved gallery features, smoothing the
-query manifold and consistently improving mAP at negligible computational cost.
-Database-side Augmentation (DBA) applies the same expansion to gallery features
-and can be combined with AQE; we evaluate AQE alone as it provides the best
-mAP--Rank-1 trade-off at $k{=}3$ for our ViT-B stream.
+Average Query Expansion (AQE)~\cite{arandjelovic2012aqe} replaces each query feature with the mean of its top-$k$ retrieved gallery features. This smooths the query space and improves mAP at almost no extra cost. Database-side Augmentation (DBA) does the same for gallery features and can be combined with AQE. We evaluate AQE alone, because it gives the best mAP--Rank-1 trade-off at $k{=}3$ for our ViT-B stream.
 
-Supervised Contrastive Learning (SupCon)~\cite{khosla2020supcon} extends
-contrastive losses to the supervised setting by treating all same-class samples
-as positives within each mini-batch, producing more uniformly distributed and
-discriminative embedding spaces than triplet loss alone~\cite{ye2022survey}. We
-evaluate SupCon as an alternative metric objective for Stream~1 (variant
-A5$\beta$); the deployed checkpoint (A5$\alpha$) retains a triplet $+$ centre
-objective, and the two are shown to be statistically equivalent
-(Section~\ref{sec:seed_variance}).
+Supervised Contrastive Learning (SupCon)~\cite{khosla2020supcon} extends contrastive losses to the supervised setting. All samples of the same class in a mini-batch count as positives. This gives embedding spaces that are more uniform and more discriminative than triplet loss alone~\cite{ye2022survey}. We evaluate SupCon as an alternative metric objective for Stream~1 (variant A5$\beta$). The deployed checkpoint (A5$\alpha$) keeps a triplet $+$ centre objective. Section~\ref{sec:seed_variance} shows that the two are statistically equivalent.
