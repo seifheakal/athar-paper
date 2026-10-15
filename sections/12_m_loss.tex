@@ -10,7 +10,7 @@ with label smoothing ($\varepsilon = 0.1$):
     y_c^{\mathrm{smooth}} = (1{-}\varepsilon)y_c + \varepsilon/C
   \label{eq:cels}
 \end{equation}
-where $C = 576$ training identities. The deployed headline checkpoint
+where $C = 576$ training identities. The recipe of the released headline checkpoint
 (A5$\alpha$) adds two terms to this loss. One is a soft-margin triplet loss
 (margin $m{=}0.3$). The other is a delayed centre loss ($\lambda{=}5\times10^{-4}$),
 enabled after epoch~30. We also use layer-wise learning-rate decay of 0.75:
@@ -38,12 +38,12 @@ where $\mathcal{P}(i)$ is the set of positive pairs and $\mathcal{A}(i)$ is all
 other mini-batch samples. This gives
 $\mathcal{L}_{\mathrm{A5\beta}} = \mathcal{L}_{\mathrm{CE\text{-}LS}} +
 \mathcal{L}_{\mathrm{SupCon}}$. A5$\alpha$ and A5$\beta$ are separate ablation rows.
-In the ablation campaign, A5$\alpha$ gets 89.06\% mAP and A5$\beta$ gets 88.57\% mAP
-under stream-1-only AQE$+$rerank evaluation. The difference is 0.49\,pp, with A5$\alpha$ higher.
+In single from-scratch ablation runs, A5$\alpha$ gets 89.06\% mAP and A5$\beta$ gets 88.57\% mAP
+under stream-1-only AQE$+$rerank evaluation (the released A5$\alpha$ checkpoint scores 89.63\% at this setting). The difference is 0.49\,pp, with A5$\alpha$ higher.
 This is well inside the $\pm 0.55$\,pp three-seed standard deviation of
 A5$\alpha$ (88.75 $\pm$ 0.55\,pp mAP, see Table~\ref{tab:ablation} and
 Section~\ref{sec:seed_variance}). So the two recipes are statistically equivalent.
-We keep A5$\alpha$ as the headline Stream~1 recipe, because it is the deployed checkpoint.
+We keep A5$\alpha$ as the headline Stream~1 recipe, because the released checkpoint was trained with it.
 
 CircleLoss made training unstable in our full-recipe runs. The training loss diverged,
 so we leave it out of the final recipe. To find the cause, we ran a controlled 400-step

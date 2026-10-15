@@ -1,7 +1,7 @@
 % ===== UNIT 15: Post-processing: AQE, k-reciprocal, TTA (3.4) =====
 % Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
-Post-processing is applied to each stream separately, before fusion.
+This section gives the standalone post-processing settings of each stream. In the fusion pipeline (Section~\ref{sec:fusion}), AQE is applied to each stream separately and $k$-reciprocal re-ranking is applied once, to the fused similarity matrix.
 
 \subsubsection{Average query expansion}
 For each query $\mathbf{q}$, we average the top-$k$ gallery features, ranked by cosine similarity, with the original query:

@@ -26,12 +26,11 @@ The contributions of this work are as follows:
     previously published result (92.9\%~\cite{lu2025clipsenet}) and
     $+1.88$\,pp above our own reproduction of that stream (91.44\%). Rank-1
     (98.45\%) is competitive with but does not exceed CLIP-SENet standalone
-    Rank-1 (98.7\%). Because the $+0.42$\,pp margin is small, is measured against 
-    a very recent paper that has not been peer reviewed, and reuses that model's checkpoint, we
-    present it as a demonstration of feature complementarity, which a paired
-    bootstrap test shows is significant over the best single
-    stream (Section~\ref{sec:holdout}) rather
-    than a decisive state of the art.
+    Rank-1 (98.7\%). Because the $+0.42$\,pp margin is small and our fusion reuses that model's
+    released checkpoint, we present it as a demonstration of feature
+    complementarity, not a decisive state of the art. A paired bootstrap test
+    shows that the gain over the best single stream is significant
+    (Section~\ref{sec:holdout}).
   \item \textbf{C3: Same-setup ablation path.} An in depth
     ablation traces the complete performance trajectory from the 82.3\%
     TransReID baseline to 93.3\% mAP under a single consistent post-processing
