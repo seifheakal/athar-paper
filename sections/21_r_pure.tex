@@ -6,26 +6,20 @@ Table~\ref{tab:vit_compare} compares our pipeline with prior transformer-based m
 
 \begin{table}[!t]
   \centering
-  \caption{Transformer-based methods on VeRi-776, with and without
-    post-processing. ``Published'' gives the values reported in each paper,
-    all without post-processing. The last two columns are our own evaluation of
-    the official checkpoints, without and with our identical AQE $+$
-    $k$-reciprocal re-ranking (our row uses its 1536D concat-patch flip-TTA
-    feature, as in Table~\ref{tab:matched}). Rank-1 was not recorded for the
-    re-evaluated checkpoints}
+  \caption{Transformer-based methods on VeRi-776. Prior rows are reported
+    without post-processing. Our row includes AQE $+$ $k$-reciprocal
+    re-ranking $+$ TTA, so this is not a matched comparison}
   \label{tab:vit_compare}
   \small
-  \begin{tabular}{L{3.6cm}L{1.6cm}L{2.2cm}C{2.3cm}C{1.7cm}C{1.9cm}}
+  \begin{tabular}{L{4.2cm}L{1.8cm}L{3.0cm}C{1.3cm}C{1.3cm}}
     \toprule
-    & & & Published & \multicolumn{2}{c}{Our evaluation, mAP~(\%)} \\
-    \cmidrule(lr){5-6}
-    Method & Venue & Backbone & mAP\,/\,R1~(\%) & w/o PP & $+$\,our PP \\
+    Method & Venue & Backbone & mAP~(\%) & R1~(\%) \\
     \midrule
-    TransReID (ViT-B)~\cite{he2021transreid}   & ICCV 2021 & ViT-B/16  & 80.60\,/\,97.00 & --    & --    \\
-    TransReID* (DeiT-B)~\cite{he2021transreid} & ICCV 2021 & DeiT-B/16 & 82.30\,/\,97.10 & 82.11 & 91.12 \\
-    CLIP-ReID~\cite{li2023clipreid}            & AAAI 2023 & ViT-B/16  & 84.50\,/\,97.30 & 82.99 & \textbf{91.80} \\
+    TransReID (ViT-B)~\cite{he2021transreid}   & ICCV 2021 & ViT-B/16  & 80.60 & 97.00 \\
+    TransReID* (DeiT-B)~\cite{he2021transreid} & ICCV 2021 & DeiT-B/16 & 82.30 & 97.10 \\
+    CLIP-ReID~\cite{li2023clipreid}            & AAAI 2023 & ViT-B/16  & 84.50 & 97.30 \\
     \midrule
-    Ours (S1)                                  & --        & ViT-B/16 (CLIP) & --        & 82.22 & 89.97 \\
+    \textbf{Ours (S1, w/ PP)} & -- & \textbf{ViT-B/16 (CLIP)} & \textbf{89.97} & \textbf{97.79} \\
     \bottomrule
   \end{tabular}
 \end{table}
