@@ -59,7 +59,7 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 - **08** [Re-ranking and post-processing (2.4)](sections/08_rel_rerank.tex) - ~214 words, ~15 min  
   - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **09** [Positioning (2.5)](sections/09_rel_position.tex) - ~84 words, ~10 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 
 ## 3 Methodology
 
