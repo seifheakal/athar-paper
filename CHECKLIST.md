@@ -2,7 +2,7 @@
 
 The paper was drafted with heavy AI assistance. **Goal: every unit below is rewritten in our own words by one of us, then read by a second person.** One unit = one file in [`sections/`](sections/) = one sitting (~10-25 min).
 
-**Progress: 8 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
+**Progress: 9 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
 
 ## How to take a unit
 
@@ -59,7 +59,7 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 - **08** [Re-ranking and post-processing (2.4)](sections/08_rel_rerank.tex) - ~214 words, ~15 min  
   - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **09** [Positioning (2.5)](sections/09_rel_position.tex) - ~84 words, ~10 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 
 ## 3 Methodology
 

@@ -1,19 +1,5 @@
 % ===== UNIT 09: Positioning (2.5) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsection{Positioning}
-To the best of the authors' knowledge, no prior work reports above 90\% mAP on
-VeRi-776 using a pure ViT-B backbone; the best prior pure-ViT result stands at
-84.5\% mAP~\cite{li2023clipreid,opencodepapers2024veri}, reported without
-post-processing. Our ViT-B retrieval pipeline reaches 89.97\% mAP, but
-we caution that this is not a like-for-like comparison: 84.5\% is a
-raw-embedding number, whereas 89.97\% includes AQE $+$ $k$-reciprocal
-re-ranking $+$ TTA. At matched no-post-processing conditions our embedding
-(82.2\% mAP) does not exceed CLIP-ReID, and the matched comparison confirms the
-pipeline number is a post-processing effect: the official TransReID and
-CLIP-ReID checkpoints under our identical post-processing reach 91.12\% and
-91.80\% mAP---both above our 89.97\%---so our recipe holds no advantage over
-either baseline (Section~\ref{sec:matched}). For the fusion result, no prior
-two-stream method exceeds 93.3\% mAP on VeRi-776; the best prior single-stream
-result stands at 92.9\% mAP~\cite{lu2025clipsenet}, which our fusion exceeds by
-a narrow $+0.42$\,pp.
+To the best of our knowledge, no prior work reports above 90\% mAP on VeRi-776 with a pure ViT-B backbone. The best prior pure-ViT result is 84.5\% mAP~\cite{li2023clipreid,opencodepapers2024veri}, reported without post-processing. Our ViT-B pipeline reaches 89.97\% mAP, but this is not a like-for-like comparison. The 84.5\% is a raw-embedding number. The 89.97\% includes AQE $+$ $k$-reciprocal re-ranking $+$ TTA. Without post-processing, our embedding (82.2\% mAP) does not beat CLIP-ReID. The matched comparison shows that the gain comes from post-processing. We apply our identical post-processing to the official TransReID and CLIP-ReID checkpoints. They reach \textbf{91.12\%} and \textbf{91.80\% mAP}, both above our 89.97\%. So our recipe has no advantage over either baseline (Section~\ref{sec:matched}). For the fusion result, no prior two-stream method exceeds 93.3\% mAP on VeRi-776. The best prior single-stream result is 92.9\% mAP~\cite{lu2025clipsenet}. Our fusion beats it by a narrow $+0.42$\,pp.
