@@ -7,10 +7,25 @@ Liu et al.~\cite{liu2016veri} introduced the VeRi-776 benchmark. PROVID~\cite{li
 respective papers and reproduced throughout the survey
 literature~\cite{ye2022survey,li2024vehiclereidsurvey}.} Ye et al.~\cite{ye2022survey} wrote a survey of deep Re-ID for people and vehicles. Li et al.~\cite{li2024vehiclereidsurvey} survey work on vehicles. They cover parts, multiple data sources and cross-domain adaptation.
 
-VAMI~\cite{zhou2018vami} generates other viewpoints of a vehicle with adversarial training. It was published at CVPR 2018 and gets 50.13\% mAP and 77.03\% Rank-1.
-PVEN~\cite{meng2020pven} uses semantic segmentation to get view-aware features for each part. It was published at CVPR 2020 and gets 79.5\% mAP and 95.6\% Rank-1.
-CAL~\cite{rao2021cal} uses attention to ignore background cues. It was published at ICCV 2021 and gets 74.3\% mAP and 95.4\% Rank-1.
-VehicleNet~\cite{zheng2020vehiclenet} trains on several datasets at once, VeRi-776, VehicleID and synthetic data. It was published in IEEE TMM 2020 and gets 83.41\% mAP and 96.78\% Rank-1.
-HPGN~\cite{shen2022hpgn} uses a pyramid graph network to model spatial information at different image scales. It was published in IEEE T-ITS 2022 and gets 80.18\% mAP and 96.72\% Rank-1.
-A Strong Baseline~\cite{cybercore2021strong} uses ResNet101-IBN-a with multi-head attention and trains on several domains. It was published at CVPR-W AICity 2021 and gets 87.1\% mAP. This is a strong result for ResNet models before transformers.
-Khorramshahi et al.~\cite{khorramshahi2023selfsupervision} test self-supervised pretraining on ResNet, ViT, Swin and ConvNeXt backbones in the AI City setting.
+Table~\ref{tab:cnn_era} lists the main CNN-era methods on VeRi-776, with the idea behind each one and the result reported in its paper.
+
+\begin{table}[!ht]
+  \centering
+  \caption{CNN-era methods on VeRi-776, as reported in the original papers}
+  \label{tab:cnn_era}
+  \small
+  \begin{tabular}{L{3.3cm}L{2.5cm}L{4.9cm}C{1.2cm}C{1.2cm}}
+    \toprule
+    Method & Venue & Main idea & mAP~(\%) & R1~(\%) \\
+    \midrule
+    VAMI~\cite{zhou2018vami} & CVPR 2018 & Generates other viewpoints with adversarial training & 50.13 & 77.03 \\
+    PVEN~\cite{meng2020pven} & CVPR 2020 & View-aware features for each part, from semantic segmentation & 79.5 & 95.6 \\
+    CAL~\cite{rao2021cal} & ICCV 2021 & Attention that ignores background cues & 74.3 & 95.4 \\
+    VehicleNet~\cite{zheng2020vehiclenet} & IEEE TMM 2020 & Trains on VeRi-776, VehicleID and synthetic data together & 83.41 & 96.78 \\
+    HPGN~\cite{shen2022hpgn} & IEEE T-ITS 2022 & Pyramid graph network for spatial information at different scales & 80.18 & 96.72 \\
+    A Strong Baseline~\cite{cybercore2021strong} & CVPR-W AICity 2021 & ResNet101-IBN-a with multi-head attention, trained on several domains & 87.1 & -- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+A Strong Baseline is a strong result for ResNet models before transformers. Khorramshahi et al.~\cite{khorramshahi2023selfsupervision} test self-supervised pretraining on ResNet, ViT, Swin and ConvNeXt backbones in the AI City setting.
