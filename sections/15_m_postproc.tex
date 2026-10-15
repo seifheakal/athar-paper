@@ -12,7 +12,7 @@ For each query $\mathbf{q}$, we average the top-$k$ gallery features, ranked by 
   \label{eq:aqe}
 \end{equation}
 
-Stream~1 uses $k{=}3$ and Stream~2 uses $k{=}10$. Both were selected by grid search over $k\in\{1,3,5,10,20\}$. The compact CLS token space of Stream~1 works best with a small neighbourhood ($k{=}3$). The broader ResNet-IBN clusters of Stream~2 benefit from a larger average ($k{=}10$). This fits the IBN design, which aims for robustness to camera style~\cite{pan2018ibn}.
+Stream~1 uses $k{=}3$ and Stream~2 uses $k{=}10$. Both were selected by grid search over $k\in\{1,3,5,10,20\}$. The compact CLS token space of Stream~1 works best with a small neighbourhood ($k{=}3$). The broader ResNet-IBN clusters of Stream~2 benefit from a larger average ($k{=}10$). This fits the IBN design, which aims to be less sensitive to camera style~\cite{pan2018ibn}.
 
 \subsubsection{$k$-reciprocal re-ranking}
 The final distance for each query--gallery pair is:
