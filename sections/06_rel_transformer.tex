@@ -1,48 +1,11 @@
 % ===== UNIT 06: Transformer-based vehicle re-ID (2.2) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsection{Transformer-based vehicle re-identification}
-TransReID~\cite{he2021transreid} (ICCV 2021) was the first pure Vision
-Transformer framework for object re-identification, introducing the SIE and JPM
-modules and achieving 82.3\% mAP and 97.1\% Rank-1 on VeRi-776 with SGD
-optimisation. As we demonstrate, switching the initialisation from ImageNet-21k
-to CLIP~\cite{radford2021clip} and the optimiser from SGD to
-AdamW~\cite{loshchilov2019adamw} yields a substantial gain within our own
-development trajectory without any architectural change---though, as
-Section~\ref{sec:matched} shows, not a net gain over the tuned published
-baseline.
+TransReID~\cite{he2021transreid} (ICCV 2021) was the first pure Vision Transformer framework for object re-identification. It introduced the SIE and JPM modules. It gets 82.3\% mAP and 97.1\% Rank-1 on VeRi-776 with SGD. We switch the initialisation from ImageNet-21k to CLIP~\cite{radford2021clip} and the optimiser from SGD to AdamW~\cite{loshchilov2019adamw}. This gives a large gain in our own development, with no change to the architecture. Section~\ref{sec:matched} shows that it is not a net gain over the tuned published baseline.
 
-CLIP-ReID~\cite{li2023clipreid} (AAAI 2023) introduced a two-stage
-prompt-tuning procedure that exploits CLIP's vision-language representations
-without requiring text annotations, achieving 84.5\% mAP and 97.3\% Rank-1 on
-VeRi-776~\cite{opencodepapers2024veri}. CLIP-ReID uses the same ViT-B/16 CLIP
-backbone family as the present work. Our full pipeline reaches 89.97\% mAP, but
-we note this is not a matched comparison: CLIP-ReID's 84.5\% is reported
-without post-processing, and at the raw-embedding level it in fact exceeds our
-recipe (84.5\% vs.\ 82.2\%). The difference in the pipeline number is
-post-processing---AQE $+$ $k$-reciprocal re-ranking $+$ TTA---which we apply
-and the CLIP-ReID figure does not include (Section~\ref{sec:discussion}).
-Recent transformer variants have broadened this line beyond single-domain
-VeRi-style retrieval: MSFFT~\cite{holla2024msfft} fuses multi-scale transformer
-features for cross-platform vehicle ReID, while
-MiKeCoCo~\cite{kuang2025mikecoco} uses CLIP-guided prompt knowledge for
-generalisable vehicle ReID.
+CLIP-ReID~\cite{li2023clipreid} (AAAI 2023) uses a two-stage prompt-tuning procedure. It uses the vision-language knowledge in CLIP and needs no text annotations. It gets 84.5\% mAP and 97.3\% Rank-1 on VeRi-776~\cite{opencodepapers2024veri}. CLIP-ReID uses the same ViT-B/16 CLIP backbone family as our work. Our full pipeline reaches 89.97\% mAP, but this is not a matched comparison. CLIP-ReID's 84.5\% is reported without post-processing. At the raw-embedding level it is higher than our recipe (84.5\% vs.\ 82.2\%). The difference in the pipeline number comes from post-processing, which means AQE $+$ $k$-reciprocal re-ranking $+$ TTA. We apply it and the CLIP-ReID figure does not include it (Section~\ref{sec:discussion}). Recent transformer papers go beyond single-domain VeRi retrieval. MSFFT~\cite{holla2024msfft} fuses multi-scale transformer features for cross-platform vehicle ReID. MiKeCoCo~\cite{kuang2025mikecoco} uses CLIP-guided prompt knowledge to make vehicle ReID generalise better.
 
-RPTM~\cite{ghosh2023rptm} (WACV 2023) proposed relation-preserving triplet
-mining to stabilise triplet loss training across hard and semi-hard negatives,
-achieving 88.0\% mAP and 97.3\% Rank-1. MBR4B-LAI~\cite{luo2023mbr4b} (ITSC
-2023) combined four convolutional branches with location-aware identity
-embeddings and camera/pose metadata, reaching 92.09\% mAP and 98.03\% Rank-1
-after re-ranking---a competitive CNN ensemble that our fusion method surpasses.
-FastReID~\cite{wang2020fastreid} provided a unified, production-quality
-baseline toolbox widely used for ablation and comparison across vehicle and
-person ReID benchmarks.
+RPTM~\cite{ghosh2023rptm} (WACV 2023) uses relation-preserving triplet mining. It makes triplet loss training more stable across hard and semi-hard negatives. It gets 88.0\% mAP and 97.3\% Rank-1. MBR4B-LAI~\cite{luo2023mbr4b} (ITSC 2023) combines four convolutional branches with location-aware identity embeddings and camera and pose metadata. It reaches 92.09\% mAP and 98.03\% Rank-1 after re-ranking. This is a strong CNN ensemble, and our fusion method beats it. FastReID~\cite{wang2020fastreid} is a unified, production-quality baseline toolbox. People use it widely for ablations and comparisons across vehicle and person ReID benchmarks.
 
-CLIP-SENet~\cite{lu2025clipsenet} (arXiv 2025) is a single-stream approach that
-combines ResNet101-IBN-a local appearance features with 512-dimensional
-semantic embeddings from a TinyCLIP Semantic Extraction Module (SEM) and an
-Adaptive Fine-Grained Enhancement Module (AFEM), achieving 92.9\% mAP and
-98.7\% Rank-1 on VeRi-776. This is the closest prior result to ours; the
-present work takes the pre-trained CLIP-SENet v6 checkpoint as a frozen second
-stream in a training-free score-level fusion, adding $+0.42$\,pp mAP above the
-CLIP-SENet standalone result.
+CLIP-SENet~\cite{lu2025clipsenet} (arXiv 2025) is a single-stream approach. It combines ResNet101-IBN-a local appearance features with 512-dimensional semantic embeddings. The embeddings come from a TinyCLIP Semantic Extraction Module (SEM) and an Adaptive Fine-Grained Enhancement Module (AFEM). It gets 92.9\% mAP and 98.7\% Rank-1 on VeRi-776. This is the closest prior result to ours. We take the pre-trained CLIP-SENet v6 checkpoint as a frozen second stream. We fuse the two streams at score level with no training. This adds $+0.42$\,pp mAP above the CLIP-SENet standalone result.
