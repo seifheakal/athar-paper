@@ -11,10 +11,12 @@ Table~\ref{tab:sota} compares our single-stream (S1) and fusion results with pub
     similarity only. Rows differ in post-processing condition and are
     therefore not strictly like-for-like: our pipeline rows are \cmark\ while
     several transformer baselines (TransReID, CLIP-ReID) are reported
-    \xmark. Section~\ref{sec:matched} gives the matched-condition comparison}
+    \xmark. The block marked ``this work'' applies our post-processing to the
+    official TransReID and CLIP-ReID checkpoints (Section~\ref{sec:matched}).
+    Rank-1 was not recorded for these two runs}
   \label{tab:sota}
   \small
-  \begin{tabular}{L{2.6cm}L{1.8cm}L{4.4cm}C{1.4cm}C{1.3cm}C{1.1cm}L{1.1cm}}
+  \begin{tabular}{L{3.1cm}L{1.8cm}L{4.0cm}C{1.4cm}C{1.3cm}C{1.1cm}L{1.1cm}}
     \toprule
     Method & Venue & Backbone & mAP~(\%) & R1~(\%) & w/~PP & Ref. \\
     \midrule
@@ -29,7 +31,11 @@ Table~\ref{tab:sota} compares our single-stream (S1) and fusion results with pub
     MBR4B-LAI    & ITSC 2023  & ResNet50 (multi-branch)   & 92.09 & 98.03 & \cmark & \cite{luo2023mbr4b} \\
     CLIP-SENet   & T-ITS 2026 & ResNet101-IBN-a $+$ TinyCLIP & 92.90 & 98.70 & \cmark & \cite{lu2025clipsenet} \\
     \midrule
-    \textbf{Ours (S1, w/ PP)} & --  & ViT-B/16 (CLIP init.) & \textbf{89.97} & \textbf{97.79} & \cmark & -- \\\\
+    \multicolumn{7}{l}{\emph{Official checkpoints re-evaluated with our post-processing (this work)}} \\
+    TransReID $+$ our PP & ICCV 2021 & DeiT-B/16             & 91.12 & --    & \cmark & \cite{he2021transreid} \\
+    CLIP-ReID $+$ our PP & AAAI 2023 & ViT-B/16              & 91.80 & --    & \cmark & \cite{li2023clipreid} \\
+    \midrule
+    Ours (S1, w/ PP) & --  & ViT-B/16 (CLIP init.) & 89.97 & 97.79 & \cmark & -- \\\\
     \textbf{Ours (fusion)}    & --  & ViT-B $+$ ResNet101-IBN-a $+$ TinyCLIP & \textbf{93.32} & \textbf{98.45} & \cmark & -- \\\\
     \bottomrule
   \end{tabular}
