@@ -2,7 +2,7 @@
 % Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 Four observations follow (Table~\ref{tab:veriwild} and
-Figure~\ref{fig:transfer}). First, the ViT-B stream \emph{transfers}, and does
+Figure~\ref{fig:transfer}). First, the ViT-B stream transfers, and does
 so at every gallery scale: 31.7\,/\,26.7\,/\,20.9\% mAP raw and
 35.9\,/\,30.5\,/\,23.8\% with AQE on the 3{,}000\,/\,5{,}000\,/\,10{,}000
 protocols---far below its in-domain 89.97\% (as expected for a
@@ -16,14 +16,14 @@ Rank-1 trails the VehicleID-sourced methods by more than mAP does, consistent
 with their source providing over twenty times more identities for top-1
 discrimination.
 
-Second, and more informative, the score-level \emph{fusion does not survive the
-domain shift at any scale}: at the VeRi-776-tuned weight $w_1{=}0.35$ it
+Second, and more informative, the score-level fusion does not survive the
+domain shift at any scale: at the VeRi-776-tuned weight $w_1{=}0.35$ it
 reaches 28.7\,/\,24.2\,/\,18.5\% mAP raw and 33.6\,/\,28.1\,/\,21.4\% with AQE,
-\emph{below} the stronger single stream in both conditions at every protocol.
+below the stronger single stream in both conditions at every protocol.
 Under transfer the CLIP-SENet stream is substantially weaker
 (20.2\,/\,16.8\,/\,12.2\% mAP), and the weight tuned on VeRi-776---which
 weights that stream at $0.65$---drags the fusion below ViT-B alone. (The
-table's fusion rows apply each stream's \emph{standalone} AQE setting
+table's fusion rows apply each stream's standalone AQE setting
 ($k{=}3/k{=}10$) uniformly across scales; under the exactly deployed fusion
 configuration---common AQE $k{=}3$ with joint re-ranking---the 3{,}000-protocol
 fusion reaches 32.8\% mAP with AQE and 31.4\% with joint re-ranking, leading to

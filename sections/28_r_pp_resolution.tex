@@ -25,15 +25,15 @@ block of Table~\ref{tab:ablation}.
 Stream~1 trains and evaluates at 224\,$\times$\,224, whereas TransReID uses
 256\,$\times$\,256 and CLIP-SENet 320\,$\times$\,320, raising the question of
 whether the ViT-B stream leaves accuracy on the table at its lower resolution.
-We measure the deployed checkpoint's \emph{inference}-resolution sensitivity by
+We measure the deployed checkpoint's inference-resolution sensitivity by
 re-extracting Stream~1 features at 256\,$\times$\,256 and 320\,$\times$\,320
 (position embeddings bicubically interpolated to the larger patch grid) and
 re-running the identical post-processing (Figure~\ref{fig:resolution}).
 Accuracy degrades monotonically away from the native resolution: full-pipeline
 mAP drops by $0.30$\,pp at 256 and $1.70$\,pp at 320. The checkpoint is thus
 well matched to its training resolution, and higher-resolution
-\emph{inference} is not an available lever; whether higher-resolution
-\emph{training} would help (as in TransReID's 256 recipe) remains open and
+inference is not an available lever; whether higher-resolution
+training would help (as in TransReID's 256 recipe) remains open and
 would require retraining (Section~\ref{sec:limitations}). The
 native-resolution result doubles as a further independent reproduction: this
 fresh extraction reproduces the headline 89.97\%\,/\,97.79\% operating point to

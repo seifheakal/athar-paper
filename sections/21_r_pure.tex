@@ -8,7 +8,7 @@ transformer-based methods using the same ViT-B/16 backbone family.
 \begin{table}[!t]
   \centering
   \caption{Transformer-based methods on VeRi-776. Prior rows are reported
-    \emph{without} post-processing; our row includes AQE $+$ $k$-reciprocal
+    without post-processing; our row includes AQE $+$ $k$-reciprocal
     re-ranking $+$ TTA, so this is not a matched comparison}
   \label{tab:vit_compare}
   \small
@@ -32,9 +32,9 @@ matched no-post-processing conditions our embedding (82.2\%) is on par with
 TransReID and below CLIP-ReID, so this is a post-processing gap.
 Section~\ref{sec:matched} runs the matched-condition comparison directly and
 finds that TransReID, given our identical post-processing, in fact
-\emph{exceeds} our pipeline (91.12\% vs.\ 89.97\% mAP). For clarity,
+exceeds our pipeline (91.12\% vs.\ 89.97\% mAP). For clarity,
 Table~\ref{tab:oppoints} summarises every reported operating point in one
-place, including a \emph{validation-selected} fusion row
+place, including a validation-selected fusion row
 (Section~\ref{sec:holdout}) as the recommended tuning-free default. The
 headline fusion also attains \textbf{84.14\% mINP}~\cite{ye2022survey},
 recomputed deterministically from the released per-query dumps.

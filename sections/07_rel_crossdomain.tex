@@ -7,13 +7,13 @@ domain adaptation (UDA) approaches such as SPGAN~\cite{deng2018spgan},
 ECN~\cite{zhong2019ecn}, and UDAP~\cite{song2020udap} train on a labelled
 source and adapt using unlabelled target data; transferred from the large
 VehicleID source to VeRi-Wild they reach 24.1--34.7\% mAP on the
-3{,}000-identity protocol, while the strongest reported \emph{direct} transfer
+3{,}000-identity protocol, while the strongest reported direct transfer
 (no target data at all) reaches 37.7\% and full viewpoint-aware adaptation
 39.7\%~\cite{zheng2020vapc}. Recent analysis attributes much of the gap between
 in-domain and cross-domain performance to train/test similarity bias within the
 ReID benchmarks themselves: models trained on VeRi-Wild lose
 ${\approx}15$\,pp mAP when evaluated on the visually similar VeRi-776, and mAP
-on vehicle \emph{types} unseen during training drops from above 90\% to
+on vehicle types unseen during training drops from above 90\% to
 65--70\% even for state-of-the-art models~\cite{benmabrouk2026genlimits}. This
 context frames the cross-dataset evaluation of Section~\ref{sec:veriwild}:
 large absolute drops under zero-shot transfer are the field norm, not an

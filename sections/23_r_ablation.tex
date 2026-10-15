@@ -14,11 +14,11 @@ ablation experiments.
     Rows A1--A5$\beta$ report isolated-component contributions measured under a
     common operating point (Stream~1 only, AQE $k{=}3$ $+$ $k$-reciprocal
     re-ranking, single-flip 768D CLS); deltas are relative to control A1.
-    \textbf{A1 is an intentionally minimal, \emph{un-tuned} SGD control}
-    (ImageNet-initialised DeiT, no recipe/schedule tuning); it is \emph{not} a
+    \textbf{A1 is an intentionally minimal, un-tuned SGD control}
+    (ImageNet-initialised DeiT, no recipe/schedule tuning); it is not a
     reproduction of TransReID, whose fully tuned DeiT-B SGD recipe reaches
     82.3\% mAP~\cite{he2021transreid}. Isolated deltas quantify component
-    contributions \emph{during recipe development} relative to this control and
+    contributions during recipe development relative to this control and
     must not be read as head-to-head superiority over a tuned baseline; the
     authoritative recipe-versus-published accounting is the cumulative
     trajectory (lower block), anchored at the published 82.3\%%
@@ -29,15 +29,15 @@ ablation experiments.
     \toprule
     Configuration & mAP~(\%) & R1~(\%) & $\Delta$ vs.\ A1 \\
     \midrule
-    \multicolumn{4}{l}{\emph{Isolated component ablation (Stream~1, AQE $+$ rerank)}} \\
+    \multicolumn{4}{l}{emph{Isolated component ablation (Stream~1, AQE $+$ rerank)}} \\
     A1 --- un-tuned SGD control: DeiT $+$ SGD $+$ CE $+$ triplet (not TransReID) & 57.62 & 80.45 & --- \\
     A2 --- $+$CLIP initialisation only                    & 70.97 & 86.83 & $+13.35$ \\
     A3 --- $+$SupCon only (DeiT $+$ SGD $+$ CE-LS $+$ SupCon) & 59.48 & 79.74 & $+1.86$ \\
     A4 --- $+$AdamW/LLRD only (DeiT $+$ CE $+$ triplet)   & 80.91 & 94.82 & $+23.29$ \\
-    A5$\alpha$ --- full (CLIP $+$ AdamW/LLRD $=0.75$ $+$ CE-LS $+$ triplet $+$ centre; \emph{deployed}) & 89.06 & 97.74 & $+31.44$ \\
+    A5$\alpha$ --- full (CLIP $+$ AdamW/LLRD $=0.75$ $+$ CE-LS $+$ triplet $+$ centre; deployed) & 89.06 & 97.74 & $+31.44$ \\
     A5$\beta$ --- full (CLIP $+$ AdamW/LLRD $=0.65$ $+$ CE-LS $+$ SupCon; alternative) & 88.57 & 96.66 & $+30.95$ \\
     \midrule
-    \multicolumn{4}{l}{\emph{Cumulative trajectory $\to$ headline}} \\
+    \multicolumn{4}{l}{Cumulative trajectory $\to$ headline} \\
     TransReID baseline (DeiT-B*)~\cite{he2021transreid}  & 82.30 & 97.10 & --- \\
     Base cosine, ViT-B (no PP)                            & 82.22 & 97.50 & $-0.08$ \\
     \quad$+$AQE $k{=}3$                                   & 84.08 & 97.20 & $+1.86$ \\
@@ -92,7 +92,7 @@ reflects the difficulty of tuning SGD under our short schedule rather than an
 intrinsic $+23$\,pp superiority of AdamW over SGD---a fully tuned SGD recipe
 (TransReID) already reaches 82.3\% mAP~\cite{he2021transreid}. What A4
 establishes is that AdamW with layer-wise LR decay reaches a strong operating
-point \emph{without} bespoke per-optimiser schedule tuning, which is the
+point without bespoke per-optimiser schedule tuning, which is the
 practical property the recipe relies on. SupCon in isolation (A3) barely moves
 the needle ($+1.86$\,pp) but combines well once CLIP and AdamW are in place:
 the deployed A5$\alpha$ recipe reaches 89.06\% mAP, statistically

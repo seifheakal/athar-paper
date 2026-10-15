@@ -3,17 +3,17 @@
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 Third, AQE---an $\mathcal{O}(N)$ operation---helps the transferring stream at
 every scale ($+4.3$, $+3.7$, and $+2.9$\,pp mAP), while consistently
-\emph{hurting} the weak stream's Rank-1, a known failure mode of query
+hurting the weak stream's Rank-1, a known failure mode of query
 expansion on poorly clustered features. Fourth, $k$-reciprocal re-ranking---the
 largest single accuracy step in-domain ($+5.55$\,pp on
-VeRi-776)---\emph{reduces} accuracy under transfer: measured at the 3{,}000
+VeRi-776)---reduces accuracy under transfer: measured at the 3{,}000
 protocol, it lowers ViT-B from 35.9 to 34.8\% mAP (and Rank-1 by 3.3\,pp) and
 the fusion from 33.6 to 30.9\%. On poorly clustered transfer features the
 $k$-reciprocal neighbourhoods admit false matches that the Jaccard blending
 then amplifies, so the in-domain post-processing recipe does not port
 wholesale: like the fusion weight, re-ranking's benefit is domain-specific.
 This is not an artefact of the default parameters: across the same
-axis-aligned grid swept in-domain (Section~\ref{sec:holdout}), \emph{every}
+axis-aligned grid swept in-domain (Section~\ref{sec:holdout}), every
 re-ranked transfer configuration lands at 33.4--35.5\% mAP, below the 35.9\%
 AQE-only result. AQE itself is near-optimal at the VeRi-776-tuned $k{=}3$: the
 transfer-side optimum is $k{=}5$ (36.2\%), only $0.3$\,pp higher, and we
@@ -26,7 +26,7 @@ dumps (\texttt{scripts/eval/vw\_per\_query\_ap.npz}), so all reported CIs can
 be recomputed independently.
 
 The fusion failure, unlike the re-ranking failure, admits a training-free
-remedy. We tested \emph{query-adaptive} weights computed from each stream's own
+remedy. We tested query-adaptive weights computed from each stream's own
 AQE'd score row with no target-domain information: a margin rule
 $w_1^{(i)}{=}m_1/(m_1{+}m_2)$, $m_s{=}\max(s)-\mathrm{mean}(\text{top-}50)$,
 and a top-100 dispersion analogue. At the 3{,}000 protocol the margin rule
@@ -34,16 +34,16 @@ recovers \textbf{35.9\%} mAP (from 32.8\% at the fixed weight; single stream
 35.9\%) by shifting weight toward the reliable stream
 ($\bar{w}_1{\approx}0.63$). A constant-weight control attributes the rescue:
 the transfer weight surface peaks at $w_1{\approx}0.8$/36.5\%---marginally
-\emph{above} the single stream, so some complementarity survives the shift, but
+above the single stream, so some complementarity survives the shift, but
 locating that optimum requires target-domain evaluation---while a constant
 $w_1{=}0.63$ scores 36.0\% and recentring the rule's weights on the optimum
 adds nothing (36.4\%): the rule's value is finding a safe operating point
-\emph{without labels}, not yet its per-query variation. In-domain the rules
+without labels, not yet its per-query variation. In-domain the rules
 cost 1.1--1.4\,pp vs.\ the tuned fixed weight (87.0--87.3 vs.\ 88.4\% mAP at
 matched AQE-only settings) while staying well above the single stream
 (84.2\%), so adaptive weighting acts as a domain-robustness guard. A
-ground-truth per-query \emph{oracle} reaches 40.1\% mAP / 66.9\%
+ground-truth per-query oracle reaches 40.1\% mAP / 66.9\%
 Rank-1---above every published direct-transfer entry in
 Table~\ref{tab:veriwild}---so per-query headroom is real but uncaptured by
-first-order score statistics; \emph{learned} query-adaptive fusion is thus a
+first-order score statistics; learned query-adaptive fusion is thus a
 concrete, quantified future direction.

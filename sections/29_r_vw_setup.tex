@@ -5,10 +5,10 @@
 \label{sec:veriwild}
 A central question for any VeRi-776 result is whether it reflects transferable
 re-identification ability or dataset-specific tuning. To probe this, we
-evaluate our VeRi-776-trained checkpoints \emph{zero-shot} on
+evaluate our VeRi-776-trained checkpoints zero-shot on
 VeRi-Wild~\cite{lou2019veriwild} (416{,}314 images, 40{,}671 identities, 174
 cameras), applying the identical feature extraction and post-processing with
-\emph{no} fine-tuning. VeRi-Wild's 174 cameras do not correspond to VeRi-776's
+no fine-tuning. VeRi-Wild's 174 cameras do not correspond to VeRi-776's
 twenty, so no remapping is attempted: the Stream~1 camera side-information
 embedding is fixed to a single constant index for all images (one shared camera
 token, so the SIE offset is identical everywhere and cancels in relative
@@ -31,12 +31,12 @@ official protocol.
   using no VeRi-Wild data of any kind (identical extraction and post-processing
   to VeRi-776). Middle block: published VehicleID$\rightarrow$VeRi-Wild
   transfer results as reported in~\cite{zheng2020vapc}; the UDA methods
-  additionally \emph{adapt on unlabelled VeRi-Wild images}, and VehicleID
+  additionally adapt on unlabelled VeRi-Wild images, and VehicleID
   provides over twenty times more training identities than VeRi-776. Bottom
   block (different regime, reference only): supervised training on VeRi-Wild's
   own training set. Cells are mAP\,/\,Rank-1 in \%; our best zero-shot
   configuration in \textbf{bold}. Re-ranked transfer rows are measured at the
-  3{,}000 protocol only; note re-ranking \emph{reduces} transfer accuracy.
+  3{,}000 protocol only; note re-ranking reduces transfer accuracy.
   Paired-bootstrap 95\% CIs on our mAPs are within $\pm 1.0$\,pp at every
   scale}
   \label{tab:veriwild}

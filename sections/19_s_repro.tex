@@ -3,11 +3,11 @@
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsection{Reproducibility}
 \label{sec:reproducibility}
-Every number in this paper is produced by \emph{deterministic} evaluation from
+Every number in this paper is produced by deterministic evaluation from
 two frozen, SHA-256-pinned checkpoints. We are careful about what this does and
 does not guarantee: because inference---feature extraction, AQE,
 $k$-reciprocal re-ranking, and score fusion---is deterministic, each reported
-value \emph{re-evaluates} exactly from the released checkpoints. This is a
+value re-evaluates exactly from the released checkpoints. This is a
 re-evaluation guarantee, not a claim that training is bit-for-bit reproducible;
 the latter is bounded separately below. Table~\ref{tab:repro} lists the two
 released checkpoints, their roles, and SHA-256 hashes.
@@ -19,7 +19,7 @@ re-derivation---since inference is deterministic and the checkpoints are
 hash-pinned; this is the operative guarantee for all headline numbers, and the
 fusion headline was confirmed identical across three independent evaluations
 (two GPU notebooks and a CPU recomputation from dumped features). As a stronger
-check than deterministic re-evaluation, an \emph{independent re-extraction}---%
+check than deterministic re-evaluation, an independent re-extraction---%
 fresh forward passes through the two SHA-256-verified checkpoints on a separate
 compute environment and account---reproduced the entire cumulative trajectory
 of Table~\ref{tab:ablation} and the 89.97 / 91.44 / 93.32\% mAP headline to

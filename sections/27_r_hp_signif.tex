@@ -13,8 +13,8 @@ depends on a sharp, idiosyncratic post-processing optimum.
 
 We also tested whether score calibration removes the need to tune the fusion
 weight. Simple $z$-score calibration of each stream's similarity distribution
-before an equal-weight ($w_1{=}0.5$) fusion does \emph{not} help---it lowers
-mAP to 90.35\%---whereas the \emph{uncalibrated} equal-weight fusion already
+before an equal-weight ($w_1{=}0.5$) fusion does not help---it lowers
+mAP to 90.35\%---whereas the uncalibrated equal-weight fusion already
 reaches 93.10\%, within 0.22\,pp of the tuned 93.32\%. The fusion weight is
 therefore barely consequential and needs no careful evaluation-set tuning;
 calibration is unnecessary and, here, counter-productive.
@@ -27,7 +27,7 @@ fusion~$-$~ViT-B $=+3.34$\,pp (95\% CI $[2.81, 3.88]$), both measured against
 our own same-condition reproductions of those streams; the complementarity
 underlying the fusion is thus statistically robust. This test concerns the gain
 over the streams we can evaluate---the narrower $+0.42$\,pp margin over the
-\emph{published} CLIP-SENet mAP cannot be significance-tested without that
+published CLIP-SENet mAP cannot be significance-tested without that
 model's per-query results, and we do not claim it as significant. The fusion
 weight itself is barely consequential: $w_1{=}0.35$ exceeds $w_1{=}0.30$ by
 only $+0.10$\,pp (95\% CI $[0.02, 0.19]$). To let readers audit these tests

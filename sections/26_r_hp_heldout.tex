@@ -18,7 +18,7 @@ is released so readers can reproduce this check.
 
 Because this split still draws its identities from the test set, we add a
 second protocol using identities disjoint from the test set entirely: we carve
-a 100-identity validation set from the 576 \emph{training} identities and
+a 100-identity validation set from the 576 training identities and
 re-select the fusion weight there. As those images were seen during training,
 retrieval on them saturates (mAP $=100\%$ for every $w_1\in[0.2,0.5]$), so the
 selection is uninformative in isolation---but freezing the resulting choice
@@ -29,5 +29,5 @@ configuration out of the box, Table~\ref{tab:oppoints} lists the
 validation-selected operating point ($w_1{=}0.25$, literature-default
 post-processing) at 93.25\% mAP / 98.15\% Rank-1---the recommended default for
 unbiased comparison. A fully unseen validation set---holding identities out of
-\emph{training} rather than reusing seen images---would be stricter but
+training rather than reusing seen images---would be stricter but
 requires retraining, which we note as the rigorous alternative.

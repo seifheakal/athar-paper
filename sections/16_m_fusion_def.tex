@@ -12,13 +12,13 @@ $\mathbf{S}_{\mathrm{CLIP}}$, the fused similarity is:
 \end{equation}
 Concretely, the fusion pipeline uses the \textbf{1536D} concat-patch flip-TTA
 Stream~1 representation (the best-mAP Stream~1 configuration of
-Section~\ref{sec:method}, \emph{not} the 768D CLS-only variant) together with
-the 2048D Stream~2 representation: AQE $k{=}3$ is applied to \emph{each}
+Section~\ref{sec:method}, not the 768D CLS-only variant) together with
+the 2048D Stream~2 representation: AQE $k{=}3$ is applied to each
 stream, the resulting cosine-similarity matrices are combined via
-Eq.~\eqref{eq:fusion}, and a \emph{single} joint $k$-reciprocal re-ranking
+Eq.~\eqref{eq:fusion}, and a single joint $k$-reciprocal re-ranking
 ($k_1{=}80, k_2{=}15, \lambda{=}0.2$) is applied to the fused matrix. The
 fusion therefore re-applies a common AQE $k{=}3$ to both streams; it does
-\emph{not} reuse Stream~2's standalone AQE $k{=}10$ / re-ranking $50/10/0.1$,
+not reuse Stream~2's standalone AQE $k{=}10$ / re-ranking $50/10/0.1$,
 which characterise the standalone CLIP-SENet result (91.44\% mAP) only.
 
 This order of operations is empirically preferred, as

@@ -13,12 +13,12 @@ Section~\ref{sec:matched}: at matched no-post-processing conditions the recipe
 does not by itself exceed TransReID (82.2\% vs.\ 82.3\% mAP), and under our
 identical post-processing both TransReID and CLIP-ReID in fact surpass our
 pipeline (91.12\% and 91.80\% vs.\ 89.97\%). These are therefore drivers
-\emph{within our recipe} rather than net gains over a tuned baseline, and the
+within our recipe rather than net gains over a tuned baseline, and the
 bulk of the reported improvement is contributed by AQE, $k$-reciprocal
 re-ranking, and TTA. For context, a DINOv2-initialised
 alternative~\cite{oquab2023dinov2} evaluated as a second fusion stream on
 VeRi-776 did not match the CLIP-based CLIP-SENet stream (below 89.3\% mAP
 standalone), so CLIP-family semantic supervision was retained for both streams;
-we did not run a controlled DINOv2-versus-CLIP \emph{Stream-1 backbone} swap on
+we did not run a controlled DINOv2-versus-CLIP Stream-1 backbone swap on
 VeRi-776 and therefore make no claim about pretraining scale versus semantic
 supervision from this benchmark alone.

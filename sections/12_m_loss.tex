@@ -10,7 +10,7 @@ with label smoothing ($\varepsilon = 0.1$):
     y_c^{\mathrm{smooth}} = (1{-}\varepsilon)y_c + \varepsilon/C
   \label{eq:cels}
 \end{equation}
-where $C = 576$ training identities. The \emph{deployed} headline checkpoint
+where $C = 576$ training identities. The deployed headline checkpoint
 (A5$\alpha$) pairs this classification loss with a soft-margin triplet loss
 (margin $m{=}0.3$) and a delayed centre loss ($\lambda{=}5\times10^{-4}$,
 enabled after epoch~30), under layer-wise learning-rate decay 0.75:
@@ -54,9 +54,9 @@ probe the cause, we ran a controlled 400-step diagnostic with a minimal head
 (plain CLIP-initialised ViT-B $+$ BNNeck $+$ CE-LS $+$ metric loss,
 $P{\times}K=12{\times}8$) across five conditions: CircleLoss at
 $\gamma\in\{32,64\}$ under fp16 and fp32, an ImageNet-initialised control, and
-a triplet$+$centre control. \emph{None} of the CircleLoss conditions diverged
+a triplet$+$centre control. None of the CircleLoss conditions diverged
 in this minimal setting---fp16 and fp32 differed only in descent speed, and
-CLIP versus ImageNet initialisation behaved similarly---which does \emph{not}
+CLIP versus ImageNet initialisation behaved similarly---which does not
 support a simple precision- or initialisation-based explanation. The
 instability we observed is therefore specific to the full recipe configuration
 (SIE/JPM heads, layer-wise learning-rate decay, and the longer schedule) rather

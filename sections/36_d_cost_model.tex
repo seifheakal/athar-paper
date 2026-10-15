@@ -11,9 +11,9 @@ retrieval-accuracy budget.
 is a ViT-B/16 at $224\times224$ ($\approx$86\,M parameters,
 $\approx$17.6\,GFLOPs); Stream~2 (ResNet101-IBN-a $+$ TinyCLIP) is of
 comparable order at its $320\times320$ input. The best-mAP Stream~1
-configuration uses horizontal-flip TTA, which \emph{doubles} the forward
+configuration uses horizontal-flip TTA, which doubles the forward
 passes; the concat-patch representation reuses already-computed tokens and adds
-negligible compute. The two-stream fusion requires \emph{both} backbones,
+negligible compute. The two-stream fusion requires both backbones,
 roughly doubling extraction time and model memory relative to a single stream.
 Measured on a single NVIDIA~T4 (batch~1), a Stream~1 forward is 13.5\,ms/image
 at 700\,MB peak VRAM, rising to 27.2\,ms with flip-TTA; Stream~2 is
