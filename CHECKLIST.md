@@ -2,7 +2,7 @@
 
 The paper was drafted with heavy AI assistance. **Goal: every unit below is rewritten in our own words by one of us, then read by a second person.** One unit = one file in [`sections/`](sections/) = one sitting (~10-25 min).
 
-**Progress: 11 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
+**Progress: 12 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
 
 ## How to take a unit
 
@@ -68,7 +68,7 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 - **11** [Stream 1: backbone architecture (3.2.1)](sections/11_m_backbone.tex) - ~104 words, ~10 min  
   - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **12** [Stream 1: loss function + equations (3.2.2)](sections/12_m_loss.tex) - ~285 words, ~20 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **13** [Stream 1: augmentation + hyper-parameters (3.2.3-3.2.4)](sections/13_m_aug_hparams.tex) - ~133 words, ~10 min  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
 - **14** [Stream 2: CLIP-SENet branch (3.3)](sections/14_m_stream2.tex) - ~186 words, ~15 min  

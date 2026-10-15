@@ -1,8 +1,8 @@
 % ===== UNIT 12: Stream 1: loss function + equations (3.2.2) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsubsection{Loss function}
-Training employs a composite loss. The classification loss is cross-entropy
+Training uses a composite loss. The classification loss is cross-entropy
 with label smoothing ($\varepsilon = 0.1$):
 \begin{equation}
   \mathcal{L}_{\mathrm{CE\text{-}LS}} =
@@ -11,9 +11,9 @@ with label smoothing ($\varepsilon = 0.1$):
   \label{eq:cels}
 \end{equation}
 where $C = 576$ training identities. The deployed headline checkpoint
-(A5$\alpha$) pairs this classification loss with a soft-margin triplet loss
-(margin $m{=}0.3$) and a delayed centre loss ($\lambda{=}5\times10^{-4}$,
-enabled after epoch~30), under layer-wise learning-rate decay 0.75:
+(A5$\alpha$) adds two terms to this loss. One is a soft-margin triplet loss
+(margin $m{=}0.3$). The other is a delayed centre loss ($\lambda{=}5\times10^{-4}$),
+enabled after epoch~30. We also use layer-wise learning-rate decay of 0.75:
 \begin{equation}
   \mathcal{L}_{\mathrm{A5\alpha}} =
     \mathcal{L}_{\mathrm{CE\text{-}LS}}
@@ -21,10 +21,9 @@ enabled after epoch~30), under layer-wise learning-rate decay 0.75:
     + \lambda\,\mathcal{L}_{\mathrm{centre}}
   \label{eq:a5alpha}
 \end{equation}
-As a statistically equivalent alternative, we also evaluate a
-supervised-contrastive variant (A5$\beta$) that replaces the triplet and centre
-terms with Supervised Contrastive Loss (SupCon)~\cite{khosla2020supcon}
-($\tau = 0.07$, LLRD 0.65):
+We also evaluate an alternative, a supervised-contrastive variant (A5$\beta$).
+It replaces the triplet and centre terms with Supervised Contrastive Loss
+(SupCon)~\cite{khosla2020supcon} ($\tau = 0.07$, LLRD 0.65):
 \begin{equation}
   \mathcal{L}_{\mathrm{SupCon}} =
     \sum_{i \in \mathcal{B}}
@@ -35,32 +34,27 @@ terms with Supervised Contrastive Loss (SupCon)~\cite{khosla2020supcon}
              {\sum_{a \in \mathcal{A}(i)} \exp(\mathbf{z}_i \cdot \mathbf{z}_a / \tau)}
   \label{eq:supcon}
 \end{equation}
-where $\mathcal{P}(i)$ is the set of positive pairs and $\mathcal{A}(i)$ all
-other mini-batch samples, giving
+where $\mathcal{P}(i)$ is the set of positive pairs and $\mathcal{A}(i)$ is all
+other mini-batch samples. This gives
 $\mathcal{L}_{\mathrm{A5\beta}} = \mathcal{L}_{\mathrm{CE\text{-}LS}} +
-\mathcal{L}_{\mathrm{SupCon}}$. A5$\alpha$ and A5$\beta$ are evaluated as
-separate ablation rows. The ablation campaign measured A5$\alpha$ at 89.06\%
-mAP and A5$\beta$ at 88.57\% mAP under stream-1-only AQE$+$rerank evaluation;
-the 0.49\,pp difference (A5$\alpha$ higher) falls within the $\pm 0.55$\,pp
-three-seed standard deviation of A5$\alpha$ (88.75 $\pm$ 0.55\,pp mAP; see
-Table~\ref{tab:ablation} and Section~\ref{sec:seed_variance}). Because the
-difference falls well inside this three-seed standard deviation, the two
-recipes are statistically equivalent and A5$\alpha$---the actually deployed
-checkpoint---is retained as the headline Stream~1 recipe.
+\mathcal{L}_{\mathrm{SupCon}}$. A5$\alpha$ and A5$\beta$ are separate ablation rows.
+In the ablation campaign, A5$\alpha$ gets 89.06\% mAP and A5$\beta$ gets 88.57\% mAP
+under stream-1-only AQE$+$rerank evaluation. The difference is 0.49\,pp, with A5$\alpha$ higher.
+This is well inside the $\pm 0.55$\,pp three-seed standard deviation of
+A5$\alpha$ (88.75 $\pm$ 0.55\,pp mAP, see Table~\ref{tab:ablation} and
+Section~\ref{sec:seed_variance}). So the two recipes are statistically equivalent.
+We keep A5$\alpha$ as the headline Stream~1 recipe, because it is the deployed checkpoint.
 
-CircleLoss produced numerical instability (diverging training loss) in our
-full-recipe training runs and is therefore excluded from the final recipe. To
-probe the cause, we ran a controlled 400-step diagnostic with a minimal head
-(plain CLIP-initialised ViT-B $+$ BNNeck $+$ CE-LS $+$ metric loss,
-$P{\times}K=12{\times}8$) across five conditions: CircleLoss at
+CircleLoss made training unstable in our full-recipe runs. The training loss diverged,
+so we leave it out of the final recipe. To find the cause, we ran a controlled 400-step
+diagnostic with a minimal head (plain CLIP-initialised ViT-B $+$ BNNeck $+$ CE-LS $+$ metric loss,
+$P{\times}K=12{\times}8$). We tested five conditions. These were CircleLoss at
 $\gamma\in\{32,64\}$ under fp16 and fp32, an ImageNet-initialised control, and
 a triplet$+$centre control. None of the CircleLoss conditions diverged
-in this minimal setting---fp16 and fp32 differed only in descent speed, and
-CLIP versus ImageNet initialisation behaved similarly---which does not
-support a simple precision- or initialisation-based explanation. The
-instability we observed is therefore specific to the full recipe configuration
-(SIE/JPM heads, layer-wise learning-rate decay, and the longer schedule) rather
-than to CircleLoss on CLIP features per se; its precise cause remains
-unisolated, and CircleLoss remains excluded on the empirical grounds observed
-in the full setting. The probe script and loss curves are released with the
-code.
+in this minimal setting. The fp16 and fp32 runs differed only in descent speed.
+CLIP and ImageNet initialisation behaved similarly. So neither precision nor
+initialisation is a simple explanation. The instability we saw is specific to the
+full recipe (SIE/JPM heads, layer-wise learning-rate decay and the longer schedule).
+It does not come from CircleLoss on CLIP features alone. We did not isolate the exact cause.
+CircleLoss stays excluded because of what we observed in the full setting.
+The probe script and loss curves are released with the code.
