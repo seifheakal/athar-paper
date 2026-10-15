@@ -51,7 +51,7 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 ## 2 Related work
 
 - **05** [CNN-era vehicle re-ID (2.1)](sections/05_rel_cnn.tex) - ~187 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **06** [Transformer-based vehicle re-ID (2.2)](sections/06_rel_transformer.tex) - ~307 words, ~20 min  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
 - **07** [Cross-domain transfer and dataset bias (2.3)](sections/07_rel_crossdomain.tex) - ~121 words, ~10 min  
