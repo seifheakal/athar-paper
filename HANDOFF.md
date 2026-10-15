@@ -16,13 +16,14 @@ Read this first when the user says "continue the handoff".
 | `7e9e2ac` | `main.tex`: removed the two visible guidance notes (ORCID "to be supplied", photo instruction); added an empty paragraph so Seif's wrapfigure photo still renders after the "Author Biographies" heading. |
 | `0ee90e3` + revert `a146b72` | Tables 6/7 redesign: **reverted at the user's request** (it duplicated Table 9). |
 | `016d6a1` | Unit 04: dropped "not peer reviewed" for CLIP-SENet (it is published in T-ITS now). |
+| next commit | Added the MBR4B authors' GitHub repository as reference [38] (`mbr4bcode`; the MBR4B paper's own "code is available" link points to it) and cited it next to 92.09 / 92.1 in units 04, 06, 20 (text + Table 6). The number itself is unchanged. |
 
 Net change vs. the user's original text: references + related in-text citation fixes, guidance notes removed, unit 04 peer-review clause.
 
 ## Review material (repo root)
 - `main_current.pdf`: current paper (built from the sources at `016d6a1`).
-- `main_review_highlighted.pdf`: same paper with 101 colour-coded highlight notes (page 1 = summary page). Colours: RED factual/inconsistency, ORANGE unsupported claim, YELLOW AI-draft/AI-style, BLUE presentation, GREEN fixed/check-only, PURPLE reference-number check (each note names the source paper + table/section).
-- `review_notes.md`: the 95 distinct notes as a numbered list.
+- `main_review_highlighted.pdf`: same paper with 45 highlights (44 distinct notes), real open problems only (page 1 = summary page, which also lists the 22 notes that were checked and dropped as not real problems). Colours: RED factual/inconsistency, ORANGE unsupported claim, BLUE presentation/wording, PURPLE reference-number check (each note names the source paper + table/section). The user asked to drop AI-draft / AI-style highlights, anything already resolved, and anything that is not a real problem; keep it that way. The triage lives in `DROP` in `review_tools/annotate.py`.
+- `review_notes.md`: the distinct notes as a numbered list (regenerate with `python review_tools/export_notes.py main_review_highlighted.pdf review_notes.md`).
 - `review_prompt.md`: prompt the user runs in a separate account/session to verify every note independently; it should produce `review_report.md`.
 
 **Next step the user planned:** run `review_prompt.md` in a fresh session, get `review_report.md`, then decide here which confirmed items to fix (show each change first).

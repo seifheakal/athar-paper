@@ -14,9 +14,7 @@ PURPLE = (0.80, 0.66, 1.0)   # reference-number check: value or claim compared a
 
 LEGEND = [(RED, "Factual error or internal inconsistency"),
           (ORANGE, "Claim not supported by the paper / over-stated"),
-          (YELLOW, "AI-draft wording or AI-style pattern"),
-          (BLUE, "Presentation / submission checklist"),
-          (GREEN, "Fixed already, or only needs a check"),
+          (BLUE, "Presentation, wording or submission checklist"),
           (PURPLE, "Reference-number check: compared with the cited source (note says where to look)")]
 
 # Page filters for anchors that also occur elsewhere: only pages containing this text are searched.
@@ -34,12 +32,6 @@ REFCHECK = [
     ("RPTM", PURPLE,
      "Post-processing mark: Table 6 marks RPTM as without post-processing. RPTM paper (arXiv 2110.07933), Table 2 caption: 'The * indicates the usage of re-ranking', and the row 'RPTM (ResNet-101)*' gives 88.00 / 97.30. The text also says 82.5% mAP 'w/o re-ranking'.",
      "Mark RPTM as with post-processing (or use its non-re-ranked number).", 1, T6),
-    ("92.09", PURPLE,
-     "Source note (the number itself is fine): 92.09 / 98.03 is reported in the authors' GitHub README (github.com/videturfortuna/vehicle_reid_itsc2023, 'teste.py ... --re_rank', 'With re-ranking: mAP= 92.09, CMC1= 98.03'). The cited ITSC paper (arXiv 2310.01129, Table IV) reports MBR-4B-LAI at 85.63 / 97.74 without re-ranking. CLIP-SENet's T-ITS Table I lists MBR at 91.9 / 98.2.",
-     "Keep 92.09, and cite the GitHub repository next to the paper (e.g. 'with re-ranking, from the authors' released code').", 0, None),
-    ("92.1% mAP", PURPLE,
-     "Same as 92.09 elsewhere: the value is from the authors' GitHub README (with re-ranking), not from the ITSC paper (85.63 there).",
-     "Add the GitHub repository as a source.", 0, None),
     ("location-aware identity embeddings", PURPLE,
      "Description check: MBR4B paper (arXiv 2310.01129), Section III-C is titled 'Leveraging Additional Information (LAI)' and uses camera ID and viewpoint metadata. It does not describe 'location-aware identity embeddings'.",
      "'... with LAI (Leveraging Additional Information), which adds camera and viewpoint metadata'.", 1, None),
@@ -97,9 +89,6 @@ REFCHECK = [
     ("At the default evaluation settings of its authors", PURPLE,
      "Value check: the CA-Jaccard paper (arXiv 2311.10605) states kintra=5 and kinter=20 (matches), but not k1=30, k2=6, lambda=0.3. Those presumably come from the authors' code.",
      "Say 'the default settings of the authors' released code'.", 1, None),
-    ("VAPC (adapted)", PURPLE,
-     "Value check: all SPGAN / UDAP / ECN / VAPC-DT / VAPC-DA rows match the VAPC arXiv version (2011.09099, Table I) exactly. The reference now points to the T-ITS 2022 version, which was not checked.",
-     "Optional: confirm against the T-ITS version.", 1, T12),
     ("84.5% mAP and 97.3% Rank-1 on VeRi-776", PURPLE,
      "Citation check: correct value, but it is cited to the OpenCodePapers mirror. The CLIP-ReID paper (arXiv 2211.13977), Table 3, row 'CLIP-ReID' (ViT), gives 84.5 / 97.3 directly.",
      "Cite the CLIP-ReID paper [8].", 1, None),
@@ -108,43 +97,28 @@ REFCHECK = [
 # (anchor text as it appears in the PDF, colour, problem, suggested fix, occurrence)  occurrence: 1-based, 0 = all
 ISSUES = [
     # ---------- front matter ----------
-    ("Transformer backbones dominate vehicle re-identification", YELLOW,
-     "Abstract: about 77% of its 5-word sequences are copied from original/main_ai_draft.tex. This is the first thing a detector or reviewer reads.",
-     "Rewrite the abstract from scratch in your own words, after the body is final (150-250 words).", 1),
     ("We use a specific recipe that we just build on", RED,
      "Broken sentence; it does not parse.",
      "e.g. 'Our pipeline combines CLIP-pretrained initialisation, AdamW with layer-wise learning-rate decay, a tuned metric objective and a three-step post-processing chain (...)'.", 1),
 
     # ---------- introduction ----------
-    ("Vehicle re-identification is heavily used in intelligent", YELLOW,
-     "Unit 02 (Motivation): about 75% copied from the AI draft.",
-     "Rewrite in your own words; vary sentence length.", 1),
-    ("changed how people approached", YELLOW,
-     "Unit 03: about 70% copied from the AI draft.",
-     "Rewrite in your own words.", 1),
     ("No pure ViT-B method has been reported above 90% mAP", ORANGE,
      "This framing ('we approach 90%') contradicts your own finding that TransReID and CLIP-ReID with your post-processing reach 91.12 / 91.80%.",
      "Frame the gap as 'recipe vs post-processing effects are never separated', which is what the paper actually shows.", 1),
-    ("The contributions of this work are as follows", YELLOW,
-     "Unit 04 (Contributions): about 75% copied from the AI draft.",
-     "Rewrite C1-C5 in your own words; keep the numbers.", 1),
     ("both slightly above ours", ORANGE,
      "1.15 and 1.83 pp are not 'slightly' above.",
      "Say 'both above ours (by 1.15 and 1.83 pp)'.", 1),
-    ("which a paired bootstrap test shows is significant", YELLOW,
-     "The 'not peer reviewed' clause is fixed (CLIP-SENet is in IEEE T-ITS 2026). The rest of this sentence is still garbled: the 'which ...' clause sits between 'complementarity' and 'rather than'.",
-     "e.g. '...we present it as a demonstration of feature complementarity, not a decisive state of the art. A paired bootstrap test shows the gain over the best single stream is significant.' Also check that the T-ITS version still reports 92.9 / 98.7.", 1),
+    ("which a paired bootstrap test shows is significant", BLUE,
+     "Garbled sentence: the 'which ...' clause sits between 'complementarity' and 'rather than'.",
+     "e.g. '...we present it as a demonstration of feature complementarity, not a decisive state of the art. A paired bootstrap test shows the gain over the best single stream is significant.'", 1),
     ("supported by a CityFlowV2 MTMC port", ORANGE,
      "CityFlowV2 is used as evidence here (and in 5.10 and 6.5) but is never described anywhere: no setup, no numbers, no table.",
      "Either remove the CityFlowV2 claims, or add a short paragraph with the setup and IDF1 results.", 1),
 
     # ---------- related work ----------
-    ("They cover parts, multiple data sources", GREEN,
-     "Reference fixed to Yi et al. (Neurocomputing 2025). The content of this sentence was not checked against that survey.",
+    ("They cover parts, multiple data sources", PURPLE,
+     "Content check: the content of this sentence was not checked against the Yi et al. survey.",
      "Confirm the survey really covers parts, multi-source data and cross-domain adaptation.", 1),
-    ("It introduced the SIE and JPM modules.", YELLOW,
-     "Units 05-41 were 'rewritten' mainly by splitting sentences: average length dropped from 26 to 14 words, with very uniform short sentences. 'So ...' starts 34 sentences and 'This is ...' 28. That uniform rhythm is itself a recognisable machine pattern.",
-     "When rewriting, merge some short sentences, vary the length, and drop most 'So ...' / 'This confirms ...' openers.", 1),
     ("Supervised Contrastive Learning (SupCon)", ORANGE,
      "A paragraph about a training loss sits inside the 'Re-ranking and post-processing' section.",
      "Move it to the methodology (loss function) or a short 'metric learning' paragraph.", 1),
@@ -218,7 +192,7 @@ ISSUES = [
      "Your own timings (50 s at 13,257 images, 254 s at 41,861, 519 s at 69,389) grow as about N^1.4, not N^2. '3.6x the gallery' divides query+gallery by the gallery alone; the image count grew 3.2x.",
      "'roughly five times the in-domain pass for 3.2x as many images'; state the measured ~N^1.4 scaling once in 6.4.", 1),
     ("Visual inspection suggests", ORANGE,
-     "Qualitative section with no figure. Table 13 states mechanisms that were never measured ('CLIP prior abstracts away lighting', 'SupCon anchor pulls clusters', '>60% occlusion', '<40x40 px'). Reads as generated text.",
+     "Qualitative section with no figure. Table 13 states mechanisms that were never measured ('CLIP prior abstracts away lighting', 'SupCon anchor pulls clusters', '>60% occlusion', '<40x40 px').",
      "If you inspected failures: keep only the observed failure groups in 3-4 plain sentences and drop the table. If not: remove the section.", 1),
 
     # ---------- discussion ----------
@@ -243,44 +217,50 @@ ISSUES = [
     ("This number comes from the post-processing pipeline, not from the recipe", ORANGE,
      "Two sentences earlier 'our recipe' includes the post-processing pipeline. The term 'recipe' switches meaning, and the central argument depends on it.",
      "Define 'recipe' once as training only (backbone, initialisation, optimiser, loss, augmentation) and use it consistently.", 1),
-    ("This is slightly the best published mAP", YELLOW, "Ungrammatical.", "'This is the best published mAP on VeRi-776, by a narrow +0.42 pp.'", 1),
+    ("This is slightly the best published mAP", BLUE, "Ungrammatical.", "'This is the best published mAP on VeRi-776, by a narrow +0.42 pp.'", 1),
     ("and extension to nighttime surveillance and CityFlowV2", ORANGE,
      "Lists CityFlowV2 as future work, but 1.3, 5.10 and 6.5 cite a CityFlowV2 result as evidence.",
      "Make the two consistent.", 1),
 
     # ---------- back matter ----------
-    ("Use of large language models.", GREEN,
-     "Good: keep this disclosure. It is your real protection; a detector score is not. Springer also asks for LLM use to be documented in the methods.",
-     "Make sure it matches what was actually done (drafting by Claude, then author rewriting).", 1),
-    ("References", GREEN,
-     "Reference list corrected and verified: all 29 DOIs and 7 arXiv IDs resolve to the right paper and first author (commit 1e648d1).",
-     "Only remaining check: that the T-ITS version of CLIP-SENet still reports 92.9 / 98.7.", 1),
     ("Author Biographies", BLUE,
      "Only 2 of the 5 author photos exist (Seif, Ahmed).",
      "Add photos for M. A. Ali, A. A. Ali and A. Hamdi if the journal asks for them.", 1),
-    ("He led this project from start to finish", YELLOW,
+    ("He led this project from start to finish", BLUE,
      "Bio repeats the author-contribution list almost word for word.",
      "Keep the bio to background and interests (50-100 words). Also check 'received his B.Sc.' is true on the submission date.", 1),
-    ("His undergraduate research addressed data augmentation", YELLOW,
-     "About 62% copied from the AI draft, and written by Seif although the checklist says each author writes their own bio.",
-     "Have Mohamed write it.", 1),
-    ("His work focuses on the engineering of reproducible evaluation pipelines", YELLOW,
-     "Bio still marked AI-DRAFT (100% the AI text); inflated for an undergraduate.",
-     "Ali A. Ali should write his own bio.", 1),
-    ("His undergraduate work focused on deep representation learning", YELLOW,
-     "Bio still marked AI-DRAFT (100% the AI text).",
-     "Abdelrahman Hamdi should write his own bio.", 1),
-    ("His research spans machine learning, computer architecture", YELLOW,
-     "Marked REWRITTEN, but 100% identical to the AI draft.",
-     "The supervisor should confirm or rewrite it.", 1),
 ]
 
-# Highlight-only pass for AI-style "candour" and wrap-up phrases
-PHRASES = ["This confirms", "We want to be clear", "we state it openly", "we say so", "in a more honest light",
-           "For transparency", "statistically solid", "To be clear"]
-PHRASE_NOTE = ("AI-style phrase. Over-disclosure ('we want to be clear', 'we say so', 'in a more honest light') and "
-               "self-confirming wrap-ups ('This confirms ...') are typical of recent AI assistants.",
-               "Cut it, or say it plainly once.")
+# Triage: notes checked and NOT counted as real problems (opinion, rounding, minor citation style, or sources disagree).
+# They are not highlighted; they are listed on the summary page instead. Key = (anchor, colour).
+DROP = {
+    ("No pure ViT-B method has been reported above 90% mAP", ORANGE): "framing opinion (the factual part is kept as a purple note)",
+    ("both slightly above ours", ORANGE): "wording ('slightly' for 1.15 / 1.83 pp)",
+    ("They cover parts, multiple data sources", PURPLE): "not checked, no evidence of an error",
+    ("Supervised Contrastive Learning (SupCon)", ORANGE): "section placement (structure opinion)",
+    ("statistically equivalent", ORANGE): "wording ('within training noise' would be more careful)",
+    ("we found no sign that feature-level concatenation overfits", ORANGE): "minor logic between two paragraphs",
+    ("(TransReID* ViT-B/16, released by the TransReID authors", RED): "merged into the purple note at 'so our extraction is faithful'",
+    ("The same is probably true for much of the apparent progress after TransReID", ORANGE): "hedged claim ('probably')",
+    ("88.75 ± 0.55", RED): "population vs sample SD: a convention, the argument holds either way",
+    ("benefit more from graph-based", ORANGE): "terminology for AQE",
+    ("+4.3", RED): "rounding: unrounded values (e.g. 35.93) give +4.3 / +3.7",
+    ("AQE is a single similarity pass", RED): "duplicate of the 'AQE costs almost nothing' note",
+    ("This number comes from the post-processing pipeline, not from the recipe", ORANGE): "terminology ('recipe') clarity",
+    ("He led this project from start to finish", BLUE): "bio style",
+    ("training images of 576", PURPLE): "37,781 and 37,778 both appear in the literature",
+    ("viewpoint (8 categories)", PURPLE): "minor citation of the viewpoint labels",
+    ("Epochs", PURPLE): "120 epochs is from TransReID's released config, not the paper (minor)",
+    ("was the first pure Vision Transformer framework", PURPLE): "'first' is commonly accepted",
+    ("VehicleNet", PURPLE): "post-processing mark: sources disagree",
+    ("Disabling camera and view embeddings is standard practice", PURPLE): "mild overstatement of the citation",
+    ("At the default evaluation settings of its authors", PURPLE): "defaults come from the authors' code (minor)",
+    ("84.5% mAP and 97.3% Rank-1 on VeRi-776", PURPLE): "value correct; only the citation could be the primary paper",
+}
+
+# AI-style phrase pass: switched off (the user does not want AI-draft / AI-style highlights)
+PHRASES = []
+PHRASE_NOTE = ("", "")
 
 
 def matches(page, anchor):
@@ -311,6 +291,8 @@ def main(src, dst):
     for item in ISSUES + REFCHECK:
         anchor, colour, problem, fix, occ = item[:5]
         ctx = item[5] if len(item) > 5 else None
+        if (anchor, colour) in DROP:
+            continue
         hits = []
         for page in doc:
             if ctx and ctx not in page.get_text():
@@ -342,33 +324,23 @@ def main(src, dst):
         y += 17
     y += 12
     body = (
-        "Summary of the AI-writing analysis (prose only, references excluded)\n"
-        "- 32% of all 8-word sequences and 45% of 5-word sequences are verbatim from original/main_ai_draft.tex.\n"
-        "- Barely changed: abstract (77%), introduction units 02-04 (70-75%), statements (67%), bios 46-49 (62-100%).\n"
-        "- Units 05-41: mostly sentence-splitting. Average sentence length fell from 26.4 to 13.9 words and the sentence\n"
-        "  count doubled (383 -> 755). The rhythm is now very uniform; 'So ...' opens 34 sentences and 'This is ...' 28.\n"
-        "- Classic AI words were removed (18 -> 1), but 'candour' phrases and 'This confirms' wrap-ups remain.\n"
-        "- 0 of 49 units have had the second-person review the checklist asks for.\n\n"
-        "Already fixed\n"
-        "- All 37 references verified; 10 wrong author lists corrected, 3 updated to published versions,\n"
-        "  pages and DOIs added; matching in-text fixes in units 05, 06, 08 and 20 (commit 1e648d1).\n"
-        "- Guidance notes removed from the PDF (ORCID 'to be supplied' line, photo instruction).\n"
-        "- Section 1.3: dropped 'not peer reviewed' (CLIP-SENet is published in IEEE T-ITS 2026).\n\n"
+        "Only open, real problems are highlighted. Resolved items (reference list, guidance notes, 'not peer reviewed',\n"
+        "MBR4B 92.09 source: now cited to the authors' GitHub repository) and AI-draft / AI-style notes were removed.\n\n"
         "Highest-priority open items\n"
-        "1. Section 1.3: check the T-ITS version of CLIP-SENet still reports 92.9 / 98.7 (your +0.42 pp rests on it).\n"
-        "2. Four different Stream-1 numbers (89.97 / 89.63 / 89.06 / 89.99) attached to the same label.\n"
-        "3. 'Close to defaults' (k1=80 vs default 20) and 'fits O(N^2)' (measured ~N^1.4) are false by the paper's own numbers.\n"
-        "4. CityFlowV2 is cited as evidence three times but never described.\n"
-        "5. Qualitative section (5.11) asserts mechanisms with no figure or measurement.\n"
-        "6. Three author photos are missing (M. A. Ali, A. A. Ali, A. Hamdi).\n"
-        "7. Abstract, introduction and bios are still mostly the AI draft: rewrite them yourselves.\n\n"
+        "1. Four different Stream-1 numbers (89.97 / 89.63 / 89.06 / 89.99) attached to the same label.\n"
+        "2. 'Close to defaults' (k1=80 vs default 20) and 'fits O(N^2)' (measured ~N^1.4) are false by the paper's own numbers.\n"
+        "3. CityFlowV2 is cited as evidence three times but never described.\n"
+        "4. Qualitative section (5.11) asserts mechanisms with no figure or measurement.\n"
+        "5. Three author photos are missing (M. A. Ali, A. A. Ali, A. Hamdi).\n\n"
         "Reference-number check (purple notes)\n"
         "About 80 numbers and claims taken from cited papers were compared with the papers themselves (arXiv PDFs,\n"
         "dataset pages, the MBR4B GitHub README). Most match. Each purple note names the source paper, the table or\n"
         "section, and the exact value found there, so every note can be re-checked independently. They are findings\n"
-        "to verify, not changes: nothing in the paper was changed because of them.\n"
+        "to verify, not changes: nothing in the paper was changed because of them.\n\n"
+        "Checked and not counted as real problems (not highlighted)\n"
+        + "".join(f"- '{a[:58]}': {why}\n" for (a, _), why in DROP.items())
     )
-    p.insert_textbox(fitz.Rect(50, y, p.rect.width - 40, p.rect.height - 40), body, fontsize=9.5, lineheight=1.35)
+    p.insert_textbox(fitz.Rect(50, y, p.rect.width - 40, p.rect.height - 30), body, fontsize=8.6, lineheight=1.3)
 
     doc.save(dst, garbage=3, deflate=True)
     print(f"annotations: {count}")
