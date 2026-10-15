@@ -1,43 +1,10 @@
 % ===== UNIT 19: Reproducibility (4.4) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsection{Reproducibility}
 \label{sec:reproducibility}
-Every number in this paper is produced by deterministic evaluation from
-two frozen, SHA-256-pinned checkpoints. We are careful about what this does and
-does not guarantee: because inference---feature extraction, AQE,
-$k$-reciprocal re-ranking, and score fusion---is deterministic, each reported
-value re-evaluates exactly from the released checkpoints. This is a
-re-evaluation guarantee, not a claim that training is bit-for-bit reproducible;
-the latter is bounded separately below. Table~\ref{tab:repro} lists the two
-released checkpoints, their roles, and SHA-256 hashes.
+Every number in this paper comes from deterministic evaluation of two frozen, SHA-256-pinned checkpoints. We want to be clear about what this guarantees. Inference is deterministic. This includes feature extraction, AQE, $k$-reciprocal re-ranking and score fusion. So each reported value can be re-evaluated exactly from the released checkpoints. This is a re-evaluation guarantee. It does not mean that training is bit-for-bit reproducible, which we discuss below. Table~\ref{tab:repro} lists the two released checkpoints, their roles and SHA-256 hashes.
 
-We distinguish two reproducibility regimes. (i)~\textbf{Exact reproduction:}
-evaluating the released checkpoints with the released notebooks re-computes
-every table value exactly---a deterministic re-evaluation, not an independent
-re-derivation---since inference is deterministic and the checkpoints are
-hash-pinned; this is the operative guarantee for all headline numbers, and the
-fusion headline was confirmed identical across three independent evaluations
-(two GPU notebooks and a CPU recomputation from dumped features). As a stronger
-check than deterministic re-evaluation, an independent re-extraction---%
-fresh forward passes through the two SHA-256-verified checkpoints on a separate
-compute environment and account---reproduced the entire cumulative trajectory
-of Table~\ref{tab:ablation} and the 89.97 / 91.44 / 93.32\% mAP headline to
-within 0.01\,pp, confirming that the released checkpoints, not any cached
-feature dump, determine the reported numbers. (ii)~\textbf{Within-variance
-reproduction:} retraining a stream from scratch reproduces its recipe only
-within the $\pm0.55$\,pp three-seed standard deviation
-(Section~\ref{sec:seed_variance}), because GPU training is not bit-reproducible
-(cuDNN autotuning, non-deterministic atomics) even under fixed seeds; the
-released checkpoint---not a fresh retrain---therefore defines the headline.
+We distinguish two reproducibility regimes. (i)~\textbf{Exact reproduction.} Evaluating the released checkpoints with the released notebooks re-computes every table value exactly. This is a deterministic re-evaluation, not an independent re-derivation. It works because inference is deterministic and the checkpoints are hash-pinned. This is the guarantee that applies to all headline numbers. We confirmed that the fusion headline is identical across three independent evaluations (two GPU notebooks and a CPU recomputation from dumped features). We also ran a stronger check. An independent re-extraction, with fresh forward passes through the two SHA-256-verified checkpoints on a separate compute environment and account, reproduced the entire cumulative trajectory of Table~\ref{tab:ablation} and the 89.97 / 91.44 / 93.32\% mAP headline to within 0.01\,pp. This confirms that the released checkpoints, and not any cached feature dump, determine the reported numbers. (ii)~\textbf{Within-variance reproduction.} Retraining a stream from scratch reproduces its recipe only within the $\pm0.55$\,pp three-seed standard deviation (Section~\ref{sec:seed_variance}). GPU training is not bit-reproducible, even with fixed seeds, because of cuDNN autotuning and non-deterministic atomics. So the released checkpoint, and not a fresh retrain, defines the headline.
 
-From-scratch reproduction is further limited by an incomplete training-time
-record: the $P\times K$ identity-sampling tuple was not logged (only the
-effective batch size of 96 is confirmed; Section~\ref{sec:method}), so an exact
-retraining configuration cannot be fully specified from our logs, which we flag
-as a reproducibility limitation. The standard VeRi-776 protocol is asserted at
-evaluation time ($1\,678$ query, $11\,579$ gallery, $576$ training identities);
-all evaluation used PyTorch~2.4.1 (CUDA~12.4) on a single NVIDIA~T4 GPU. The
-evaluation notebooks, the checkpoint manifest (with full hashes), and the
-per-table provenance mapping are released in the project repository
-(\url{https://github.com/MRKDaGods/gp}).
+Reproducing the training from scratch is also limited by an incomplete training-time record. The $P\times K$ identity-sampling tuple was not logged. Only the effective batch size of 96 is confirmed (Section~\ref{sec:method}). So we cannot fully specify the exact retraining configuration from our logs, and we flag this as a reproducibility limitation. The standard VeRi-776 protocol is checked at evaluation time ($1\,678$ query, $11\,579$ gallery, $576$ training identities). All evaluation used PyTorch~2.4.1 (CUDA~12.4) on a single NVIDIA~T4 GPU. The evaluation notebooks, the checkpoint manifest (with full hashes) and the per-table provenance mapping are released in the project repository (\url{https://github.com/MRKDaGods/gp}).

@@ -2,7 +2,7 @@
 
 The paper was drafted with heavy AI assistance. **Goal: every unit below is rewritten in our own words by one of us, then read by a second person.** One unit = one file in [`sections/`](sections/) = one sitting (~10-25 min).
 
-**Progress: 12 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
+**Progress: 41 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
 
 ## How to take a unit
 
@@ -70,75 +70,75 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 - **12** [Stream 1: loss function + equations (3.2.2)](sections/12_m_loss.tex) - ~285 words, ~20 min  
   - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **13** [Stream 1: augmentation + hyper-parameters (3.2.3-3.2.4)](sections/13_m_aug_hparams.tex) - ~133 words, ~10 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **14** [Stream 2: CLIP-SENet branch (3.3)](sections/14_m_stream2.tex) - ~186 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **15** [Post-processing: AQE, k-reciprocal, TTA (3.4)](sections/15_m_postproc.tex) - ~143 words, ~10 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **16** [Score-level fusion: definition + figure (3.5 part 1)](sections/16_m_fusion_def.tex) - ~136 words, ~10 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **17** [Score-level fusion: why score- not feature-level (3.5 part 2)](sections/17_m_fusion_why.tex) - ~192 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 
 ## 4 Experimental setup
 
 - **18** [Dataset, protocol, implementation details (4.1-4.3)](sections/18_s_setup.tex) - ~110 words, ~10 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **19** [Reproducibility (4.4)](sections/19_s_repro.tex) - ~309 words, ~20 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 
 ## 5 Results
 
 - **20** [Comparison with the state of the art (5.1)](sections/20_r_sota.tex) - ~115 words, ~10 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **21** [Pure ViT-B comparison (5.2)](sections/21_r_pure.tex) - ~103 words, ~10 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **22** [Matched-condition vs TransReID / CLIP-ReID (5.3)](sections/22_r_matched.tex) - ~260 words, ~20 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **23** [Ablation study (5.4)](sections/23_r_ablation.tex) - ~261 words, ~20 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **24** [Seed variance + fusion-weight sensitivity (5.5-5.6)](sections/24_r_seed_fusionw.tex) - ~278 words, ~20 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **25** [Hyper-parameter selection and selection bias (5.7 part 1)](sections/25_r_hp_selection.tex) - ~156 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **26** [Held-out validation (5.7 part 2)](sections/26_r_hp_heldout.tex) - ~236 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **27** [Post-proc plateau, calibration, bootstrap significance (5.7 part 3)](sections/27_r_hp_signif.tex) - ~203 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **28** [Post-processing contribution + input resolution (5.8-5.9)](sections/28_r_pp_resolution.tex) - ~172 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **29** [VeRi-Wild: setup, table, figure (5.10 part 1)](sections/29_r_vw_setup.tex) - ~155 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **30** [VeRi-Wild: observations 1-2, fusion does not transfer (5.10 part 2)](sections/30_r_vw_obs12.tex) - ~218 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **31** [VeRi-Wild: AQE, training-free fix (5.10 part 3)](sections/31_r_vw_obs34.tex) - ~306 words, ~20 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **32** [VeRi-Wild: literature context + reframing (5.10 part 4)](sections/32_r_vw_context.tex) - ~180 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **33** [Qualitative analysis (5.11)](sections/33_r_qualitative.tex) - ~87 words, ~10 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 
 ## 6 Discussion
 
 - **34** [What drives the ViT-B gain (6.1)](sections/34_d_gain.tex) - ~176 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **35** [Why fusion works + backbone scale (6.2-6.3)](sections/35_d_fusion_scale.tex) - ~170 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **36** [Cost: model and feature extraction (6.4 part 1)](sections/36_d_cost_model.tex) - ~158 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **37** [Cost: post-processing + domain transfer (6.4 part 2)](sections/37_d_cost_pp.tex) - ~259 words, ~20 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **38** [Cost: scalable sparse implementation + figure (6.4 part 3)](sections/38_d_cost_sparse.tex) - ~123 words, ~10 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **39** [Cost: accuracy/latency trade-offs, CA-Jaccard (6.4 part 4)](sections/39_d_cost_tradeoff.tex) - ~250 words, ~20 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **40** [Limitations (6.5)](sections/40_d_limitations.tex) - ~321 words, ~20 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 
 ## 7 Conclusion
 
 - **41** [Conclusion](sections/41_conclusion.tex) - ~246 words, ~15 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 
 ## Back matter
 

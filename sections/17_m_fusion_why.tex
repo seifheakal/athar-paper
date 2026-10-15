@@ -1,32 +1,6 @@
 % ===== UNIT 17: Score-level fusion: why score- not feature-level (3.5 part 2) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
-Score-level fusion is preferred over feature-level fusion because the two
-streams have fundamentally different feature geometries (1536D concat-patch ViT
-representation vs.\ 2048D convolutional map) and normalisation schemes;
-combining at the feature level would require a learned projection prone to
-overfitting on 576 training identities. The streams also use different input
-resolutions (224\,$\times$\,224 vs.\ 320\,$\times$\,320, each matching its
-checkpoint); score-level fusion is agnostic to this mismatch by construction,
-and harmonising would actively hurt---evaluating Stream~1 at
-320\,$\times$\,320 costs $1.7$\,pp mAP (Section~\ref{sec:res_sens}).
+We prefer score-level fusion over feature-level fusion. The two streams have very different feature geometries (a 1536D concat-patch ViT representation and a 2048D convolutional map) and different normalisation schemes. Fusing at the feature level would need a learned projection, which could overfit on 576 training identities. The streams also use different input resolutions (224\,$\times$\,224 vs.\ 320\,$\times$\,320, each matching its checkpoint). Score-level fusion does not depend on this mismatch. Making the resolutions equal would even hurt, since evaluating Stream~1 at 320\,$\times$\,320 costs $1.7$\,pp mAP (Section~\ref{sec:res_sens}).
 
-We also verified the score-versus-feature-level choice empirically. Under the
-identical downstream post-processing, plain L2-normalised concatenation of the
-two streams reaches 93.08\% mAP / 98.63\% Rank-1, and weight-matched
-concatenation ($[\sqrt{w_1}\,\mathbf{f}_1;\sqrt{w_2}\,\mathbf{f}_2]$, the
-feature-space counterpart of Eq.~\eqref{eq:fusion}) reaches 93.37\% /
-98.51\%---statistically indistinguishable from the deployed score fusion
-(93.32\% / 98.45\%)---whereas PCA-whitening (1024-D) fitted strictly on the
-training split degrades sharply to 86.50\%. Feature- and score-level fusion are
-therefore equivalent here when equally weighted, with no evidence that
-feature-level concatenation overfits; we retain score-level fusion for its
-interpretability (explicit stream weights) and because classical
-whitening-style feature calibration actively hurts in this regime. The optimal
-weights $w_1{=}0.35$, $w_2{=}0.65$ were found by grid search on the VeRi-776
-query/gallery split ($\approx$49.5\,min on T4). Since no separate held-out
-validation split is used for weight selection, the chosen weights may reflect a
-mild optimistic bias. However, Figure~\ref{fig:weight} demonstrates that mAP
-remains above 93.0\% across $w_1 \in [0.2,\,0.5]$, indicating that the optimal
-weight is not a sharp peak and that the practical impact of this selection
-procedure on the reported result is negligible.
+We also tested this choice empirically. We used the same downstream post-processing for all variants. Plain L2-normalised concatenation of the two streams reaches 93.08\% mAP / 98.63\% Rank-1. Weight-matched concatenation ($[\sqrt{w_1}\,\mathbf{f}_1;\sqrt{w_2}\,\mathbf{f}_2]$, the feature-space version of Eq.~\eqref{eq:fusion}) reaches 93.37\% / 98.51\%. This is statistically indistinguishable from the deployed score fusion (93.32\% / 98.45\%). PCA-whitening (1024-D) fitted only on the training split drops sharply to 86.50\%. So feature-level and score-level fusion are equivalent here when equally weighted, and we found no sign that feature-level concatenation overfits. We keep score-level fusion because the stream weights are explicit, and because whitening-style feature calibration hurts in this setting. We found the optimal weights $w_1{=}0.35$, $w_2{=}0.65$ by grid search on the VeRi-776 query/gallery split ($\approx$49.5\,min on T4). We use no separate held-out validation split for weight selection, so the chosen weights may be slightly optimistic. However, Figure~\ref{fig:weight} shows that mAP stays above 93.0\% for $w_1 \in [0.2,\,0.5]$. The optimal weight is not a sharp peak, so the effect of this selection procedure on the reported result is negligible.

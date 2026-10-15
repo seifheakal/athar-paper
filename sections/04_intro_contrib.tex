@@ -14,7 +14,7 @@ The contributions of this work are as follows:
     and CLIP-ReID checkpoints lifts them to \textbf{91.12\%} and
     \textbf{91.80\% mAP}, both slightly above ours, while all three
     are within 0.9\,pp without post-processing
-    (82.11\,/\,82.99\,/\,82.22\%; Table~\ref{tab:matched}). Our recipe thus
+    (82.11\,/\,82.99\,/\,82.22\%, Table~\ref{tab:matched}). Our recipe thus
     gives no advantage over these baselines at matched conditions: the ViT-B
     retrieval gains are because of post-processing, and we position
     Stream~1 as a reproducible baseline rather than a superior recipe. Among
@@ -42,7 +42,7 @@ The contributions of this work are as follows:
     configuration files, per-query evaluation dumps, and the post-processing
     pipeline are publicly released. Every reported number is the deterministic
     re-evaluation of a frozen, hash-pinned checkpoint and is thus
-    exactly re-computable from the release; from-scratch retraining is
+    exactly re-computable from the release. From-scratch retraining is
     reproducible within a $\pm0.55$\,pp seed band
     (Section~\ref{sec:seed_variance}). Headline numbers use hyperparameters
     selected on the standard evaluation split (disclosed, not implicit), with

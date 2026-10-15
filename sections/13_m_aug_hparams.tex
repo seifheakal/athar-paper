@@ -1,15 +1,8 @@
 % ===== UNIT 13: Stream 1: augmentation + hyper-parameters (3.2.3-3.2.4) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsubsection{Augmentation pipeline}
-Table~\ref{tab:augmentation} lists the full augmentation sequence applied
-during Stream~1 training. All reported Stream~1 results use a
-224\,$\times$\,224 input; hue/colour-corrupting augmentations (random
-grayscale, strong hue jitter) were excluded as they remove vehicle colour
-identity cues. A controlled 256\,$\times$\,256 training-resolution
-comparison was not reproduced in this campaign; an inference-resolution
-sensitivity analysis (Section~\ref{sec:res_sens}) shows the deployed checkpoint
-performs best at its native 224\,$\times$\,224.
+Table~\ref{tab:augmentation} lists the full augmentation sequence used during Stream~1 training. All reported Stream~1 results use a 224\,$\times$\,224 input. We left out augmentations that change colour, such as random grayscale and strong hue jitter, because they remove vehicle colour cues. We did not reproduce a controlled 256\,$\times$\,256 training-resolution comparison in this campaign. An inference-resolution analysis (Section~\ref{sec:res_sens}) shows that the deployed checkpoint performs best at its native 224\,$\times$\,224.
 
 \begin{table}[!t]
   \centering
@@ -36,15 +29,7 @@ performs best at its native 224\,$\times$\,224.
 \end{table}
 
 \subsubsection{Training hyperparameters}
-Table~\ref{tab:hyperparams} compares the proposed Stream~1 configuration with
-the published TransReID recipe~\cite{he2021transreid}. Training required
-approximately 2.5--3.0 GPU-hours on $2\times$ NVIDIA T4 GPUs with DataParallel.
-The exact $P{\times}K$ tuple is not recorded in the training logs; only the
-effective batch size of 96 is confirmed. For future retraining we recommend
-$P{\times}K = 12{\times}8$ as the default consistent with this batch
-size---stated explicitly as a recommendation rather than a recovered record;
-retraining reproducibility under the released configuration is bounded by the
-$\pm 0.55$\,pp seed band of Section~\ref{sec:seed_variance}.
+Table~\ref{tab:hyperparams} compares our Stream~1 configuration with the published TransReID recipe~\cite{he2021transreid}. Training took about 2.5--3.0 GPU-hours on $2\times$ NVIDIA T4 GPUs with DataParallel. The exact $P{\times}K$ tuple is not recorded in the training logs. Only the effective batch size of 96 is confirmed. For future retraining we recommend $P{\times}K = 12{\times}8$, which matches this batch size. This is a recommendation, not a recovered record. Retraining under the released configuration is reproducible within the $\pm 0.55$\,pp seed band of Section~\ref{sec:seed_variance}.
 
 \begin{table}[!t]
   \centering

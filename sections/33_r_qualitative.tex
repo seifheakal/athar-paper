@@ -1,23 +1,14 @@
 % ===== UNIT 33: Qualitative analysis (5.11) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsection{Qualitative analysis}
-Visual inspection indicates the fusion model handles frontal-to-rear viewpoint
-transitions, illumination shifts, and partial occlusion well. Failure cases
-arise under: (a)~near-identical vehicles of the same make, model, and colour at
-similar viewpoints, where both streams return similar-appearing but incorrect
-identities; (b)~extreme occlusion ($>$60\% vehicle body); and (c)~very
-low-resolution gallery crops. In these cases, both streams tend to fail on the
-same queries, indicating correlated rather than complementary errors in the
-hardest cases. Table~\ref{tab:qual} summarises these failure modes alongside
-representative success cases; full retrieval panel figures are available in the
-project repository.
+Visual inspection suggests that the fusion model handles frontal-to-rear viewpoint changes, illumination shifts and partial occlusion well. Failures happen in three cases. (a)~Near-identical vehicles of the same make, model and colour at similar viewpoints, where both streams return similar-looking but incorrect identities. (b)~Extreme occlusion ($>$60\% of the vehicle body). (c)~Very low-resolution gallery crops. In these cases, both streams tend to fail on the same queries. This points to correlated errors, not complementary ones, in the hardest cases. Table~\ref{tab:qual} summarises these failure modes together with representative success cases. Full retrieval panel figures are in the project repository.
 
 \begin{table*}[!t]
   \centering
   \caption{Qualitative failure-mode analysis on VeRi-776 (200 test identities).
   Rows 1--3 are failure modes and show correlated errors across both streams,
-  indicating a ceiling reachable only by improved cross-view invariance; rows
+  which suggests a ceiling that only better cross-view invariance can lift. Rows
   4--5 are success cases included for contrast}
   \label{tab:qual}
   \small
@@ -27,13 +18,13 @@ project repository.
     \midrule
     Same make/model/colour, identical viewpoint &
       Returns visually similar but incorrect identity &
-      Returns same incorrect identity; errors correlated \\
+      Returns same incorrect identity, errors correlated \\
     Extreme occlusion ($>$60\% body) &
-      Rank-1 miss; partial hood/trunk features dominate &
-      Rank-1 miss; AFEM misses occluded part regions \\
+      Rank-1 miss, partial hood/trunk features dominate &
+      Rank-1 miss, AFEM misses occluded part regions \\
     Very low-resolution gallery ($<$40$\times$40\,px) &
-      Patch tokens degenerate; CLS unstable &
-      IBN-a loses texture; both streams fail jointly \\
+      Patch tokens degenerate, CLS unstable &
+      IBN-a loses texture, both streams fail jointly \\
     \midrule
     Frontal-to-rear transition (success) &
       SIE camera offset reduces cross-view gap &

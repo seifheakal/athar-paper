@@ -1,24 +1,5 @@
 % ===== UNIT 34: What drives the ViT-B gain (6.1) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsection{What drives the ViT-B gain}
-The improvement of our ViT-B pipeline over the published TransReID baseline
-combines recipe and post-processing effects that the ablation deliberately
-separates. Within the recipe, CLIP pretraining initialisation and AdamW with
-layer-wise LR decay are the two ingredients our development depended on most
-(A2, A4); CLIP provides a rich visual-semantic prior for fine-grained vehicle
-discrimination, consistent with transfer-learning observations in the ReID
-literature~\cite{li2023clipreid,radford2021clip}. We reiterate the caveat of
-Section~\ref{sec:matched}: at matched no-post-processing conditions the recipe
-does not by itself exceed TransReID (82.2\% vs.\ 82.3\% mAP), and under our
-identical post-processing both TransReID and CLIP-ReID in fact surpass our
-pipeline (91.12\% and 91.80\% vs.\ 89.97\%). These are therefore drivers
-within our recipe rather than net gains over a tuned baseline, and the
-bulk of the reported improvement is contributed by AQE, $k$-reciprocal
-re-ranking, and TTA. For context, a DINOv2-initialised
-alternative~\cite{oquab2023dinov2} evaluated as a second fusion stream on
-VeRi-776 did not match the CLIP-based CLIP-SENet stream (below 89.3\% mAP
-standalone), so CLIP-family semantic supervision was retained for both streams;
-we did not run a controlled DINOv2-versus-CLIP Stream-1 backbone swap on
-VeRi-776 and therefore make no claim about pretraining scale versus semantic
-supervision from this benchmark alone.
+The improvement of our ViT-B pipeline over the published TransReID baseline combines recipe effects and post-processing effects, and the ablation deliberately separates them. Within the recipe, CLIP pretraining initialisation and AdamW with layer-wise LR decay are the two ingredients that our development depended on most (A2, A4). CLIP provides a rich visual-semantic prior for fine-grained vehicle discrimination, which fits transfer-learning observations in the ReID literature~\cite{li2023clipreid,radford2021clip}. We repeat the caveat of Section~\ref{sec:matched}. At matched no-post-processing conditions the recipe does not by itself exceed TransReID (82.2\% vs.\ 82.3\% mAP). Under our identical post-processing, both TransReID and CLIP-ReID are above our pipeline (91.12\% and 91.80\% vs.\ 89.97\%). So these are drivers within our recipe, not net gains over a tuned baseline. Most of the reported improvement comes from AQE, $k$-reciprocal re-ranking and TTA. For context, we also tried a DINOv2-initialised alternative~\cite{oquab2023dinov2} as a second fusion stream on VeRi-776. It did not match the CLIP-based CLIP-SENet stream (below 89.3\% mAP standalone), so we kept CLIP-family semantic supervision for both streams. We did not run a controlled DINOv2-versus-CLIP Stream-1 backbone swap on VeRi-776. So we make no claim about pretraining scale versus semantic supervision from this benchmark alone.

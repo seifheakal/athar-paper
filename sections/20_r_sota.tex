@@ -1,15 +1,13 @@
 % ===== UNIT 20: Comparison with the state of the art (5.1) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsection{Comparison with the state of the art}
-Table~\ref{tab:sota} compares the proposed single-stream (S1) and fusion
-results against published methods on VeRi-776, and Figure~\ref{fig:landscape}
-places them in the mAP--Rank-1 landscape.
+Table~\ref{tab:sota} compares our single-stream (S1) and fusion results with published methods on VeRi-776. Figure~\ref{fig:landscape} shows them in the mAP--Rank-1 plane.
 
 \begin{table*}[!t]
   \centering
   \caption{State-of-the-art comparison on VeRi-776.
-    \cmark\,=\,post-processing (AQE / re-ranking) applied; \xmark\,=\,cosine
+    \cmark\,=\,post-processing (AQE / re-ranking) applied, \xmark\,=\,cosine
     similarity only. Rows differ in post-processing condition and are
     therefore not strictly like-for-like: our pipeline rows are \cmark\ while
     several transformer baselines (TransReID, CLIP-ReID) are reported
@@ -31,8 +29,8 @@ places them in the mAP--Rank-1 landscape.
     MBR4B-LAI    & ITSC 2023  & ResNet50 (multi-branch)   & 92.09 & 98.03 & \cmark & \cite{luo2023mbr4b} \\
     CLIP-SENet   & arXiv 2025 & ResNet101-IBN-a $+$ TinyCLIP & 92.90 & 98.70 & \cmark & \cite{lu2025clipsenet} \\
     \midrule
-    \textbf{Ours (S1, w/ PP)} & ---  & ViT-B/16 (CLIP init.) & \textbf{89.97} & \textbf{97.79} & \cmark & --- \\
-    \textbf{Ours (fusion)}    & ---  & ViT-B $+$ ResNet101-IBN-a $+$ TinyCLIP & \textbf{93.32} & \textbf{98.45} & \cmark & --- \\
+    \textbf{Ours (S1, w/ PP)} & --  & ViT-B/16 (CLIP init.) & \textbf{89.97} & \textbf{97.79} & \cmark & -- \\\\
+    \textbf{Ours (fusion)}    & --  & ViT-B $+$ ResNet101-IBN-a $+$ TinyCLIP & \textbf{93.32} & \textbf{98.45} & \cmark & -- \\\\
     \bottomrule
   \end{tabular}
 \end{table*}
@@ -40,26 +38,8 @@ places them in the mAP--Rank-1 landscape.
 \begin{figure}[!t]
   \centering
   \includegraphics[width=0.92\columnwidth]{Fig3}
-  \caption{Published VeRi-776 results in the mAP--Rank-1 plane. Filled markers
-  denote results reported with post-processing; open markers denote
-  raw-embedding results. Early CNN-era methods (PROVID, 53.4\% mAP; VAMI,
-  50.1\% mAP) fall outside the plotted range and are omitted for readability.
-  The single-stream result of this work is competitive but, as
-  Section~\ref{sec:matched} shows, this reflects post-processing rather than a
-  recipe advantage}
+  \caption{Published VeRi-776 results in the mAP--Rank-1 plane. Filled markers denote results reported with post-processing. Open markers denote raw-embedding results. Early CNN-era methods (PROVID with 53.4\% mAP, VAMI with 50.1\% mAP) fall outside the plotted range and are omitted. The single-stream result of this work is competitive, but Section~\ref{sec:matched} shows that this comes from post-processing, not from a better recipe}
   \label{fig:landscape}
 \end{figure}
 
-This table should be read with care, because the rows mix post-processing
-conditions. First, our ViT-B pipeline (89.97\% mAP, \cmark) is the strongest
-pure-ViT-B entry among published results, but those baselines are
-reported without post-processing (\xmark); when we apply our identical
-post-processing to the official TransReID and CLIP-ReID checkpoints they reach
-91.12\% and 91.80\% mAP, both exceeding ours
-(Section~\ref{sec:matched}), so this row reflects post-processing rather than a
-recipe advantage. Among single models reported with post-processing,
-MBR4B-LAI (92.1\% mAP~\cite{luo2023mbr4b}) also exceeds our single stream.
-Second, the fusion (93.32\% mAP) marginally exceeds the best prior published
-result (CLIP-SENet, 92.9\%~\cite{lu2025clipsenet}) by $+0.42$\,pp and
-MBR4B-LAI by $+1.23$\,pp, which we interpret as evidence of stream
-complementarity rather than a decisive margin.
+Read this table with care, because the rows mix post-processing conditions. First, our ViT-B pipeline (89.97\% mAP, \cmark) is the strongest pure-ViT-B entry among published results. But those baselines are reported without post-processing (\xmark). When we apply our identical post-processing to the official TransReID and CLIP-ReID checkpoints, they reach 91.12\% and 91.80\% mAP, both above ours (Section~\ref{sec:matched}). So this row reflects post-processing, not a recipe advantage. Among single models reported with post-processing, MBR4B-LAI (92.1\% mAP~\cite{luo2023mbr4b}) is also above our single stream. Second, the fusion (93.32\% mAP) is slightly above the best prior published result (CLIP-SENet, 92.9\%~\cite{lu2025clipsenet}), by $+0.42$\,pp, and above MBR4B-LAI by $+1.23$\,pp. We read this as evidence that the two streams complement each other, not as a decisive margin.

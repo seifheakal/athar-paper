@@ -1,36 +1,14 @@
 % ===== UNIT 14: Stream 2: CLIP-SENet branch (3.3) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsection{Stream~2: CLIP-SENet branch}
-The CLIP-SENet architecture~\cite{lu2025clipsenet} provides a complementary
-feature stream. Where the ViT-B processes images as sequences of global patch
-tokens through self-attention, CLIP-SENet processes images through a
-ResNet101-IBN-a backbone~\cite{pan2018ibn} that applies local convolutional
-filters with Instance-Batch Normalisation (IBN), capturing fine-grained local
-texture patterns less salient in global attention maps.
+The CLIP-SENet architecture~\cite{lu2025clipsenet} gives us a second, complementary feature stream. The ViT-B reads images as sequences of global patch tokens with self-attention. CLIP-SENet uses a ResNet101-IBN-a backbone~\cite{pan2018ibn} instead. It applies local convolutional filters with Instance-Batch Normalisation (IBN). This captures fine-grained local texture that is less visible in global attention maps.
 
-The CLIP-SENet architecture consists of three
-components~\cite{lu2025clipsenet}:
+CLIP-SENet has three components~\cite{lu2025clipsenet}:
 \begin{enumerate}
-  \item \textbf{CNN backbone:} ResNet101-IBN-a~\cite{pan2018ibn} for
-    2048-dimensional local appearance features. IBN balances instance
-    normalisation (style invariance) and batch normalisation (discriminative
-    learning), benefiting cross-camera ReID where camera-specific styles
-    constitute nuisance variation.
-  \item \textbf{Semantic Extraction Module (SEM):} the TinyCLIP image encoder
-    extracts a 512-dimensional visual-semantic representation; unlike
-    CLIP-ReID~\cite{li2023clipreid}, no text encoder is used at any
-    stage~\cite{lu2025clipsenet}.
-  \item \textbf{Adaptive Fine-Grained Enhancement Module (AFEM):} adaptively
-    groups and weights fine-grained vehicle attributes (model, colour, shape)
-    from TinyCLIP, producing robust semantic embeddings without text
-    annotations~\cite{lu2025clipsenet}.
+  \item \textbf{CNN backbone.} ResNet101-IBN-a~\cite{pan2018ibn} gives 2048-dimensional local appearance features. IBN combines instance normalisation (style invariance) with batch normalisation (discriminative learning). This helps cross-camera ReID, where the style of each camera is a nuisance.
+  \item \textbf{Semantic Extraction Module (SEM).} The TinyCLIP image encoder extracts a 512-dimensional visual-semantic representation. Unlike CLIP-ReID~\cite{li2023clipreid}, it does not use a text encoder at any stage~\cite{lu2025clipsenet}.
+  \item \textbf{Adaptive Fine-Grained Enhancement Module (AFEM).} It groups and weights fine-grained vehicle attributes (model, colour, shape) from TinyCLIP. This gives strong semantic embeddings without text annotations~\cite{lu2025clipsenet}.
 \end{enumerate}
 
-The CLIP-SENet v6 checkpoint is trained on VeRi-776 with Adam
-($\mathrm{lr}\!=\!5\!\times\!10^{-4}$, wd$=\!5\!\times\!10^{-4}$, cosine
-schedule), $P\!=\!8$, $K\!=\!8$, effective batch 128 (\texttt{accum\_steps}=2),
-CE-LS $+$ SupCon, 24 epochs with 5-epoch warm-up on a P100 GPU
-($\approx$4\,h\,26\,min). Input size is $320\!\times\!320$, matching the
-released CLIP-SENet~v6 checkpoint; a $256\!\times\!256$
-training-resolution variant was not reproduced in this campaign.
+The CLIP-SENet v6 checkpoint is trained on VeRi-776 with Adam ($\mathrm{lr}\!=\!5\!\times\!10^{-4}$, wd$=\!5\!\times\!10^{-4}$, cosine schedule), $P\!=\!8$, $K\!=\!8$ and effective batch 128 (\texttt{accum\_steps}=2). The loss is CE-LS $+$ SupCon. It trains for 24 epochs with a 5-epoch warm-up on a P100 GPU ($\approx$4\,h\,26\,min). The input size is $320\!\times\!320$, which matches the released CLIP-SENet~v6 checkpoint. We did not reproduce a $256\!\times\!256$ training-resolution variant in this campaign.

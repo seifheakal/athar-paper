@@ -1,41 +1,8 @@
 % ===== UNIT 41: Conclusion =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
-This paper revisited the ViT-Base/16 pipeline for vehicle re-identification on
-VeRi-776 and separated the contribution of the training recipe from that of
-evaluation-time post-processing. A fully specified recipe---combining CLIP
-pretraining initialisation, a tuned metric-learning objective, an optimised
-augmentation pipeline, AdamW optimisation, and a three-step post-processing
-pipeline---achieves 89.97\% mAP and 97.79\% Rank-1 at its best-mAP operating
-point, with a separate best-Rank-1 operating point of 85.14\% mAP and 98.33\%
-Rank-1. As emphasised throughout, this number is delivered by the
-post-processing pipeline rather than by the recipe: the recipe merely matches
-TransReID at the raw-embedding level (82.2\% vs.\ 82.3\%), and given our
-identical post-processing the official TransReID and CLIP-ReID checkpoints
-reach 91.12\% and 91.80\% mAP---both above ours
-(Section~\ref{sec:matched}). We therefore present Stream~1 as a reproducible,
-fully specified baseline rather than a superior recipe---a result we regard as
-the paper's most useful finding for the community, since it suggests that a
-substantial part of apparent post-TransReID progress on this benchmark is
-attributable to post-processing rather than to architectural or recipe
-refinement.
+This paper revisited the ViT-Base/16 pipeline for vehicle re-identification on VeRi-776. We separated the effect of the training recipe from the effect of evaluation-time post-processing. Our recipe combines CLIP pretraining initialisation, a tuned metric-learning objective, an optimised augmentation pipeline, AdamW optimisation and a three-step post-processing pipeline. It reaches 89.97\% mAP and 97.79\% Rank-1 at its best-mAP operating point. A separate best-Rank-1 operating point reaches 85.14\% mAP and 98.33\% Rank-1. This number comes from the post-processing pipeline, not from the recipe. At the raw-embedding level the recipe only matches TransReID (82.2\% vs.\ 82.3\%). Given our identical post-processing, the official TransReID and CLIP-ReID checkpoints reach \textbf{91.12\%} and \textbf{91.80\%} mAP, both above ours (Section~\ref{sec:matched}). So we present Stream~1 as a reproducible, specific baseline, not as a superior recipe. We see this as the most useful finding of the paper for the community. It suggests that a large part of the apparent progress after TransReID on this benchmark comes from post-processing, not from architecture or recipe changes.
 
-Score-level fusion with a CLIP-SENet branch~\cite{lu2025clipsenet} achieves
-93.32\% mAP and 98.45\% Rank-1, marginally the best published mAP on VeRi-776,
-exceeding the previous best (CLIP-SENet standalone:
-92.9\%~\cite{lu2025clipsenet}) by a narrow $+0.42$\,pp; Rank-1 accuracy
-(98.45\%) is competitive with but does not exceed the CLIP-SENet standalone
-Rank-1 (98.7\%). A paired bootstrap confirms the gain over the stronger single
-stream is statistically significant, so the fusion demonstrates genuine feature
-complementarity between transformer and CNN-semantic streams. The comprehensive
-ablation from 82.3\% to 93.3\% mAP traces this trajectory under one consistent
-protocol, and the zero-shot VeRi-Wild study shows which parts of it transfer:
-the ViT-B embedding generalises in part, whereas the fusion advantage and the
-re-ranking gain are domain-specific.
+Score-level fusion with a CLIP-SENet branch~\cite{lu2025clipsenet} reaches 93.32\% mAP and 98.45\% Rank-1. This is slightly the best published mAP on VeRi-776, above the previous best (CLIP-SENet standalone, 92.9\%~\cite{lu2025clipsenet}) by a narrow $+0.42$\,pp. The Rank-1 (98.45\%) is competitive with the CLIP-SENet standalone Rank-1 (98.7\%), but does not exceed it. A paired bootstrap confirms that the gain over the stronger single stream is statistically significant. So the fusion shows real complementarity between the transformer and CNN-semantic streams. The full ablation from 82.3\% to 93.3\% mAP traces this trajectory under one consistent protocol. The zero-shot VeRi-Wild study shows which parts transfer. The ViT-B embedding generalises in part, but the fusion advantage and the re-ranking gain are domain-specific.
 
-Future directions include knowledge distillation from the fusion model into a
-single-stream model; learned query-adaptive fusion toward the measured oracle
-headroom (Section~\ref{sec:veriwild}); evaluation under seen/unseen
-vehicle-type protocols rather than standard random-identity splits; and
-extension to nighttime surveillance and CityFlowV2. All code and checkpoints
-are publicly released.
+Future directions include knowledge distillation from the fusion model into a single-stream model, and learned query-adaptive fusion toward the measured oracle headroom (Section~\ref{sec:veriwild}). They also include evaluation under seen/unseen vehicle-type protocols instead of standard random-identity splits, and extension to nighttime surveillance and CityFlowV2. All code and checkpoints are publicly released.
