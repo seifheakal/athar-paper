@@ -2,7 +2,7 @@
 
 The paper was drafted with heavy AI assistance. **Goal: every unit below is rewritten in our own words by one of us, then read by a second person.** One unit = one file in [`sections/`](sections/) = one sitting (~10-25 min).
 
-**Progress: 41 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
+**Progress: 44 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
 
 ## How to take a unit
 
@@ -143,7 +143,7 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 ## Back matter
 
 - **42** [Statements and declarations](sections/42_statements.tex) - ~263 words, ~20 min *Keep it plain and factual. Make "Author contributions" and "Use of large language models" true after the rewrite.*  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **43** [References - verify entries 1-19 (do NOT rewrite)](sections/43_refs_a.tex) - ~386 words, ~25 min *Not a style rewrite. Fix typos and formatting only.*  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
 - **44** [References - verify entries 20-37 (do NOT rewrite)](sections/44_refs_b.tex) - ~377 words, ~25 min *Not a style rewrite. Fix typos and formatting only.*  
@@ -152,9 +152,9 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 ## Biographies
 
 - **45** [Bio: Seif T. Heakal (his own)](sections/45_bio_seif.tex) - ~63 words, ~10 min *Only this author writes this. 50-100 words.*  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **46** [Bio: Mohamed A. Ali (his own)](sections/46_bio_maali.tex) - ~58 words, ~10 min *Only this author writes this. 50-100 words.*  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **47** [Bio: Ali A. Ali (his own)](sections/47_bio_aali.tex) - ~61 words, ~10 min *Only this author writes this. 50-100 words.*  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
 - **48** [Bio: Abdelrahman Hamdi (his own)](sections/48_bio_hamdi.tex) - ~64 words, ~10 min *Only this author writes this. 50-100 words.*  
