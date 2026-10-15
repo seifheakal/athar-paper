@@ -64,7 +64,7 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 ## 3 Methodology
 
 - **10** [Overview figure + problem formulation (3.1)](sections/10_m_overview.tex) - ~95 words, ~10 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **11** [Stream 1: backbone architecture (3.2.1)](sections/11_m_backbone.tex) - ~104 words, ~10 min  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
 - **12** [Stream 1: loss function + equations (3.2.2)](sections/12_m_loss.tex) - ~285 words, ~20 min  
