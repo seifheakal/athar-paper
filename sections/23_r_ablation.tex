@@ -29,7 +29,7 @@ ablation experiments.
     \toprule
     Configuration & mAP~(\%) & R1~(\%) & $\Delta$ vs.\ A1 \\
     \midrule
-    \multicolumn{4}{l}{emph{Isolated component ablation (Stream~1, AQE $+$ rerank)}} \\
+    \multicolumn{4}{l}{\emph{Isolated component ablation (Stream~1, AQE $+$ rerank)}} \\
     A1 --- un-tuned SGD control: DeiT $+$ SGD $+$ CE $+$ triplet (not TransReID) & 57.62 & 80.45 & --- \\
     A2 --- $+$CLIP initialisation only                    & 70.97 & 86.83 & $+13.35$ \\
     A3 --- $+$SupCon only (DeiT $+$ SGD $+$ CE-LS $+$ SupCon) & 59.48 & 79.74 & $+1.86$ \\
@@ -37,7 +37,7 @@ ablation experiments.
     A5$\alpha$ --- full (CLIP $+$ AdamW/LLRD $=0.75$ $+$ CE-LS $+$ triplet $+$ centre; deployed) & 89.06 & 97.74 & $+31.44$ \\
     A5$\beta$ --- full (CLIP $+$ AdamW/LLRD $=0.65$ $+$ CE-LS $+$ SupCon; alternative) & 88.57 & 96.66 & $+30.95$ \\
     \midrule
-    \multicolumn{4}{l}{Cumulative trajectory $\to$ headline} \\
+    \multicolumn{4}{l}{\emph{Cumulative trajectory $\to$ headline}} \\
     TransReID baseline (DeiT-B*)~\cite{he2021transreid}  & 82.30 & 97.10 & --- \\
     Base cosine, ViT-B (no PP)                            & 82.22 & 97.50 & $-0.08$ \\
     \quad$+$AQE $k{=}3$                                   & 84.08 & 97.20 & $+1.86$ \\
