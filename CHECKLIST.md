@@ -2,7 +2,7 @@
 
 The paper was drafted with heavy AI assistance. **Goal: every unit below is rewritten in our own words by one of us, then read by a second person.** One unit = one file in [`sections/`](sections/) = one sitting (~10-25 min).
 
-**Progress: 9 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
+**Progress: 10 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
 
 ## How to take a unit
 
@@ -64,7 +64,7 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 ## 3 Methodology
 
 - **10** [Overview figure + problem formulation (3.1)](sections/10_m_overview.tex) - ~95 words, ~10 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **11** [Stream 1: backbone architecture (3.2.1)](sections/11_m_backbone.tex) - ~104 words, ~10 min  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
 - **12** [Stream 1: loss function + equations (3.2.2)](sections/12_m_loss.tex) - ~285 words, ~20 min  
