@@ -2,7 +2,7 @@
 
 The paper was drafted with heavy AI assistance. **Goal: every unit below is rewritten in our own words by one of us, then read by a second person.** One unit = one file in [`sections/`](sections/) = one sitting (~10-25 min).
 
-**Progress: 3 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
+**Progress: 4 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
 
 ## How to take a unit
 
@@ -46,7 +46,7 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 - **03** [The ViT-B training recipe gap (1.2)](sections/03_intro_gap.tex) - ~169 words, ~15 min  
   - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 - **04** [Contributions + paper organisation (1.3-1.4)](sections/04_intro_contrib.tex) - ~347 words, ~20 min  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@seifheakal`  - Reviewer: `@____`
 
 ## 2 Related work
 

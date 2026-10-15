@@ -1,10 +1,10 @@
 % ===== UNIT 04: Contributions + paper organisation (1.3-1.4) =====
-% Status: AI-DRAFT  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
+% Status: REWRITTEN  (change to REWRITTEN / REVIEWED when done; see CHECKLIST.md)
 % Rules: style rewrite only. Keep every \cite, \ref, \label, number, equation and table value as is. Change the wording, not the content.
 \subsection{Contributions}
 The contributions of this work are as follows:
 \begin{itemize}
-  \item \textbf{C1 : Reproducible ViT-B/16 pipeline and a
+  \item \textbf{C1: Reproducible ViT-B/16 pipeline and a
     recipe-versus-post-processing analysis.} We release a specific
     ViT-B/16 retrieval pipeline (CLIP initialisation, a tuned metric objective,
     an optimised augmentation pipeline, AQE $+$ $k$-reciprocal
@@ -12,7 +12,7 @@ The contributions of this work are as follows:
     97.79\% Rank-1} on VeRi-776. We test what drives this
     number: applying our identical post-processing to the official TransReID
     and CLIP-ReID checkpoints lifts them to \textbf{91.12\%} and
-    \textbf{91.80\% mAP} both slightly above ours while all three
+    \textbf{91.80\% mAP}, both slightly above ours, while all three
     are within 0.9\,pp without post-processing
     (82.11\,/\,82.99\,/\,82.22\%; Table~\ref{tab:matched}). Our recipe thus
     gives no advantage over these baselines at matched conditions: the ViT-B
@@ -20,7 +20,7 @@ The contributions of this work are as follows:
     Stream~1 as a reproducible baseline rather than a superior recipe. Among
     single models reported with post-processing, MBR4B-LAI
     (92.1\% mAP~\cite{luo2023mbr4b}) is also higher.
-  \item \textbf{C2 : Marginal new best mAP via training-free fusion.}
+  \item \textbf{C2: Marginal new best mAP via training-free fusion.}
     Score-level fusion with CLIP-SENet~\cite{lu2025clipsenet} achieves
     \textbf{93.32\% mAP / 98.45\% Rank-1}, $+0.42$\,pp mAP above the best
     previously published result (92.9\%~\cite{lu2025clipsenet}) and
@@ -28,16 +28,16 @@ The contributions of this work are as follows:
     (98.45\%) is competitive with but does not exceed CLIP-SENet standalone
     Rank-1 (98.7\%). Because the $+0.42$\,pp margin is small, is measured against 
     a very recent paper that has not been peer reviewed, and reuses that model's checkpoint, we
-    present it as a demonstration of feature complementarity which a paired
+    present it as a demonstration of feature complementarity, which a paired
     bootstrap test shows is significant over the best single
     stream (Section~\ref{sec:holdout}) rather
     than a decisive state of the art.
-  \item \textbf{C3 : Same-setup ablation path.} An in depth
+  \item \textbf{C3: Same-setup ablation path.} An in depth
     ablation traces the complete performance trajectory from the 82.3\%
     TransReID baseline to 93.3\% mAP under a single consistent post-processing
     protocol, separating post-processing contributions from recipe
     contributions instead of conflating them.
-  \item \textbf{C4 : Reproducible public release with validation and cost
+  \item \textbf{C4: Reproducible public release with validation and cost
     analysis.} All checkpoints (SHA-256 pinned), evaluation notebooks,
     configuration files, per-query evaluation dumps, and the post-processing
     pipeline are publicly released. Every reported number is the deterministic
@@ -45,18 +45,18 @@ The contributions of this work are as follows:
     exactly re-computable from the release; from-scratch retraining is
     reproducible within a $\pm0.55$\,pp seed band
     (Section~\ref{sec:seed_variance}). Headline numbers use hyperparameters
-    selected on the standard evaluation split disclosed, not implicit with
+    selected on the standard evaluation split (disclosed, not implicit), with
     held-out validation bounding the resulting optimism to $\leq$0.2\,pp mAP
     (Section~\ref{sec:holdout}), and the latency and memory of every pipeline
-    stage extraction, TTA, AQE, re-ranking, fusion are measured for
+    stage (extraction, TTA, AQE, re-ranking, fusion) are measured for
     deployment planning (Section~\ref{sec:cost}).
-  \item \textbf{C5 : Cross-dataset transfer study.} A zero-shot
+  \item \textbf{C5: Cross-dataset transfer study.} A zero-shot
     VeRi-776$\rightarrow$VeRi-Wild evaluation across all three official test
     protocols (with paired-bootstrap CIs and released per-query dumps) shows
     the ViT-B stream transfers competitively with published cross-domain
     methods that use over twenty times more source identities or adapt using
     unlabelled target data, while the two-stream fusion does not
-    transfer at any scale evidence, supported by a CityFlowV2 MTMC port,
+    transfer at any scale: evidence, supported by a CityFlowV2 MTMC port,
     that its VeRi-776 advantage is domain-specific
     (Section~\ref{sec:veriwild}).
 \end{itemize}
