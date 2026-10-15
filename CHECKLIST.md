@@ -2,7 +2,7 @@
 
 The paper was drafted with heavy AI assistance. **Goal: every unit below is rewritten in our own words by one of us, then read by a second person.** One unit = one file in [`sections/`](sections/) = one sitting (~10-25 min).
 
-**Progress: 44 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
+**Progress: 45 / 49 units rewritten, 0 / 49 reviewed** (update this line when you tick boxes)
 
 ## How to take a unit
 
@@ -160,7 +160,7 @@ Time estimates are rough (based on prose word count; tables/figures add checking
 - **48** [Bio: Abdelrahman Hamdi (his own)](sections/48_bio_hamdi.tex) - ~64 words, ~10 min *Only this author writes this. 50-100 words.*  
   - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
 - **49** [Bio: Ahmed H. Abdel-Gawad (supervisor, his own)](sections/49_bio_ahmed.tex) - ~51 words, ~10 min *Only this author writes this. 50-100 words.*  
-  - [ ] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
+  - [x] Rewritten  - [ ] Reviewed  - Owner: `@____`  - Reviewer: `@____`
 
 ## Final pass (after all units are Reviewed)
 
